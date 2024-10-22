@@ -28,7 +28,6 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
-import CommonButton from "../common/button/Button";
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -138,7 +137,15 @@ const BenefitsDetails: React.FC = () => {
               </Box>
 
               <Box m={4}>
-                <CommonButton label="Procced To Apply" onClick={openModal} />
+                <Button
+                  className="custom-btn"
+                  type="submit"
+                  mt={4}
+                  width="100%"
+                  onClick={openModal}
+                >
+                  Proceed To Apply
+                </Button>
               </Box>
             </Box>
           </Box>
