@@ -28,6 +28,7 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
+import CommonButton from "../common/button";
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -158,6 +159,52 @@ const BenefitsDetails: React.FC = () => {
             <ModalOverlay />
             <ModalContent>
               <ModalHeader className="border-bottom">
+                <Box className="heading">Terms and Conditions</Box>
+                <Box color="gray.600" fontWeight="300" fontSize={"18px"}>
+                  Confirmation
+                </Box>
+              </ModalHeader>
+              <Divider />
+
+              <ModalCloseButton />
+              <ModalBody className="border-bottom">
+              <Text fontWeight="500" fontSize={'20px'}>  Share my documents with the provider for processing my application</Text>
+      <Text mt={4} mb={2} fontWeight="normal"  fontSize={'17px'}>Read and accept before you proceed</Text>
+      
+      
+              
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  className="custom-btn"
+                  type="submit"
+                  mt={4}
+                  m={2}
+                  width="100%"
+                >
+                  Okay
+                </Button>
+                <Button
+                  className="custom-btn"
+                  type="submit"
+                  mt={4}
+                  m={2}
+                  width="100%"
+                >
+                  Okay
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+          {/* <Modal
+            isCentered
+            finalFocusRef={finalRef}
+            isOpen={isOpen}
+            onClose={onClose}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader className="border-bottom">
                 <Box className="heading">Application Submitted</Box>
                 <Box color="gray.600" fontWeight="300" fontSize={"18px"}>
                   Confirmation
@@ -188,7 +235,7 @@ const BenefitsDetails: React.FC = () => {
                 </Button>
               </ModalFooter>
             </ModalContent>
-          </Modal>
+          </Modal> */}
           <Footer />
         </Box>
       </Flex>
