@@ -8,6 +8,7 @@ import UserProfile from "./components/benefit/UserProfile";
 import Footer from "./components/common/Footer";
 import BenefitsDetails from "./components/benefit/Details";
 import ExploreBenefits from "./components/benefit/Benefits";
+import Preview from "./components/application/Preview";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/footer" element={<Footer />} />
           <Route path="/explorebenefits" element={<ExploreBenefits />} />
           <Route path="/benefitsdetails" element={<BenefitsDetails />} />
+          <Route path="/previewapplication" element={<Preview/>} />
         </Routes>
       </Router>
     </ChakraProvider>

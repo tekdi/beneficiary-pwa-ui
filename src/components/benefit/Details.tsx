@@ -25,14 +25,18 @@ import {
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
-import CommonButton from "../common/button";
+import { useNavigate } from "react-router-dom";
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const finalRef = React.useRef(null);
+  const navigate = useNavigate();
+
+  const redirectToPreviewApplication = () => {
+    navigate("/previewapplication");
+  }
 
   const openModal = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -168,17 +172,14 @@ const BenefitsDetails: React.FC = () => {
 
               <ModalCloseButton />
               <ModalBody className="border-bottom">
-              <Text fontWeight="500" fontSize={'20px'}>  Share my documents with the provider for processing my application</Text>
-      <Text mt={4} mb={2} fontWeight="normal"  fontSize={'17px'}>Read and accept before you proceed</Text>
-      
-      
-              
+              <Text mt={4} mb={10} fontWeight="500" fontSize={'20px'}>  Share my documents with the provider for processing my application</Text>
+              <Text mt={4} mb={4} fontWeight="normal"  fontSize={'17px'}>Read and accept before you proceed</Text>
               </ModalBody>
               <ModalFooter>
                 <Button
                   className="custom-btn"
                   type="submit"
-                  mt={4}
+                  mt={4}  
                   m={2}
                   width="100%"
                 >
@@ -190,52 +191,13 @@ const BenefitsDetails: React.FC = () => {
                   mt={4}
                   m={2}
                   width="100%"
+                  onClick={redirectToPreviewApplication}
                 >
-                  Okay
+                  Accept
                 </Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
-          {/* <Modal
-            isCentered
-            finalFocusRef={finalRef}
-            isOpen={isOpen}
-            onClose={onClose}
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader className="border-bottom">
-                <Box className="heading">Application Submitted</Box>
-                <Box color="gray.600" fontWeight="300" fontSize={"18px"}>
-                  Confirmation
-                </Box>
-              </ModalHeader>
-              <Divider />
-
-              <ModalCloseButton />
-              <ModalBody className="border-bottom">
-                <Heading size="md" color="#484848" fontWeight={500} mt={6}>
-                  Your application to the{" "}
-                  <span className="text-blue">Pre-Matric Scholarship-SC </span>{" "}
-                  Benefit has been submitted!
-                </Heading>
-                <Box mt={4} mb={4}>
-                  Application ID : 1303
-                </Box>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  className="custom-btn"
-                  type="submit"
-                  mt={4}
-                  m={2}
-                  width="100%"
-                >
-                  Okay
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal> */}
           <Footer />
         </Box>
       </Flex>
