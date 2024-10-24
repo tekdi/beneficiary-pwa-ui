@@ -28,6 +28,10 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import { useNavigate } from "react-router-dom";
+import CommonButton from "../common/button/Button";
+import OutlineButton from "../common/button/OutlineButton";
+import Layout from "../common/layout/Layout";
+import HeadingText from "../common/layout/HeadingText";
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -42,24 +46,14 @@ const BenefitsDetails: React.FC = () => {
     event.preventDefault();
     onOpen();
   };
+  const handleBack =() => {
+    navigate(-1);
+  }
   return (
-    <Box className="main-bg">
-      <Flex height="100vh" alignItems="center" justifyContent="center">
-        <Box
-          width="550px"
-          height="100vh"
-          borderRadius="lg"
-          shadow="lg"
-          borderWidth="1px"
-          background="#fff"
-        >
-          <Header />
+    <Layout isNavbar={true}>
+
           <Box className="card-scroll">
-            <Box mt={4} mb={2} p={2} className="border-bottom">
-              <Heading as="h4" size="lg" mb={2} className="heading">
-                <ArrowBackIcon /> Pre-Matric Scholarship-ST
-              </Heading>
-            </Box>
+          <HeadingText heading="Pre-Matric Scholarship-ST" beneficiary={false} handleBack={handleBack}/>
 
             <Box>
               <Box maxW="2xl" m={4}>
@@ -142,15 +136,7 @@ const BenefitsDetails: React.FC = () => {
               </Box>
 
               <Box m={4}>
-                <Button
-                  className="custom-btn"
-                  type="submit"
-                  mt={4}
-                  width="100%"
-                  onClick={openModal}
-                >
-                  Proceed To Apply
-                </Button>
+                <CommonButton onClick={openModal} label="Proceed To Apply" />
               </Box>
             </Box>
           </Box>
@@ -175,33 +161,14 @@ const BenefitsDetails: React.FC = () => {
               <Text mt={4} mb={10} fontWeight="500" fontSize={'20px'}>  Share my documents with the provider for processing my application</Text>
               <Text mt={4} mb={4} fontWeight="normal"  fontSize={'17px'}>Read and accept before you proceed</Text>
               </ModalBody>
-              <ModalFooter>
-                <Button
-                  className="custom-btn"
-                  type="submit"
-                  mt={4}  
-                  m={2}
-                  width="100%"
-                >
-                  Okay
-                </Button>
-                <Button
-                  className="custom-btn"
-                  type="submit"
-                  mt={4}
-                  m={2}
-                  width="100%"
-                  onClick={redirectToPreviewApplication}
-                >
-                  Accept
-                </Button>
+              <ModalFooter gap={2}>
+                <OutlineButton onClick={onClose} label="Deny" />
+                <CommonButton onClick={redirectToPreviewApplication} label="Accept" />
               </ModalFooter>
             </ModalContent>
           </Modal>
           <Footer />
-        </Box>
-      </Flex>
-    </Box>
+    </Layout>
   );
 };
 

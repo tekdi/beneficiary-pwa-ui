@@ -2,15 +2,9 @@ import React from "react";
 import {
   Box,
   Button,
-  ButtonGroup,
-  Card,
-  CardBody,
-  CardFooter,
   Flex,
   Heading,
   Text,
-  Center,
-  Badge,
   UnorderedList,
   ListItem,
   useDisclosure,
@@ -24,11 +18,10 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
-import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
-import Header from "../common/Header";
+import { ArrowBackIcon} from "@chakra-ui/icons";
 import Footer from "../common/Footer";
-import CommonButton from "../common/button/Button";
+import Layout from "../common/layout/Layout";
+
 const List: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const finalRef = React.useRef(null);
@@ -38,17 +31,7 @@ const List: React.FC = () => {
     onOpen();
   };
   return (
-    <Box className="main-bg">
-      <Flex height="100vh" alignItems="center" justifyContent="center">
-        <Box
-          width="550px"
-          height="100vh"
-          borderRadius="lg"
-          shadow="lg"
-          borderWidth="1px"
-          background="#fff"
-        >
-          <Header />
+    <Layout isNavbar={true}>
           <Box className="card-scroll">
             <Box mt={4} mb={2} p={2} className="border-bottom">
               <Heading as="h4" size="lg" mb={2} className="heading">
@@ -190,9 +173,7 @@ const List: React.FC = () => {
             </ModalContent>
           </Modal>
           <Footer />
-        </Box>
-      </Flex>
-    </Box>
+    </Layout>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
-import { FormControl,Select,Box } from '@chakra-ui/react';
+import { FormControl,Select, FormLabel, FormHelperText } from '@chakra-ui/react';
 
 interface Option {
   value: string;
@@ -25,8 +25,8 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({ value, onChange, label,
       variant="outlined"
       width="100%"
     >
-      <Box
-        as="label"
+     
+      <FormLabel  
         htmlFor={name}
         position="absolute"
         top={isFocused || value ? '-10px' : '40%'}
@@ -38,10 +38,7 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({ value, onChange, label,
         color={isFocused ? 'blue.500' : 'gray.500'}
         fontSize={isFocused || value ? '0.85rem' : '1rem'}
         zIndex={100}
-        pointerEvents="none"
-      >
-        {label}
-      </Box>
+        pointerEvents="none">{label}</FormLabel>
       <Select
         id={name}
         name={name}
@@ -67,6 +64,7 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({ value, onChange, label,
           </option>
         ))}
       </Select>
+  
     </FormControl>
   );
 };

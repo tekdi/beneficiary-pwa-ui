@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Button,
   FormControl,
   Heading,
   Text,
@@ -16,6 +15,9 @@ import Header from "../common/Header";
 import FlotingInput from "../common/FlotingInput";
 import FloatingPasswordInput from "../common/FloatingPasswordInput";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import CommonButton from "../common/button/Button";
+import Layout from "../common/layout/Layout";
+import HeadingText from "../common/layout/HeadingText";
 
 
 const Signup: React.FC = () => {
@@ -24,22 +26,14 @@ const Signup: React.FC = () => {
     navigate("/signin");
   };
 
+  const handleBack =() => {
+    navigate(-1);
+  }
+
   return (
-    <Box className="main-bg">
-      <Flex height="100vh" alignItems="center" justifyContent="center"  position="relative">
-        <Box
-          width="550px"
-          height="100vh"
-          borderRadius="lg"
-          shadow="lg"
-          borderWidth="1px"
-          background="#fff"
-        >
-          <Header />
+    <Layout isNavbar={false}>
+    <HeadingText heading="Sign Up with E-Wallet" beneficiary={false} handleBack={handleBack}/>
           <Box p={5}>
-            <Heading as="h2" size="lg" mb={4} mt={1} className="heading">
-              <ArrowBackIcon /> Sign Up with E-Wallet
-            </Heading>
             <form>
               <VStack align="stretch">
                 <FormControl>
@@ -55,13 +49,10 @@ const Signup: React.FC = () => {
                     name="confirmpassword"
                   />
                 </FormControl>
-                <Button className="custom-btn" type="submit" mt={4}>
-                  Sign Up
-                </Button>
+                <CommonButton label="Sign Up" />
               </VStack>
             </form>
             <Center>
-              {" "}
               <Text mt={6}>
                 Already Have An Account?{" "}
                 <Link
@@ -74,10 +65,8 @@ const Signup: React.FC = () => {
               </Text>
             </Center>
           </Box>
-        </Box>
-      </Flex>
-    </Box>
+    </Layout>
   );
-};
+}
 
 export default Signup;

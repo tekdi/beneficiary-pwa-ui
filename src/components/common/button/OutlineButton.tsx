@@ -1,14 +1,14 @@
 import React from "react";
 import { Button } from "@chakra-ui/react";
 
-interface CustomButton {
+interface OutlineButton {
   onClick: () => void;
   mt?: number;
   width?: string;
   label?: string;
 }
 
-const CommonButton: React.FC<CustomButton> = ({
+const OutlineButton: React.FC<OutlineButton> = ({
   onClick,
   mt = 4,
   width = "100%",
@@ -16,7 +16,7 @@ const CommonButton: React.FC<CustomButton> = ({
 }) => {
   return (
     <Button
-      className="custom-btn"
+      className="custom-outline-btn"
       type="submit"
       mt={mt}
       width={width}
@@ -27,5 +27,5 @@ const CommonButton: React.FC<CustomButton> = ({
   );
 };
 
-export default CommonButton;
+export default OutlineButton;
 
