@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 
 import Header from "../common/Header";
 import Footer from "../common/Footer";
+import CommonButton from "../common/button/Button";
+import Layout from "../common/layout/Layout";
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -25,22 +27,7 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <Box className="main-bg">
-      <Flex
-        height="100vh"
-        alignItems="center"
-        justifyContent="center"
-        position="relative"
-      >
-        <Box
-          width="550px"
-          height="100vh"
-          borderRadius="lg"
-          shadow="lg"
-          borderWidth="1px"
-          background="#fff"
-        >
-          <Header />
+    <Layout isNavbar={true}>
           <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
             <Flex align="center">
               <Wrap>
@@ -181,20 +168,11 @@ const UserProfile: React.FC = () => {
                   </Flex>
                 </ListItem>
               </List>
-              <Button
-                className="custom-btn"
-                type="submit"
-                mt={4}
-                onClick={handleRedirect}
-              >
-                Explore Benefits
-              </Button>
+              <CommonButton  onClick={handleRedirect} label="Explore Benefits" />
             </VStack>
           </Box>
           <Footer />
-        </Box>
-      </Flex>
-    </Box>
+    </Layout>
   );
 };
 

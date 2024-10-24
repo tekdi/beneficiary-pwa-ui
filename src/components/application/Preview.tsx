@@ -21,10 +21,15 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import CustomDisableInput from "../common/inputs/DisableInput";
+import CommonButton from "../common/button/Button";
+import Layout from "../common/layout/Layout";
+import HeadingText from "../common/layout/HeadingText";
+import { useNavigate } from "react-router-dom";
 
 const Preview: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const finalRef = React.useRef(null);
+  const navigate = useNavigate();
 
   const openModal = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,27 +39,14 @@ const Preview: React.FC = () => {
   const closeModal = () => {
     onClose();
   };
+
+  const handleBack =() => {
+    navigate(-1);
+  }
   return (
-    <Box className="main-bg">
-      <Flex height="100vh" alignItems="center" justifyContent="center">
-        <Box
-          width="550px"
-          height="100vh"
-          borderRadius="lg"
-          shadow="lg"
-          borderWidth="1px"
-          background="#fff"
-        >
-          <Header />
+    <Layout isNavbar={true}>
           <Box className="card-scroll">
-            <Box mt={6} p={2} className="border-bottom">
-              <Heading as="h4" size="lg" mb={2} className="heading">
-                <ArrowBackIcon /> Preview Application
-              </Heading>
-              <Text ml={2} mb={6}>
-                Application for SC Scholarship 1
-              </Text>
-            </Box>
+          <HeadingText heading="Preview Application" subHeading="Application for SC Scholarship 1" beneficiary={false} handleBack={handleBack}/>       
             <Box>
               <Box maxW="2xl" m={4} className="border-bottom">
                 <Stack gap="4" align="flex-start">
@@ -108,15 +100,7 @@ const Preview: React.FC = () => {
               </Box>
 
               <Box m={4}>
-                <Button
-                  className="custom-btn"
-                  type="submit"
-                  mt={4}
-                  width="100%"
-                  onClick={openModal}
-                >
-                  Confirm Submission
-                </Button>
+                <CommonButton onClick={openModal} label="Confirm Submission" />
               </Box>
             </Box>
           </Box>
@@ -148,23 +132,12 @@ const Preview: React.FC = () => {
                 </Box>
               </ModalBody>
               <ModalFooter>
-                <Button
-                  className="custom-btn"
-                  type="submit"
-                  mt={4}
-                  m={2}
-                  width="100%"
-                  onClick={closeModal}
-                >
-                  Okay
-                </Button>
+                <CommonButton onClick={closeModal} label="Okay" />
               </ModalFooter>
             </ModalContent>
           </Modal>
           <Footer />
-        </Box>
-      </Flex>
-    </Box>
+    </Layout>
   );
 };
 

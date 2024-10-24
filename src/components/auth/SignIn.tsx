@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Button,
   FormControl,
-  FormLabel,
-  Input,
   Heading,
   Text,
   VStack,
@@ -27,9 +25,13 @@ import { BiCheck } from "react-icons/bi";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
+import CommonButton from "../common/button/Button";
 
 import Header from "../common/Header";
 import FlotingInput from "../common/FlotingInput";
+import OutlineButton from "../common/button/OutlineButton";
+import Layout from "../common/layout/Layout";
+import HeadingText from "../common/layout/HeadingText";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -48,36 +50,22 @@ const SignIn: React.FC = () => {
     onOpen(); // Open the modal
   };
 
+  const handleBack =() => {
+    navigate(-1);
+  }
+
   return (
-    <Box className="main-bg">
-    <Flex height="100vh" alignItems="center" justifyContent="center">
-      <Box
-       width="550px"
-       height="100vh"
-       borderRadius="lg"
-       shadow="lg"
-       borderWidth="1px"
-       background="#fff"
-      >
-        <Header />
+    <Layout isNavbar={false}>
+       <HeadingText heading="Sign In with E-Wallet" beneficiary={false} handleBack={handleBack}/>
         <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
-          <Heading as="h2" size="lg" mb={4} mt={1} className="heading">
-            <ArrowBackIcon /> Sign In with E-Wallet
-          </Heading>
+       
           <form onSubmit={handleSubmit}>
-            <VStack spacing={4} align="stretch">
+            <VStack align="stretch">
               <FormControl>
                 <FlotingInput label="First Name" name="firstname" />
                 <FlotingInput label="Password" name="password" />
               </FormControl>
-              <Button
-                className="custom-btn"
-                type="submit"
-                mt={4}
-                onClick={handleRedirect}
-              >
-                Sign In
-              </Button>
+              <CommonButton  onClick={handleRedirect} label="Sign In" />
             </VStack>
           </form>
           <Modal  isCentered finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
@@ -123,13 +111,9 @@ const SignIn: React.FC = () => {
                 </List>
               </ModalBody>
               <Divider />
-              <ModalFooter>
-                <Button className="custom-outline-btn" type="button" mt={4} m={2} onClick={onClose}>
-                  Deny
-                </Button>
-                <Button className="custom-btn" type="submit" mt={4} m={2} onClick={redirectUserProfile}>
-                  Accept
-                </Button>
+              <ModalFooter gap={2}>
+                <OutlineButton onClick={onClose} label="Deny" />
+                <CommonButton  onClick={redirectUserProfile} label="Accept" />
               </ModalFooter>
             </ModalContent>
           </Modal>
@@ -146,9 +130,7 @@ const SignIn: React.FC = () => {
             </Text>
           </Center>
         </Box>
-      </Box>
-    </Flex>
-    </Box>
+    </Layout>
   );
 };
 
