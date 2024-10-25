@@ -1,6 +1,7 @@
 .purple-bg {
   background-color: #121943;
 }
+
 .custom-btn {
   padding: 24px 63px !important;
   font-weight: bold;
@@ -12,12 +13,15 @@
 .custom-btn:hover {
   background-color: #3c5fdd;
 }
+
 .text-color {
   color: #3c5fdd;
 }
+
 .text-decoration-underline {
   text-decoration: underline;
 }
+
 .heading {
   color: #45464f;
   font-weight: 400 !important;
@@ -44,6 +48,7 @@
   background-repeat: no-repeat;
   background-size: cover;
 }
+
 .category-box {
   border: 1px solid blue;
   width: auto;
@@ -51,9 +56,11 @@
   border-radius: 5px;
   padding: 2px 20px;
 }
+
 .text-blue {
   color: #0037b9;
 }
+
 .badge-box {
   background: #0b7b69;
   color: #fff;
@@ -63,6 +70,7 @@
   padding: 4px 31px;
   margin: -21px;
 }
+
 .card-scroll {
   height: 80vh;
   overflow-y: scroll;
