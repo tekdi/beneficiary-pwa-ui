@@ -1,10 +1,7 @@
 import React from "react";
 import {
   Box,
-  Button,
-  Flex,
   Heading,
-  Text,
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -17,8 +14,6 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import Header from "../common/Header";
 import Footer from "../common/Footer";
 import CustomDisableInput from "../common/inputs/DisableInput";
 import CommonButton from "../common/button/Button";
@@ -98,7 +93,6 @@ const Preview: React.FC = () => {
                   />
                 </Stack>
               </Box>
-
               <Box m={4}>
                 <CommonButton onClick={openModal} label="Confirm Submission" />
               </Box>
