@@ -1,12 +1,17 @@
 import React from "react";
-import { FormControl, FormLabel, Input, InputGroup, InputRightElement, } from "@chakra-ui/react";
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  InputGroup,
+  InputRightElement,
+} from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
-
 
 // Define the type for the option
 interface Option {
-    label: string;
-    placeholder: string;
+  label: string;
+  placeholder: string;
 }
 
 // Define the props for the CustomSelect component
@@ -23,17 +28,16 @@ interface CustomSelectProps {
 
 const CustomDisableInput: React.FC<CustomSelectProps> = ({
   label,
-  placeholder
+  placeholder,
 }) => {
   return (
-
-<FormControl>
-<FormLabel htmlFor="email">{label}</FormLabel>
-<InputGroup>
-  <Input id="email" placeholder={placeholder} disabled/>
-  <InputRightElement children={<CheckIcon color="green.500" />} />
-</InputGroup>
-</FormControl>
+    <FormControl>
+      <FormLabel htmlFor="email">{label}</FormLabel>
+      <InputGroup>
+        <Input id="email" placeholder={placeholder} disabled />
+        <InputRightElement children={<CheckIcon color="green.500" />} />
+      </InputGroup>
+    </FormControl>
   );
 };
 

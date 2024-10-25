@@ -28,4 +28,3 @@ const CommonButton: React.FC<CustomButton> = ({
 };
 
 export default CommonButton;
-

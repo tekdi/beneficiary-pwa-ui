@@ -1,61 +1,61 @@
-.purple-bg{
+.purple-bg {
   background-color: #121943;
 }
-.custom-btn{
+.custom-btn {
   padding: 24px 63px !important;
   font-weight: bold;
-  background-color: #3C5FDD !important;
+  background-color: #3c5fdd !important;
   color: #fff !important;
   border-radius: 100px !important;
 }
 
 .custom-btn:hover {
-  background-color: #3C5FDD;
+  background-color: #3c5fdd;
 }
-.text-color{
-color: #3C5FDD;
+.text-color {
+  color: #3c5fdd;
 }
-.text-decoration-underline{
-text-decoration: underline;
+.text-decoration-underline {
+  text-decoration: underline;
 }
-.heading{
-  color: #45464F;
+.heading {
+  color: #45464f;
   font-weight: 400 !important;
   font-size: 25px !important;
 }
 
-.custom-outline-btn{
+.custom-outline-btn {
   padding: 24px 63px !important;
   font-weight: bold;
   background-color: #fff !important;
   border-radius: 100px !important;
-  border:1px solid #3C5FDD;
-  color:#3C5FDD !important;
+  border: 1px solid #3c5fdd;
+  color: #3c5fdd !important;
 }
 
-.border-bottom{
-  border-bottom:1px solid #45464f40;
+.border-bottom {
+  border-bottom: 1px solid #45464f40;
 }
 
-.main-bg{
-  min-height:100vh;
-  background-image:url('../src/assets/images/backgroung.png');
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:cover;
+.main-bg {
+  min-height: 100vh;
+  background-image: url("../src/assets/images/backgroung.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
-.category-box{
-border: 1px solid blue;
-width: auto;
-color: blue;
-border-radius: 5px;
-padding: 2px 20px;
+.category-box {
+  border: 1px solid blue;
+  width: auto;
+  color: blue;
+  border-radius: 5px;
+  padding: 2px 20px;
 }
-.text-blue{
-  color:#0037B9;
+.text-blue {
+  color: #0037b9;
 }
-.badge-box{
-  background: #0B7B69;
+.badge-box {
+  background: #0b7b69;
   color: #fff;
   border-radius: 8px 16px 0px 15px;
   width: auto;
@@ -63,7 +63,7 @@ padding: 2px 20px;
   padding: 4px 31px;
   margin: -21px;
 }
-.card-scroll{
-height: 80vh;
-overflow-y: scroll;
+.card-scroll {
+  height: 80vh;
+  overflow-y: scroll;
 }

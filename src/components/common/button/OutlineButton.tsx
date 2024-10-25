@@ -28,4 +28,3 @@ const OutlineButton: React.FC<OutlineButton> = ({
 };
 
 export default OutlineButton;
-

@@ -1,6 +1,14 @@
-import { Box, FormControl, Input, InputGroup, InputRightElement, Button, Icon } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import {
+  Box,
+  FormControl,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Button,
+  Icon,
+} from "@chakra-ui/react";
+import React, { useState } from "react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 export default function FloatingPasswordInput({ value, onChange, label }) {
   const [isFocused, setIsFocused] = useState(false);
@@ -27,10 +35,10 @@ export default function FloatingPasswordInput({ value, onChange, label }) {
       >
         {label}
       </Box>
-      <InputGroup size='md'>
+      <InputGroup size="md">
         <Input
           placeholder={isFocused ? "" : label}
-          type={show ? 'text' : 'password'} // Toggle between text and password
+          type={show ? "text" : "password"} // Toggle between text and password
           onFocus={() => setIsFocused(true)}
           onBlur={(e) => setIsFocused(e.target.value !== "")}
           size="md"
@@ -52,14 +60,14 @@ export default function FloatingPasswordInput({ value, onChange, label }) {
               height: "2px",
               background: "white", // same color as background
               zIndex: 2,
-              
             },
           }}
           {...{ value, onChange }}
         />
-        <InputRightElement width='4.5rem' sx={{marginTop: '3%'}}>
-          <Button h='1.75rem' size='sm' onClick={handleClick}>
-            {show ? <Icon as={ViewOffIcon} /> : <Icon as={ViewIcon} />} {/* Toggle between icons */}
+        <InputRightElement width="4.5rem" sx={{ marginTop: "3%" }}>
+          <Button h="1.75rem" size="sm" onClick={handleClick}>
+            {show ? <Icon as={ViewOffIcon} /> : <Icon as={ViewIcon} />}{" "}
+            {/* Toggle between icons */}
           </Button>
         </InputRightElement>
       </InputGroup>

@@ -1,5 +1,10 @@
-import React, { useState, ChangeEvent } from 'react';
-import { FormControl,Select, FormLabel, FormHelperText } from '@chakra-ui/react';
+import React, { useState, ChangeEvent } from "react";
+import {
+  FormControl,
+  Select,
+  FormLabel,
+  FormHelperText,
+} from "@chakra-ui/react";
 
 interface Option {
   value: string;
@@ -14,30 +19,39 @@ interface FloatingSelectProps {
   options: Option[];
 }
 
-const FloatingSelect: React.FC<FloatingSelectProps> = ({ value, onChange, label, name, options }) => {
+const FloatingSelect: React.FC<FloatingSelectProps> = ({
+  value,
+  onChange,
+  label,
+  name,
+  options,
+}) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <FormControl 
-      position="relative" 
-      mt={2} 
-      height="80px" 
+    <FormControl
+      position="relative"
+      mt={2}
+      height="80px"
       variant="outlined"
       width="100%"
     >
-      <FormLabel  
+      <FormLabel
         htmlFor={name}
         position="absolute"
-        top={isFocused || value ? '-10px' : '40%'}
+        top={isFocused || value ? "-10px" : "40%"}
         left="17px"
         bg="white"
         px={1}
-        transform={isFocused || value ? 'scale(0.85)' : 'translateY(-50%)'}
+        transform={isFocused || value ? "scale(0.85)" : "translateY(-50%)"}
         transition="all 0.2s ease-out"
-        color={isFocused ? 'blue.500' : 'gray.500'}
-        fontSize={isFocused || value ? '0.85rem' : '1rem'}
+        color={isFocused ? "blue.500" : "gray.500"}
+        fontSize={isFocused || value ? "0.85rem" : "1rem"}
         zIndex={100}
-        pointerEvents="none">{label}</FormLabel>
+        pointerEvents="none"
+      >
+        {label}
+      </FormLabel>
       <Select
         id={name}
         name={name}
@@ -46,13 +60,13 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({ value, onChange, label,
           setIsFocused(true);
           onChange(e);
         }}
-        onBlur={() => setIsFocused(value !== '')}
+        onBlur={() => setIsFocused(value !== "")}
         onFocus={() => setIsFocused(true)}
         placeholder={label}
         border="2px"
         borderColor="gray.300"
         _focus={{
-          borderColor: 'blue.500',
+          borderColor: "blue.500",
         }}
         height="60px"
         mt={4}
@@ -63,7 +77,6 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({ value, onChange, label,
           </option>
         ))}
       </Select>
-  
     </FormControl>
   );
 };

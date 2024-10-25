@@ -15,7 +15,6 @@ import {
   MenuList,
   MenuItem,
   Select,
-
 } from "@chakra-ui/react";
 // import Header from "./Header";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,12 +27,10 @@ const Header: React.FC = () => {
   };
 
   return (
-      <Box bg="#EDEFFF" p="4">
+    <Box bg="#EDEFFF" p="4">
       <Flex justifyContent="space-between" alignItems="center">
-        <Text>
-          Fast Pass
-        </Text>
-        <Select placeholder="EN" width="auto" border= '1px solid #0000006b'>
+        <Text>Fast Pass</Text>
+        <Select placeholder="EN" width="auto" border="1px solid #0000006b">
           <option value="en">EN</option>
           <option value="fr">FR</option>
           <option value="es">Sp</option>
