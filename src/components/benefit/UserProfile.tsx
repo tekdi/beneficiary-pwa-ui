@@ -14,8 +14,6 @@ import {
 import { CheckIcon } from "@chakra-ui/icons";
 
 import { useNavigate } from "react-router-dom";
-
-import Header from "../common/Header";
 import Footer from "../common/Footer";
 import CommonButton from "../common/button/Button";
 import Layout from "../common/layout/Layout";

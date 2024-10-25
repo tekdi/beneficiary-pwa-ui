@@ -25,7 +25,6 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({ value, onChange, label,
       variant="outlined"
       width="100%"
     >
-     
       <FormLabel  
         htmlFor={name}
         position="absolute"

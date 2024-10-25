@@ -51,7 +51,6 @@ const BenefitsDetails: React.FC = () => {
   }
   return (
     <Layout isNavbar={true}>
-
           <Box className="card-scroll">
           <HeadingText heading="Pre-Matric Scholarship-ST" beneficiary={false} handleBack={handleBack}/>
 
