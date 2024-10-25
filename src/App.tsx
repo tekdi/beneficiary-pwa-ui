@@ -9,8 +9,6 @@ import Footer from "./components/common/Footer";
 import BenefitsDetails from "./components/benefit/Details";
 import ExploreBenefits from "./components/benefit/Benefits";
 
-
-
 function App() {
   return (
     <ChakraProvider theme={theme}>

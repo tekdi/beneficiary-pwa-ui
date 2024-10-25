@@ -1,5 +1,5 @@
 import { Box, FormControl, Input } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 export default function FlotingInput({value,onChange,label}) {
   const [isFocused, setIsFocused] = useState(false);
