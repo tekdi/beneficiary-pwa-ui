@@ -15,6 +15,7 @@ import {
   MenuList,
   MenuItem,
   Select,
+  Stack,
 } from "@chakra-ui/react";
 // import Header from "./Header";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,7 +36,7 @@ const Navbar: React.FC = ({ isMenu = true }) => {
   };
 
   return (
-    <Box bg="#EDEFFF" p="4">
+    <Stack bg="#EDEFFF" p="6">
       <Flex justifyContent="space-between" alignItems="center">
         <Box
           display="flex"
@@ -63,7 +64,7 @@ const Navbar: React.FC = ({ isMenu = true }) => {
 
         <CustomSelect label="EN" options={options} placeholder="EN" />
       </Flex>
-    </Box>
+    </Stack>
   );
 };
 

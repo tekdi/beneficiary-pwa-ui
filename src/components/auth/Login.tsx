@@ -7,6 +7,7 @@ import {
   FormHelperText,
   FormLabel,
   Image,
+  Stack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import FloatingSelect from "../common/FloatingSelect";
@@ -50,7 +51,7 @@ const Login: React.FC = () => {
           height="400px"
         />
       </Flex>
-      <Box p={4} mt={4} borderRadius="10rem 9rem 5px 35px">
+      <Stack p={4} mt={4} borderRadius="10rem 9rem 5px 35px" shadow="lg">
         <form>
           <FormControl>
             <FormLabel color={"#45464F"}>
@@ -77,7 +78,7 @@ const Login: React.FC = () => {
         >
           {t("SIGN_IN/SIGN_UI_WITH_YOUR_E-WALLET")}
         </Button>
-      </Box>
+      </Stack>
     </Layout>
   );
 };

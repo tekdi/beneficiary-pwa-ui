@@ -32,6 +32,7 @@ import FlotingInput from "../common/FlotingInput";
 import OutlineButton from "../common/button/OutlineButton";
 import Layout from "../common/layout/Layout";
 import HeadingText from "../common/layout/HeadingText";
+import Navbar from "../common/layout/Navbar";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -55,7 +56,8 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <Layout isNavbar={false}>
+    <Layout>
+      <Navbar isMenu={false} />
       <HeadingText
         heading="Sign In with E-Wallet"
         beneficiary={false}

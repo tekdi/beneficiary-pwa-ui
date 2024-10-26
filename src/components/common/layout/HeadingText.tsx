@@ -43,7 +43,7 @@ const HeadingText: React.FC<HeadingTextProps> = ({
     <Box
       display="flex"
       flexDirection="column"
-      padding="4"
+      padding="5"
       backgroundColor="#FFFFFF"
       borderBottomWidth={beneficiary ? 0 : 1}
       borderBottomColor="#DDDDDD"

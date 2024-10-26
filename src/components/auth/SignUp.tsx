@@ -18,6 +18,7 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import CommonButton from "../common/button/Button";
 import Layout from "../common/layout/Layout";
 import HeadingText from "../common/layout/HeadingText";
+import Navbar from "../common/layout/Navbar";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const Signup: React.FC = () => {
 
   return (
     <Layout isNavbar={false}>
+      <Navbar isMenu={false} />
       <HeadingText
         heading="Sign Up with E-Wallet"
         beneficiary={false}
