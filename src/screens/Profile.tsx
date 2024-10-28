@@ -14,9 +14,9 @@ import {
 import { CheckIcon } from "@chakra-ui/icons";
 
 import { useNavigate } from "react-router-dom";
-import Footer from "../common/Footer";
-import CommonButton from "../common/button/Button";
-import Layout from "../common/layout/Layout";
+import Footer from "../components/common/Footer";
+import CommonButton from "../components/common/button/Button";
+import Layout from "../components/common/layout/Layout";
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();

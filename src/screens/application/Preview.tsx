@@ -14,11 +14,11 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
-import Footer from "../common/Footer";
-import CustomDisableInput from "../common/inputs/DisableInput";
-import CommonButton from "../common/button/Button";
-import Layout from "../common/layout/Layout";
-import HeadingText from "../common/layout/HeadingText";
+import Footer from "../../components/common/Footer";
+import CustomDisableInput from "../../components/common/inputs/DisabledInput";
+import CommonButton from "../../components/common/button/Button";
+import Layout from "../../components/common/layout/Layout";
+import HeadingText from "../../components/common/layout/HeadingText";
 import { useNavigate } from "react-router-dom";
 
 const Preview: React.FC = () => {

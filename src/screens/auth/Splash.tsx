@@ -10,10 +10,13 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import FloatingSelect from "../common/FloatingSelect";
-import i18n from "../common/i18n";
+import i18n from "../../components/common/i18n";
+import Layout from "../../components/common/layout/Layout";
+// import FloatingSelect from "../common/FloatingSelect";
+// import i18n from "../common/i18n";
 import { useTranslation } from "react-i18next";
-import Layout from "../common/layout/Layout";
+import FloatingSelect from "../../components/common/FloatingSelect";
+// import Layout from "../common/layout/Layout";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -32,7 +35,7 @@ const Login: React.FC = () => {
 
   const options = [
     { label: t("ENGLISH"), value: "en" },
-    { label: t("HINDI"), value: "hn" },
+    { label: t("HINDI"), value: "hi" },
   ];
 
   const handleRedirect = () => {
@@ -43,7 +46,7 @@ const Login: React.FC = () => {
     <Layout isNavbar={false}>
       <Flex height="50%" justifyContent="flex-end" className="purple-bg">
         <Image
-          src="../src/assets/images/Frame.png"
+          src="../src/assets/images/frame.png"
           alt="Login Image"
           objectFit="contain"
           transform="translateX(-50%)"

@@ -19,8 +19,8 @@ import {
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import Footer from "../common/Footer";
-import Layout from "../common/layout/Layout";
+import Footer from "../../components/common/Footer";
+import Layout from "../../components/common/layout/Layout";
 
 const List: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

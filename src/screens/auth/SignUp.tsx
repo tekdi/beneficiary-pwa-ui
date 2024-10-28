@@ -8,17 +8,17 @@ import {
   Flex,
   Center,
 } from "@chakra-ui/react";
-// import Header from "./Header";
 import { Link, useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
-import Header from "../common/Header";
-import FlotingInput from "../common/FlotingInput";
-import FloatingPasswordInput from "../common/FloatingPasswordInput";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import CommonButton from "../common/button/Button";
-import Layout from "../common/layout/Layout";
-import HeadingText from "../common/layout/HeadingText";
-import Navbar from "../common/layout/Navbar";
+import CommonButton from "../../components/common/button/Button";
+import Layout from "../../components/common/layout/Layout";
+import HeadingText from "../../components/common/layout/HeadingText";
+import Navbar from "../../components/common/layout/Navbar";
+
+import FlotingInput from "../../components/common/FlotingInput";
+import FloatingSelect from "../../components/common/FloatingSelect";
+import FloatingPasswordInput from "../../components/common/FloatingPasswordInput";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();

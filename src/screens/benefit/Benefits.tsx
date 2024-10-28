@@ -24,14 +24,14 @@ import {
 import "../../assets/styles/App.css";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
+import Header from "../../components/common/Header";
+import Footer from "../../components/common/Footer";
 import { Link as RouterLink } from "react-router-dom";
 import { MdOutlineFilterAlt } from "react-icons/md";
-import FloatingSelect from "../common/FloatingSelect";
+import FloatingSelect from "../../components/common/FloatingSelect";
 import { scholarships } from "../../assets/mockdata/benefit";
-import CommonButton from "../common/button/Button";
-import Layout from "../common/layout/Layout";
+import CommonButton from "../../components/common/button/Button";
+import Layout from "../../components/common/layout/Layout";
 
 const ExploreBenefits: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

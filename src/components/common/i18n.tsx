@@ -4,15 +4,15 @@ import { initReactI18next } from "react-i18next";
 
 // Import your translation files
 import en from "../../locales/en.json";
-import hn from "../../locales/hn.json";
+import hi from "../../locales/hi.json";
 
 i18n.use(initReactI18next).init({
   resources: {
     en: {
       translation: en,
     },
-    hn: {
-      translation: hn,
+    hi: {
+      translation: hi,
     },
   },
   lng: "en", // default language

@@ -25,13 +25,13 @@ import {
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import Header from "../common/Header";
-import Footer from "../common/Footer";
+import Header from "../../components/common/Header";
+import Footer from "../../components/common/Footer";
 import { useNavigate } from "react-router-dom";
-import CommonButton from "../common/button/Button";
-import OutlineButton from "../common/button/OutlineButton";
-import Layout from "../common/layout/Layout";
-import HeadingText from "../common/layout/HeadingText";
+import CommonButton from "../../components/common/button/Button";
+import OutlineButton from "../../components/common/button/OutlineButton";
+import Layout from "../../components/common/layout/Layout";
+import HeadingText from "../../components/common/layout/HeadingText";
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

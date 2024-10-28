@@ -1,15 +1,15 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./components/auth/Login";
-import SignIn from "./components/auth/SignIn";
-import Signup from "./components/auth/SignUp";
-import UserProfile from "./components/benefit/UserProfile";
+import Login from "./screens/auth/Splash";
+import SignIn from "./screens/auth/SignIn";
+import Signup from "./screens/auth/SignUp";
+import UserProfile from "./screens/Profile";
 import Footer from "./components/common/Footer";
-import BenefitsDetails from "./components/benefit/Details";
-import ExploreBenefits from "./components/benefit/Benefits";
-import Preview from "./components/application/Preview";
-import MyApplications from "./components/application/ApplicationStatus";
+import BenefitsDetails from "./screens/benefit/Details";
+import ExploreBenefits from "./screens/benefit/Benefits";
+import Preview from "./screens/application/Preview";
+import MyApplications from "./screens/application/ApplicationStatus";
 
 function App() {
   return (

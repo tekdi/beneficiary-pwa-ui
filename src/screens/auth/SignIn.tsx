@@ -25,14 +25,12 @@ import { BiCheck } from "react-icons/bi";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
-import CommonButton from "../common/button/Button";
-
-import Header from "../common/Header";
-import FlotingInput from "../common/FlotingInput";
-import OutlineButton from "../common/button/OutlineButton";
-import Layout from "../common/layout/Layout";
-import HeadingText from "../common/layout/HeadingText";
-import Navbar from "../common/layout/Navbar";
+import CommonButton from "../../components/common/button/Button";
+import FlotingInput from "../../components/common/FlotingInput";
+import OutlineButton from "../../components/common/button/OutlineButton";
+import Layout from "../../components/common/layout/Layout";
+import HeadingText from "../../components/common/layout/HeadingText";
+import Navbar from "../../components/common/layout/Navbar";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
