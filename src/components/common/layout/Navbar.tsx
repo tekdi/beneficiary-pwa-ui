@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/icons";
 import CustomSelect from "../inputs/Select";
 const options = [
-  { value: "en", label: "English" },
+  // { value: "en", label: "English" },
   // Add more options as needed
 ];
 const Navbar: React.FC = ({ isMenu = true }) => {

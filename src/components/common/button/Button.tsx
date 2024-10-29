@@ -6,6 +6,7 @@ interface CustomButton {
   mt?: number;
   width?: string;
   label?: string;
+  isDisabled?: boolean;
 }
 
 const CommonButton: React.FC<CustomButton> = ({
@@ -13,6 +14,7 @@ const CommonButton: React.FC<CustomButton> = ({
   mt = 4,
   width = "100%",
   label = "Submit",
+  isDisabled = false,
 }) => {
   return (
     <Button
@@ -21,6 +23,7 @@ const CommonButton: React.FC<CustomButton> = ({
       mt={mt}
       width={width}
       onClick={onClick}
+      isDisabled={isDisabled}
     >
       {label}
     </Button>

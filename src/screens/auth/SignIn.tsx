@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   FormControl,
@@ -26,9 +26,12 @@ import CommonButton from "../../components/common/button/Button";
 import FlotingInput from "../../components/common/inputs/FlotingInput";
 import OutlineButton from "../../components/common/button/OutlineButton";
 import Layout from "../../components/common/layout/Layout";
+import FloatingPasswordInput from "../../components/common/inputs/FloatingPasswordInput";
+import { getDocumentsList } from "../../service/auth";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
+  const [documents, setDocuments] = useState([]);
   const handleRedirect = () => {
     navigate("/signin");
   };
@@ -37,6 +40,23 @@ const SignIn: React.FC = () => {
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const getDocumentList = async () => {
+    try {
+      const response = await getDocumentsList();
+      console.log(response, "response");
+
+      setDocuments(response); // Set the response data to state
+    } catch (error) {
+      console.error("Error fetching documents list:", error);
+    }
+  };
+  console.log(documents, "documents");
+
+  useEffect(() => {
+    getDocumentList();
+  }, []);
+
   const finalRef = React.useRef(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -61,8 +81,8 @@ const SignIn: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <VStack align="stretch">
             <FormControl>
-              <FlotingInput label="First Name" name="firstname" />
-              <FlotingInput label="Password" name="password" />
+              <FlotingInput label="User Name" name="username" />
+              <FloatingPasswordInput label="Password" name="password" />
             </FormControl>
             <CommonButton onClick={handleRedirect} label="Sign In" />
           </VStack>
@@ -98,30 +118,12 @@ const SignIn: React.FC = () => {
                 Pass
               </Heading>
               <List spacing={3} mt="4">
-                <ListItem mb="2">
-                  <ListIcon as={BiCheck} color="#3C5FDD" fontSize={"25px"} />
-                  Caste Certificate
-                </ListItem>
-                <ListItem mb="2">
-                  <ListIcon as={BiCheck} color="#3C5FDD" fontSize={"25px"} />
-                  Income Certificate
-                </ListItem>
-                <ListItem mb="2">
-                  <ListIcon as={BiCheck} color="#3C5FDD" fontSize={"25px"} />
-                  Domicile Certificate
-                </ListItem>
-                <ListItem mb="2">
-                  <ListIcon as={BiCheck} color="#3C5FDD" fontSize={"25px"} />
-                  Marksheet (10th)
-                </ListItem>
-                <ListItem mb="2">
-                  <ListIcon as={BiCheck} color="#3C5FDD" fontSize={"25px"} />
-                  Birth Certificate
-                </ListItem>
-                <ListItem mb="2">
-                  <ListIcon as={BiCheck} color="#3C5FDD" fontSize={"25px"} />
-                  Disability Certificate
-                </ListItem>
+                {documents.map((item) => (
+                  <ListItem mb="2">
+                    <ListIcon as={BiCheck} color="#3C5FDD" fontSize={"25px"} />
+                    {item.name}
+                  </ListItem>
+                ))}
               </List>
             </ModalBody>
             <Divider />

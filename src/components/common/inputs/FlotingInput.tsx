@@ -1,10 +1,30 @@
 import React, { useState } from "react";
-import { Box, FormControl, Input } from "@chakra-ui/react";
+import {
+  FormControl,
+  Input,
+  FormErrorMessage,
+  Box,
+  Stack,
+} from "@chakra-ui/react";
 
-export default function FloatingInput({ value, onChange, label }) {
+interface FloatingInputProps {
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isInvalid?: boolean;
+  errorMessage?: string;
+}
+
+const FloatingInput: React.FC<FloatingInputProps> = ({
+  label,
+  value,
+  onChange,
+  isInvalid = false,
+  errorMessage,
+}) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [touched, setTouched] = useState(false);
 
-  // Common label styles
   const labelStyles = {
     position: "absolute",
     left: "12px",
@@ -15,7 +35,6 @@ export default function FloatingInput({ value, onChange, label }) {
     pointerEvents: "none",
   };
 
-  // Dynamic label styles based on focus
   const focusedLabelStyles = isFocused
     ? {
         top: "-10px",
@@ -24,13 +43,12 @@ export default function FloatingInput({ value, onChange, label }) {
         transform: "scale(0.85)",
       }
     : {
-        top: "40%",
+        top: "34%",
         color: "gray.500",
         fontSize: "1rem",
         transform: "translateY(-50%)",
       };
 
-  // Input styles with dynamic border color on focus
   const inputStyles = {
     placeholder: isFocused ? "" : label,
     size: "md",
@@ -41,32 +59,45 @@ export default function FloatingInput({ value, onChange, label }) {
     _focus: {
       borderColor: "blue.500",
     },
-    sx: {
-      "&::before": {
-        content: '""',
-        position: "absolute",
-        top: isFocused ? "-10px" : "50%",
-        left: "10px",
-        width: "30px",
-        height: "2px",
-        background: "white",
-        zIndex: 2,
-      },
-    },
   };
 
   return (
-    <FormControl height="80px" position="relative" mt={2}>
+    <FormControl
+      height="90px"
+      position="relative"
+      mt={2}
+      isInvalid={isInvalid && touched}
+    >
       <Box as="label" htmlFor="name" {...labelStyles} {...focusedLabelStyles}>
         {label}
       </Box>
       <Input
         {...inputStyles}
-        onFocus={() => setIsFocused(true)}
-        onBlur={(e) => setIsFocused(e.target.value !== "")}
+        id="name"
+        onFocus={() => {
+          setIsFocused(true);
+          setTouched(true);
+        }}
+        onBlur={() => {
+          setIsFocused(value !== "");
+        }}
         value={value}
-        onChange={onChange}
+        onChange={(e) => {
+          onChange(e);
+          if (e.target.value.trim() === "") {
+            setTouched(true);
+          }
+        }}
       />
+      {touched && value.trim() === "" && (
+        <Stack>
+          <FormErrorMessage>
+            {errorMessage || "This field is required."}
+          </FormErrorMessage>
+        </Stack>
+      )}
     </FormControl>
   );
-}
+};
+
+export default FloatingInput;

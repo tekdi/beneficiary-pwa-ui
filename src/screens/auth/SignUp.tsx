@@ -1,20 +1,87 @@
-import React from "react";
-import { Box, FormControl, Text, VStack, Center } from "@chakra-ui/react";
-import { Link, useNavigate } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  FormControl,
+  Text,
+  VStack,
+  Center,
+  Alert,
+  AlertIcon,
+} from "@chakra-ui/react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
-import FlotingInput from "../../components/common/inputs/FlotingInput";
 import FloatingPasswordInput from "../../components/common/inputs/FloatingPasswordInput";
+import { registerUser } from "../../service/auth";
+import FloatingInput from "../../components/common/inputs/FlotingInput";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [mobile, setMobile] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const handleRedirect = () => {
     navigate("/signin");
   };
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  useEffect(() => {
+    const isValid =
+      firstName.trim() !== "" &&
+      lastName.trim() !== "" &&
+      mobile.trim() !== "" &&
+      password.trim() !== "" &&
+      confirmPassword.trim() !== "" &&
+      password === confirmPassword;
+
+    setIsFormValid(isValid);
+  }, [firstName, lastName, mobile, password, confirmPassword]);
+
+  const handleSignUp = async () => {
+    const clearError = () => {
+      setTimeout(() => {
+        setError("");
+      }, 3000); // 3 seconds timeout
+    };
+
+    if (!isFormValid) {
+      setError("Please fill in all fields and ensure passwords match.");
+      clearError();
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords not match");
+      clearError();
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await registerUser({
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: mobile,
+        password,
+      });
+      setLoading(false);
+      setSuccess("Registration successful! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 3000); // Redirect after 3 seconds
+    } catch (error: any) {
+      setLoading(false);
+      setError(error.message || "An error occurred.");
+      clearError();
+    }
   };
 
   return (
@@ -27,34 +94,72 @@ const Signup: React.FC = () => {
       isBottombar={false}
     >
       <Box p={5}>
-        <form>
-          <VStack align="stretch">
-            <FormControl>
-              <FlotingInput label="First Name" name="firstname" />
-              <FlotingInput label="Last Name" name="lasttname" />
-              <FlotingInput label="Mobile Number" name="mobilenumber" />
-              <FloatingPasswordInput
-                label="Create Password"
-                name="createpassword"
-              />
-              <FloatingPasswordInput
-                label="Confirm Password"
-                name="confirmpassword"
-              />
-            </FormControl>
-            <CommonButton label="Sign Up" onClick={handleRedirect} />
-          </VStack>
-        </form>
+        <VStack align="stretch" spacing={4}>
+          <FormControl>
+            <FloatingInput
+              label="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              isInvalid={firstName.trim() === ""}
+              errorMessage="First name is required."
+            />
+
+            <FloatingInput
+              label="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              isInvalid={lastName.trim() === ""}
+              errorMessage="Last name is required."
+            />
+            <FloatingInput
+              label="Mobile Number"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              isInvalid={mobile.trim() === ""}
+              errorMessage="Mobile Number is required."
+            />
+            <FloatingPasswordInput
+              label="Create Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              isInvalid={password.trim() === ""}
+              errorMessage="Password is required."
+            />
+            <FloatingPasswordInput
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              isInvalid={confirmPassword.trim() === ""}
+              errorMessage="Confirm Password is required."
+            />
+          </FormControl>
+          <CommonButton
+            label="Sign Up"
+            onClick={handleSignUp}
+            isDisabled={!isFormValid || loading}
+          />
+          {error && (
+            <Alert status="error" variant="solid">
+              <AlertIcon />
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert status="success" variant="solid">
+              <AlertIcon />
+              {success}
+            </Alert>
+          )}
+        </VStack>
         <Center>
           <Text mt={6}>
             Already Have An Account?{" "}
-            <Link
-              as={RouterLink}
+            <RouterLink
               to="/signin"
-              className="text-color text-decoration-underline"
+              style={{ color: "blue", textDecoration: "underline" }}
             >
               Sign in
-            </Link>
+            </RouterLink>
           </Text>
         </Center>
       </Box>

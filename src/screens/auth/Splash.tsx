@@ -29,10 +29,7 @@ const Login: React.FC = () => {
     i18n.changeLanguage(value); // Change language based on selection
   };
 
-  const options = [
-    { label: t("ENGLISH"), value: "en" },
-    { label: t("HINDI"), value: "hi" },
-  ];
+  const options = [{ label: t("ENGLISH"), value: "en" }];
 
   const handleRedirect = () => {
     navigate("/signin");
