@@ -26,25 +26,46 @@ const Signup: React.FC = () => {
   const [success, setSuccess] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [passwordMatchError, setPasswordMatchError] = useState<string>("");
+  const [mobileError, setMobileError] = useState("");
 
-  const handleRedirect = () => {
-    navigate("/signin");
-  };
+  console.log(passwordMatchError, "passwordMatchError");
+  console.log(mobileError, "mobileError");
 
   const handleBack = () => {
     navigate(-1);
   };
 
   useEffect(() => {
+    // Check for empty fields
     const isValid =
       firstName.trim() !== "" &&
       lastName.trim() !== "" &&
       mobile.trim() !== "" &&
       password.trim() !== "" &&
-      confirmPassword.trim() !== "" &&
-      password === confirmPassword;
+      confirmPassword.trim() !== "";
 
-    setIsFormValid(isValid);
+    // Mobile number validation
+    const isMobileValid = /^\d{10}$/.test(mobile.trim());
+    if (!isMobileValid) {
+      setMobileError("Mobile Number must be 10 digits and numeric.");
+    } else {
+      setMobileError("");
+    }
+
+    // Set password match error
+    if (password.trim() !== "" && confirmPassword.trim() !== "") {
+      if (password !== confirmPassword) {
+        setPasswordMatchError("Passwords do not match.");
+      } else {
+        setPasswordMatchError("");
+      }
+    } else {
+      setPasswordMatchError(""); // Clear error if fields are empty
+    }
+
+    // Set form validity
+    setIsFormValid(isValid && password === confirmPassword && isMobileValid);
   }, [firstName, lastName, mobile, password, confirmPassword]);
 
   const handleSignUp = async () => {
@@ -59,11 +80,7 @@ const Signup: React.FC = () => {
       clearError();
       return;
     }
-    if (password !== confirmPassword) {
-      setError("Passwords not match");
-      clearError();
-      return;
-    }
+
     try {
       setLoading(true);
       const response = await registerUser({
@@ -115,22 +132,28 @@ const Signup: React.FC = () => {
               label="Mobile Number"
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
-              isInvalid={mobile.trim() === ""}
-              errorMessage="Mobile Number is required."
+              isInvalid={!!mobileError || mobile.trim() === ""}
+              errorMessage={mobileError || "Mobile Number is required."}
             />
             <FloatingPasswordInput
               label="Create Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPassword(e.target.value)
+              }
               isInvalid={password.trim() === ""}
               errorMessage="Password is required."
             />
             <FloatingPasswordInput
               label="Confirm Password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              isInvalid={confirmPassword.trim() === ""}
-              errorMessage="Confirm Password is required."
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setConfirmPassword(e.target.value)
+              }
+              isInvalid={!!passwordMatchError || confirmPassword.trim() === ""}
+              errorMessage={
+                passwordMatchError || "Confirm Password is required."
+              }
             />
           </FormControl>
           <CommonButton
