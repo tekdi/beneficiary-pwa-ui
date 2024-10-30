@@ -89,7 +89,7 @@ const Signup: React.FC = () => {
         password,
       });
       setLoading(false);
-      setSuccess("Registration successful! Redirecting to login...");
+      setSuccess(response);
       setTimeout(() => {
         navigate("/signin");
       }, 3000); // Redirect after 3 seconds

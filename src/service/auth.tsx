@@ -1,7 +1,7 @@
 import axios from "axios";
-import { removeToken } from "./ayncStorage";
+import { getToken, removeToken } from "./ayncStorage";
 import { API_BASE_URL } from "./env.dev";
-import { getToken } from "./ayncStorage";
+
 export const registerUser = async (userData) => {
   try {
     const response = await axios.post(

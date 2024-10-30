@@ -10,9 +10,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
-import FloatingPasswordInput from "../../components/common/inputs/FloatingPasswordInput";
 import { getDocumentsList } from "../../service/auth";
-import FloatingInput from "../../components/common/inputs/FlotingInput";
 import ConsentDialog from "../../components/common/ConsentDialog";
 
 const SignIn: React.FC = () => {
