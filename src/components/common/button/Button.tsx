@@ -23,6 +23,7 @@ const CommonButton: React.FC<CustomButton> = ({
       onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
         onClick?.(event as unknown as React.FormEvent<HTMLFormElement>)
       }
+      alignSelf={"center"}
     >
       {label}
     </Button>
