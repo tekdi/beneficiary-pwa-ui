@@ -9,6 +9,7 @@ interface HeadingTextProps {
   subHeading?: string;
   handleBack?: () => void; // This should always expect a function
   isFilter?: boolean; // New prop to determine if the filter icon should be shown
+  handleOpen?: () => void;
 }
 
 const LeftContent: React.FC<{ label: string; size?: string }> = ({
@@ -57,7 +58,7 @@ const HeadingText: React.FC<HeadingTextProps> = ({
         <VStack align="start">
           {(handleBack || heading) && (
             <Box display="flex" alignItems="center" width="100%">
-              {beneficiary && <LeftContent label={heading} />}
+              {beneficiary && heading && <LeftContent label={heading} />}
               {handleBack && <BackIcon onClick={handleBack} />}
               {heading && (
                 <Text

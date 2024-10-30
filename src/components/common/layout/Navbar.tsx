@@ -2,39 +2,18 @@ import React from "react";
 import {
   Box,
   Button,
-  FormControl,
-  Heading,
   Text,
-  VStack,
   Flex,
-  Center,
-  Grid,
-  GridItem,
   MenuButton,
   Menu,
   MenuList,
   MenuItem,
-  Select,
   Stack,
 } from "@chakra-ui/react";
-// import Header from "./Header";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  ArrowBackIcon,
-  ChevronDownIcon,
-  HamburgerIcon,
-} from "@chakra-ui/icons";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import CustomSelect from "../inputs/Select";
-const options = [
-  // { value: "en", label: "English" },
-  // Add more options as needed
-];
-const Navbar: React.FC = ({ isMenu = true }) => {
-  const navigate = useNavigate();
-  const handleRedirect = () => {
-    navigate("/signin");
-  };
-
+const options = [{ value: "en", label: "English" }];
+const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
   return (
     <Stack bg="#EDEFFF" p="6">
       <Flex justifyContent="space-between" alignItems="center">

@@ -51,7 +51,7 @@ const ExploreBenefits: React.FC = () => {
     >
       <Box className="card-scroll">
         {/* Map through the scholarships data and render BenefitCard */}
-        {scholarships.map((scholarship, index) => (
+        {scholarships.map((scholarship) => (
           <BenefitCard
             key={scholarship.title}
             date={scholarship.date}
@@ -60,7 +60,6 @@ const ExploreBenefits: React.FC = () => {
             amount={scholarship.amount}
             categories={scholarship.categories}
             description={scholarship.description}
-            link={scholarship.link}
           />
         ))}
 

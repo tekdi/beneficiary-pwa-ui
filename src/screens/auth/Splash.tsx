@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import {
   Button,
   Flex,
@@ -13,7 +13,6 @@ import i18n from "../../components/common/i18n";
 import Layout from "../../components/common/layout/Layout";
 import { useTranslation } from "react-i18next";
 import FloatingSelect from "../../components/common/inputs/FloatingSelect";
-
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();

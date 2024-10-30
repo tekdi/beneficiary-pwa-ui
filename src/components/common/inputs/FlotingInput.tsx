@@ -5,6 +5,7 @@ import {
   FormErrorMessage,
   Box,
   Stack,
+  BoxProps,
 } from "@chakra-ui/react";
 
 interface FloatingInputProps {
@@ -25,7 +26,8 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [touched, setTouched] = useState(false);
 
-  const labelStyles = {
+  // Label styles with BoxProps type
+  const labelStyles: BoxProps = {
     position: "absolute",
     left: "12px",
     background: "white",
@@ -33,6 +35,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
     zIndex: 100,
     transition: "all 0.2s ease-out",
     pointerEvents: "none",
+    top: isFocused ? "-10px" : "40%", // Dynamic top value based on focus
+    color: isFocused ? "blue.500" : "gray.500",
+    fontSize: isFocused ? "0.85rem" : "1rem",
+    transform: isFocused ? "scale(0.85)" : "translateY(-50%)",
   };
 
   const focusedLabelStyles = isFocused

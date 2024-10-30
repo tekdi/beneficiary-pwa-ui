@@ -8,22 +8,12 @@ import {
 } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 
-// Define the type for the option
-interface Option {
-  label: string;
-  placeholder: string;
-}
-
-// Define the props for the CustomSelect component
 interface CustomSelectProps {
   label: string;
-  options: Option[];
   placeholder?: string;
   width?: string;
   height?: string;
   border?: string;
-  labelStyle?: React.CSSProperties; // Optional style for the label
-  placeholderStyle?: React.CSSProperties; // Optional style for the placeholder
 }
 
 const CustomDisableInput: React.FC<CustomSelectProps> = ({

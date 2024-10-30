@@ -12,7 +12,7 @@ interface LayoutProps {
   isNavbar?: boolean;
   afterHeader?: React.ReactNode; // Optional: Additional components to render after the header
   _heading?: object; // Optional: Props to pass to HeadingText,
-  isBottombar: boolean;
+  isBottombar?: boolean;
 }
 
 const Layout: React.FC<LayoutProps> = ({

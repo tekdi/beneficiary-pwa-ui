@@ -6,6 +6,7 @@ import {
   InputRightElement,
   Button,
   Icon,
+  BoxProps,
   FormErrorMessage,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
@@ -29,32 +30,26 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [show, setShow] = useState(false); // State for showing/hiding password
   const [touched, setTouched] = useState(false);
-
   const handleClick = () => setShow(!show); // Toggle show/hide
 
   // Common styles for the label
-  const labelStyle = {
+  const labelStyles: BoxProps = {
     position: "absolute",
-    top: isFocused ? "-10px" : "40%",
     left: "12px",
     bg: "white",
     px: 1,
-    transform: isFocused ? "scale(0.85)" : "translateY(-50%)",
+    zIndex: 100,
     transition: "all 0.2s ease-out",
+    pointerEvents: "none",
+    top: isFocused ? "-10px" : "40%",
     color: isFocused ? "blue.500" : "gray.500",
     fontSize: isFocused ? "0.85rem" : "1rem",
-    zIndex: 100,
-    pointerEvents: "none",
+    transform: isFocused ? "scale(0.85)" : "translateY(-50%)",
   };
 
   return (
-    <FormControl
-      height="90px"
-      position="relative"
-      mt={2}
-      isInvalid={isInvalid && touched}
-    >
-      <Box as="label" htmlFor="password" sx={labelStyle}>
+    <FormControl height="80px" position="relative" mt={2}>
+      <Box as="label" htmlFor="password" {...labelStyles}>
         {label}
       </Box>
       <InputGroup size="md">
@@ -95,6 +90,41 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
           {errorMessage || "This field is required."}
         </FormErrorMessage>
       )}
+      {/* <InputGroup size="md">
+        <Input
+          placeholder={isFocused ? "" : label}
+          type={show ? "password" : "text"}
+          onFocus={() => setIsFocused(true)}
+          onBlur={(e) => setIsFocused(e.target.value !== "")}
+          size="md"
+          height="60px"
+          pl="12px"
+          borderColor="gray.300"
+          borderWidth="2px"
+          _focus={{
+            borderColor: "blue.500",
+          }}
+          sx={{
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: isFocused ? "-10px" : "50%",
+              left: "10px",
+              width: "30px",
+              height: "2px",
+              background: "white",
+              zIndex: 2,
+            },
+          }}
+          value={value}
+          onChange={onChange}
+        />
+        <InputRightElement width="4.5rem" sx={{ marginTop: "3%" }}>
+          <Button h="1.75rem" size="sm" onClick={handleClick}>
+            {show ? <Icon as={ViewOffIcon} /> : <Icon as={ViewIcon} />}{" "}
+          </Button>
+        </InputRightElement>
+      </InputGroup> */}
     </FormControl>
   );
 };
