@@ -89,11 +89,9 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           }
         }}
       />
-      {touched && value.trim() === "" && (
+      {isInvalid && touched && (
         <Stack>
-          <FormErrorMessage>
-            {errorMessage || "This field is required."}
-          </FormErrorMessage>
+          <FormErrorMessage>{errorMessage}</FormErrorMessage>
         </Stack>
       )}
     </FormControl>

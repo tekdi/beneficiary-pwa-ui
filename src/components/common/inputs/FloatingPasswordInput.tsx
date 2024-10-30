@@ -90,7 +90,7 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
           </Button>
         </InputRightElement>
       </InputGroup>
-      {touched && value.trim() === "" && (
+      {isInvalid && touched && value.trim() === "" && (
         <FormErrorMessage>
           {errorMessage || "This field is required."}
         </FormErrorMessage>
