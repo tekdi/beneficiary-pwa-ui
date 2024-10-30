@@ -12,11 +12,13 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
 import FloatingPasswordInput from "../../components/common/inputs/FloatingPasswordInput";
-import { registerUser } from "../../service/auth";
+import { registerUser } from "../../service/auth/auth";
 import FloatingInput from "../../components/common/inputs/FlotingInput";
+import { useTranslation } from "react-i18next";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [mobile, setMobile] = useState<string>("");
@@ -32,7 +34,6 @@ const Signup: React.FC = () => {
   const handleBack = () => {
     navigate(-1);
   };
-  console.log(mobileError, "mobileError");
 
   useEffect(() => {
     // Check for empty fields
@@ -45,9 +46,9 @@ const Signup: React.FC = () => {
 
     // Mobile number validation
     if (mobile.trim() === "") {
-      setMobileError("Mobile Number is required.");
+      setMobileError(t("SIGNUP_MOBILE_NUMBER_IS_REQUIRED"));
     } else if (!/^\d{10}$/.test(mobile.trim())) {
-      setMobileError("Mobile Number must be 10 digits and numeric.");
+      setMobileError(t("SIGNUP_MOBILE_NUMBER_VALIDATION"));
     } else {
       setMobileError("");
     }
@@ -74,12 +75,6 @@ const Signup: React.FC = () => {
       }, 3000); // 3 seconds timeout
     };
 
-    if (!isFormValid) {
-      setError("Please fill in all fields and ensure passwords match.");
-      clearError();
-      return;
-    }
-
     try {
       setLoading(true);
       const response = await registerUser({
@@ -89,7 +84,7 @@ const Signup: React.FC = () => {
         password,
       });
       setLoading(false);
-      setSuccess(response);
+      setSuccess(t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE"));
       setTimeout(() => {
         navigate("/signin");
       }, 3000); // Redirect after 3 seconds
@@ -104,7 +99,7 @@ const Signup: React.FC = () => {
     <Layout
       isMenu={false}
       _heading={{
-        heading: "Sign Up with E-Wallet",
+        heading: t("SIGNUP_WITH_E_WALLET"),
         handleBack,
       }}
       isBottombar={false}
@@ -113,50 +108,50 @@ const Signup: React.FC = () => {
         <VStack align="stretch" spacing={4}>
           <FormControl>
             <FloatingInput
-              label="First Name"
+              label={t("SIGNUP_FIRST_NAME")}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               isInvalid={firstName.trim() === ""}
-              errorMessage="First name is required."
+              errorMessage={t("SIGNUP_FIRST_NAME_REQUIRED")}
             />
 
             <FloatingInput
-              label="Last Name"
+              label={t("SIGNUP_LAST_NAME")}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               isInvalid={lastName.trim() === ""}
-              errorMessage="Last name is required."
+              errorMessage={t("SIGNUP_LAST_NAME_REQUIRED")}
             />
             <FloatingInput
-              label="Mobile Number"
+              label={t("SIGNUP_MOBILE_NUMBER")}
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
               isInvalid={mobileError !== ""}
               errorMessage={mobileError}
             />
             <FloatingPasswordInput
-              label="Create Password"
+              label={t("SIGNUP_CREATE_PASSWORD")}
               value={password}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setPassword(e.target.value)
               }
               isInvalid={password.trim() === ""}
-              errorMessage="Password is required."
+              errorMessage={t("SIGNUP_PASSWORD_IS_REQUIRED")}
             />
             <FloatingPasswordInput
-              label="Confirm Password"
+              label={t("SIGNUP_CONFIRM_PASSWORD")}
               value={confirmPassword}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setConfirmPassword(e.target.value)
               }
               isInvalid={!!passwordMatchError || confirmPassword.trim() === ""}
               errorMessage={
-                passwordMatchError || "Confirm Password is required."
+                passwordMatchError || t("SIGNUP_CONFIRM_PASSWORD_IS_REQUIRED")
               }
             />
           </FormControl>
           <CommonButton
-            label="Sign Up"
+            label={t("SIGNUP_SIGN_UP")}
             onClick={handleSignUp}
             isDisabled={!isFormValid || loading}
           />
@@ -175,12 +170,12 @@ const Signup: React.FC = () => {
         </VStack>
         <Center>
           <Text mt={6}>
-            Already Have An Account?{" "}
+            {t("SIGNUP_ALREADY_HAVE_AN_ACCOUNT")}
             <RouterLink
               to="/signin"
               style={{ color: "blue", textDecoration: "underline" }}
             >
-              Sign in
+              {t("SIGNUP_SIGN_IN")}
             </RouterLink>
           </Text>
         </Center>

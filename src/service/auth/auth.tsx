@@ -1,18 +1,15 @@
 import axios from "axios";
 import { getToken, removeToken } from "./ayncStorage";
-import { API_BASE_URL } from "./env.dev";
+
+const apiBaseUrl = import.meta.env.apiBaseUrl;
 
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/auth/register`,
-      userData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.post(`${apiBaseUrl}/auth/register`, userData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Network Error");
@@ -25,7 +22,7 @@ export const registerUser = async (userData) => {
  */
 export const loginUser = async (loginData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/auth/login`, loginData, {
+    const response = await axios.post(`${apiBaseUrl}/auth/login`, loginData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -38,7 +35,7 @@ export const loginUser = async (loginData) => {
 export const logoutUser = async (accessToken, refreshToken) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/auth/logout`,
+      `${apiBaseUrl}/auth/logout`,
       {
         access_token: accessToken,
         refresh_token: refreshToken,
@@ -63,7 +60,7 @@ export const getUser = async (userId) => {
     const { token } = await getToken();
     // Make the API call to fetch user data
     const response = await axios.get(
-      `${API_BASE_URL}/users/get_one/${userId}?decryptData=true`,
+      `${apiBaseUrl}/users/get_one/${userId}?decryptData=true`,
       {
         headers: {
           Accept: "application/json", // 'application/json' is more specific and commonly used for APIs
@@ -99,7 +96,7 @@ export const sendConsent = async (user_id) => {
   };
 
   try {
-    const response = await axios.post(`${API_BASE_URL}/users/consent`, data, {
+    const response = await axios.post(`${apiBaseUrl}/users/consent`, data, {
       headers,
     });
     return response.data;
@@ -110,7 +107,7 @@ export const sendConsent = async (user_id) => {
 export const getDocumentsList = async () => {
   try {
     const { token } = await getToken();
-    const response = await axios.get(`${API_BASE_URL}/content/documents_list`, {
+    const response = await axios.get(`${apiBaseUrl}/content/documents_list`, {
       headers: {
         Accept: "*/*",
         Authorization: `Bearer ${token}`,
@@ -145,7 +142,7 @@ export const getApplicationList = async (searchText, user_id) => {
     // Send the dynamically created requestBody in the axios post request
     const { token } = await getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/users/user_applications_list`,
+      `${apiBaseUrl}/users/user_applications_list`,
       requestBody, // Use the dynamically created requestBody
       {
         headers: {
@@ -165,7 +162,7 @@ export const getApplicationDetails = async (applicationId) => {
   try {
     const { token } = await getToken();
     const response = await axios.get(
-      `${API_BASE_URL}/users/user_application/${applicationId}`,
+      `${apiBaseUrl}/users/user_application/${applicationId}`,
       {
         headers: {
           Accept: "*/*",

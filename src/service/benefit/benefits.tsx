@@ -1,14 +1,14 @@
 import axios from "axios";
-import { API_BASE_URL } from "./env.dev";
 import { generateUUID } from "../utils/JsHelper/helper";
 import { getToken } from "./ayncStorage";
 //dev-uba-bap.tekdinext.com/api/content/search
+const apiBaseUrl = import.meta.env.apiBaseUrl;
 
 export const getAll = async (userData) => {
   try {
     const { token } = await getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/content/search`,
+      `${apiBaseUrl}/content/search`,
       userData,
       {
         headers: {
@@ -57,7 +57,7 @@ export const getOne = async ({ id }) => {
   };
   try {
     const { token } = await getToken();
-    const response = await axios.post(`${API_BASE_URL}/select`, loginData, {
+    const response = await axios.post(`${apiBaseUrl}/select`, loginData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ export const applyApplication = async ({ id, context }) => {
   };
   try {
     const { token } = await getToken();
-    const response = await axios.post(`${API_BASE_URL}/init`, loginData, {
+    const response = await axios.post(`${apiBaseUrl}/init`, loginData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -162,7 +162,7 @@ export const confirmApplication = async ({ submission_id, context }) => {
   };
   try {
     const { token } = await getToken();
-    const response = await axios.post(`${API_BASE_URL}/confirm`, data, {
+    const response = await axios.post(`${apiBaseUrl}/confirm`, data, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -178,7 +178,7 @@ export const createApplication = async (data) => {
   try {
     const { token } = await getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/users/user_application`,
+      `${apiBaseUrl}/users/user_application`,
       data,
       {
         headers: {
@@ -197,7 +197,7 @@ export const getApplication = async (filters) => {
   try {
     const { token } = await getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/users/user_applications_list`,
+      `${apiBaseUrl}/users/user_applications_list`,
       {
         filters,
       },
