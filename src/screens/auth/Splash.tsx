@@ -28,7 +28,7 @@ const Login: React.FC = () => {
     i18n.changeLanguage(value); // Change language based on selection
   };
 
-  const options = [{ label: t("lOGIN_ENGLISH"), value: "en" }];
+  const options = [{ label: t("LOGIN_ENGLISH"), value: "en" }];
 
   const handleRedirect = () => {
     navigate("/signin");
@@ -50,7 +50,7 @@ const Login: React.FC = () => {
         <form>
           <FormControl>
             <FormLabel color={"#45464F"}>
-              {t("lOGIN_SELECT_PREFERRED_LANGUAGE")}
+              {t("LOGIN_SELECT_PREFERRED_LANGUAGE")}
             </FormLabel>
             <FloatingSelect
               label={t("LOGIN_SELECT_LANGUAGE")}

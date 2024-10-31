@@ -1,7 +1,7 @@
 {
-  "lOGIN_SELECT_PREFERRED_LANGUAGE": "Select Preferred Language",
+  "LOGIN_SELECT_PREFERRED_LANGUAGE": "Select Preferred Language",
   "LOGIN_CHANGE_LATER": "You can change this later",
-  "lOGIN_ENGLISH": "English",
+  "LOGIN_ENGLISH": "English",
   "LOGIN_SELECT_LANGUAGE": "Select Language",
   "LOGIN_SIGN_IN/SIGN_UI_WITH_YOUR_E-WALLET": "Sign In/Sign Up With Your E-Wallet",
   "SIGNUP_MOBILE_NUMBER_IS_REQUIRED": "Mobile Number is required.",

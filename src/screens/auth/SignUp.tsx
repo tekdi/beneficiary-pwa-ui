@@ -16,79 +16,129 @@ import { registerUser } from "../../service/auth/auth";
 import FloatingInput from "../../components/common/inputs/FlotingInput";
 import { useTranslation } from "react-i18next";
 
+interface UserDetails {
+  firstName: string;
+  lastName: string;
+  mobile: string;
+  password: string;
+  confirmPassword: string;
+}
+
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [mobile, setMobile] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+  const [userDetails, setUserDetails] = useState<UserDetails>({
+    firstName: "",
+    lastName: "",
+    mobile: "",
+    password: "",
+    confirmPassword: "",
+  });
+
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [passwordMatchError, setPasswordMatchError] = useState<string>("");
-  const [mobileError, setMobileError] = useState("");
+  const [mobileError, setMobileError] = useState<string>("");
 
   const handleBack = () => {
     navigate(-1);
   };
 
   useEffect(() => {
-    // Check for empty fields
-    const isValid =
-      firstName.trim() !== "" &&
-      lastName.trim() !== "" &&
-      mobile.trim() !== "" &&
-      password.trim() !== "" &&
-      confirmPassword.trim() !== "";
-
-    // Mobile number validation
-    if (mobile.trim() === "") {
-      setMobileError(t("SIGNUP_MOBILE_NUMBER_IS_REQUIRED"));
-    } else if (!/^\d{10}$/.test(mobile.trim())) {
-      setMobileError(t("SIGNUP_MOBILE_NUMBER_VALIDATION"));
-    } else {
-      setMobileError("");
-    }
-
-    // Set password match error
-    if (password.trim() === "" || confirmPassword.trim() === "") {
-      setPasswordMatchError("Both Password and Confirm Password are required.");
-    } else if (password !== confirmPassword) {
-      setPasswordMatchError("Passwords do not match.");
-    } else {
-      setPasswordMatchError(""); // Clear error if both are valid and match
-    }
-
-    // Set form validity
-    setIsFormValid(
-      isValid && password === confirmPassword && mobileError === ""
+    const mobileError = validateMobile(userDetails.mobile);
+    const passwordMatchError = validatePasswordMatch(
+      userDetails.password,
+      userDetails.confirmPassword
     );
-  }, [firstName, lastName, mobile, password, confirmPassword, mobileError]);
+
+    setMobileError(mobileError);
+    setPasswordMatchError(passwordMatchError);
+    console.log(mobileError, passwordMatchError);
+
+    // Ensure isFormValid is strictly boolean
+    setIsFormValid(
+      !!userDetails.firstName.trim() &&
+        !!userDetails.lastName.trim() &&
+        !!userDetails.mobile.trim() &&
+        !!userDetails.password.trim() &&
+        !!userDetails.confirmPassword.trim() &&
+        !mobileError && // Mobile validation result is now boolean
+        !passwordMatchError // Password validation result is now boolean
+    );
+  }, [userDetails]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+  };
+
+  const validateMobile = (mobile: string) => {
+    // Remove any non-numeric characters from the input
+    const cleanedMobile = mobile.replace(/\D/g, "");
+    // Check if the cleaned mobile number is empty
+    if (!cleanedMobile) {
+      return t("SIGNUP_MOBILE_NUMBER_IS_REQUIRED");
+    }
+    // Ensure the mobile number contains exactly 10 digits
+    if (!/^\d{10}$/.test(cleanedMobile)) {
+      return t("SIGNUP_MOBILE_NUMBER_VALIDATION");
+    }
+    // Return an empty string if all validations pass
+    return "";
+  };
+
+  const validatePasswordMatch = (password: string, confirmPassword: string) => {
+    // Check if either password or confirmPassword is empty
+    if (password.trim() === "" || confirmPassword.trim() === "") {
+      return "Both Password and Confirm Password are required.";
+    }
+    // Check if password and confirmPassword are the same
+    if (password !== confirmPassword) {
+      return "Passwords do not match.";
+    }
+    // Regular expression to ensure the password contains letters, special characters, and numbers
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[@!#$%]).{8,}$/;
+    // Validate password format
+    if (!passwordPattern.test(password)) {
+      return "Password must contain at least one letter, one number, and one special character (@, !, #, $, %).";
+    }
+    // Return an empty string if all validations pass
+    return "";
+  };
 
   const handleSignUp = async () => {
     const clearError = () => {
       setTimeout(() => {
         setError("");
-      }, 3000); // 3 seconds timeout
+      }, 3000);
     };
 
     try {
       setLoading(true);
       const response = await registerUser({
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: mobile,
-        password,
+        first_name: userDetails.firstName,
+        last_name: userDetails.lastName,
+        phone_number: userDetails.mobile,
+        password: userDetails.password,
       });
-      setLoading(false);
-      setSuccess(t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE"));
-      setTimeout(() => {
-        navigate("/signin");
-      }, 3000); // Redirect after 3 seconds
-    } catch (error: any) {
+
+      if (response && response?.statusCode === 200) {
+        setLoading(false);
+        setSuccess(
+          response.message || t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE")
+        );
+        setTimeout(() => {
+          navigate("/signin");
+        }, 3000);
+      } else {
+        setLoading(false);
+        setError(response.message || "An error occurred.");
+        clearError();
+      }
+    } catch (error) {
       setLoading(false);
       setError(error.message || "An error occurred.");
       clearError();
@@ -108,46 +158,45 @@ const Signup: React.FC = () => {
         <VStack align="stretch" spacing={4}>
           <FormControl>
             <FloatingInput
+              name="firstName"
               label={t("SIGNUP_FIRST_NAME")}
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              isInvalid={firstName.trim() === ""}
+              value={userDetails.firstName}
+              onChange={(e) => handleChange(e)}
+              isInvalid={!userDetails.firstName.trim()}
               errorMessage={t("SIGNUP_FIRST_NAME_REQUIRED")}
             />
-
             <FloatingInput
+              name="lastName"
               label={t("SIGNUP_LAST_NAME")}
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              isInvalid={lastName.trim() === ""}
+              value={userDetails.lastName}
+              onChange={(e) => handleChange(e)}
+              isInvalid={!userDetails.lastName.trim()}
               errorMessage={t("SIGNUP_LAST_NAME_REQUIRED")}
             />
             <FloatingInput
+              name="mobile"
               label={t("SIGNUP_MOBILE_NUMBER")}
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
-              isInvalid={mobileError !== ""}
+              value={userDetails.mobile}
+              onChange={(e) => handleChange(e)}
+              // onChange={(e) => setFirstName(e.target.value)}
+              isInvalid={!!mobileError}
               errorMessage={mobileError}
             />
             <FloatingPasswordInput
+              name="password"
               label={t("SIGNUP_CREATE_PASSWORD")}
-              value={password}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPassword(e.target.value)
-              }
-              isInvalid={password.trim() === ""}
-              errorMessage={t("SIGNUP_PASSWORD_IS_REQUIRED")}
+              value={userDetails.password}
+              onChange={handleChange}
+              isInvalid={!!passwordMatchError}
+              errorMessage={passwordMatchError}
             />
             <FloatingPasswordInput
+              name="confirmPassword"
               label={t("SIGNUP_CONFIRM_PASSWORD")}
-              value={confirmPassword}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setConfirmPassword(e.target.value)
-              }
-              isInvalid={!!passwordMatchError || confirmPassword.trim() === ""}
-              errorMessage={
-                passwordMatchError || t("SIGNUP_CONFIRM_PASSWORD_IS_REQUIRED")
-              }
+              value={userDetails.confirmPassword}
+              onChange={handleChange}
+              isInvalid={!!passwordMatchError}
+              errorMessage={passwordMatchError}
             />
           </FormControl>
           <CommonButton

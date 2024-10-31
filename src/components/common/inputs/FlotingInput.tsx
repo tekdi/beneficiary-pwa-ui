@@ -14,6 +14,7 @@ interface FloatingInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isInvalid?: boolean;
   errorMessage?: string;
+  name: string;
 }
 
 const FloatingInput: React.FC<FloatingInputProps> = ({
@@ -22,6 +23,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   onChange,
   isInvalid = false,
   errorMessage,
+  name,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -80,6 +82,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
       <Input
         {...inputStyles}
         id="name"
+        name={name}
         onFocus={() => {
           setIsFocused(true);
           setTouched(true);
@@ -95,6 +98,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           }
         }}
       />
+
       {isInvalid && touched && (
         <Stack>
           <FormErrorMessage>{errorMessage}</FormErrorMessage>

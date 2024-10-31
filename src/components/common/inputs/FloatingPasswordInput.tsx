@@ -18,6 +18,7 @@ interface FloatingSelectProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isInvalid?: boolean;
   errorMessage?: string;
+  name: string;
 }
 
 const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
@@ -26,6 +27,7 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
   onChange,
   isInvalid = false,
   errorMessage,
+  name,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [show, setShow] = useState(false); // State for showing/hiding password
@@ -48,13 +50,19 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
   };
 
   return (
-    <FormControl height="80px" position="relative" mt={2}>
+    <FormControl
+      height="80px"
+      position="relative"
+      mt={2}
+      isInvalid={isInvalid && touched}
+    >
       <Box as="label" htmlFor="password" {...labelStyles}>
         {label}
       </Box>
       <InputGroup size="md">
         <Input
           id="password"
+          name={name}
           placeholder={isFocused ? "" : label}
           type={show ? "text" : "password"} // Toggle between text and password
           onFocus={() => {
@@ -85,11 +93,12 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
           </Button>
         </InputRightElement>
       </InputGroup>
-      {isInvalid && touched && value.trim() === "" && (
+      {isInvalid && touched && (
         <FormErrorMessage>
           {errorMessage || "This field is required."}
         </FormErrorMessage>
       )}
+
       {/* <InputGroup size="md">
         <Input
           placeholder={isFocused ? "" : label}
