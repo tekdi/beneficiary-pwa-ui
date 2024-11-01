@@ -6,6 +6,7 @@ interface CustomButton {
   mt?: number;
   width?: string;
   label?: string;
+  isDisabled?: boolean;
 }
 
 const CommonButton: React.FC<CustomButton> = ({
@@ -13,6 +14,7 @@ const CommonButton: React.FC<CustomButton> = ({
   mt = 4,
   width = "100%",
   label = "Submit",
+  isDisabled = false,
 }) => {
   return (
     <Button
@@ -23,6 +25,7 @@ const CommonButton: React.FC<CustomButton> = ({
       onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
         onClick?.(event as unknown as React.FormEvent<HTMLFormElement>)
       }
+      isDisabled={isDisabled}
     >
       {label}
     </Button>
