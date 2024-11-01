@@ -1,7 +1,9 @@
 import axios from "axios";
-import { getToken, removeToken } from "./ayncStorage";
+import { getToken, removeToken } from "./asyncStorage";
 
-const apiBaseUrl = import.meta.env.apiBaseUrl;
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+console.log(apiBaseUrl, "apiBaseUrl");
 
 export const registerUser = async (userData) => {
   try {
@@ -10,6 +12,8 @@ export const registerUser = async (userData) => {
         "Content-Type": "application/json",
       },
     });
+    console.log(response, "response");
+
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Network Error");

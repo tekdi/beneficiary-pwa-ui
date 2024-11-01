@@ -16,7 +16,7 @@
   "SIGNUP_SIGN_UP": "Sign Up",
   "SIGNUP_SIGN_IN": "Sign in",
   "SIGNUP_PASSWORD_IS_REQUIRED": "Password is required.",
-  "SIGNUP_CORMFIRM_PASSWORD_IS_REQUIRED": "Password is required.",
+  "SIGNUP_CORMFIRM_PASSWORD_IS_REQUIRED": "Confirm password is required.",
   "SIGNUP_ALREADY_HAVE_AN_ACCOUNT": "Already Have An Account?",
   "SIGNUP_FIRST_NAME_REQUIRED": "First name is required.",
   "SIGNUP_LAST_NAME_REQUIRED": "Last name is required."
