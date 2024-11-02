@@ -1,8 +1,12 @@
 import axios from "axios";
 import { generateUUID } from "../utils/JsHelper/helper";
-import { getToken } from "./ayncStorage";
+import { getToken } from "./asyncStorage";
 //dev-uba-bap.tekdinext.com/api/content/search
 const apiBaseUrl = import.meta.env.apiBaseUrl;
+
+function handleError(error) {
+  throw error.response ? error.response.data : new Error("Network Error");
+}
 
 export const getAll = async (userData) => {
   try {
@@ -19,7 +23,7 @@ export const getAll = async (userData) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+    handleError(error);
   }
 };
 
@@ -65,7 +69,7 @@ export const getOne = async ({ id }) => {
     });
     return response || {};
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+    handleError(error);
   }
 };
 
@@ -95,9 +99,7 @@ export const applyApplication = async ({ id, context }) => {
     });
     return response || {};
   } catch (error) {
-    console.log("error", error.message, JSON.stringify(loginData));
-
-    throw error.response ? error.response.data : new Error("Network Error");
+    handleError(error);
   }
 };
 
@@ -170,7 +172,7 @@ export const confirmApplication = async ({ submission_id, context }) => {
     });
     return response || {};
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+    handleError(error);
   }
 };
 
@@ -189,7 +191,7 @@ export const createApplication = async (data) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+    handleError(error);
   }
 };
 
@@ -211,6 +213,6 @@ export const getApplication = async (filters) => {
     );
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+    handleError(error);
   }
 };

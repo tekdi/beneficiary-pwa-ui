@@ -8,6 +8,7 @@ import {
   Icon,
   BoxProps,
   FormErrorMessage,
+  Stack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
@@ -94,46 +95,12 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
         </InputRightElement>
       </InputGroup>
       {isInvalid && touched && (
-        <FormErrorMessage>
-          {errorMessage || "This field is required."}
-        </FormErrorMessage>
+        <Box mt={1} sx={{ mb: 2 }}>
+          <FormErrorMessage>
+            {errorMessage || "This field is required."}
+          </FormErrorMessage>
+        </Box>
       )}
-
-      {/* <InputGroup size="md">
-        <Input
-          placeholder={isFocused ? "" : label}
-          type={show ? "password" : "text"}
-          onFocus={() => setIsFocused(true)}
-          onBlur={(e) => setIsFocused(e.target.value !== "")}
-          size="md"
-          height="60px"
-          pl="12px"
-          borderColor="gray.300"
-          borderWidth="2px"
-          _focus={{
-            borderColor: "blue.500",
-          }}
-          sx={{
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: isFocused ? "-10px" : "50%",
-              left: "10px",
-              width: "30px",
-              height: "2px",
-              background: "white",
-              zIndex: 2,
-            },
-          }}
-          value={value}
-          onChange={onChange}
-        />
-        <InputRightElement width="4.5rem" sx={{ marginTop: "3%" }}>
-          <Button h="1.75rem" size="sm" onClick={handleClick}>
-            {show ? <Icon as={ViewOffIcon} /> : <Icon as={ViewIcon} />}{" "}
-          </Button>
-        </InputRightElement>
-      </InputGroup> */}
     </FormControl>
   );
 };

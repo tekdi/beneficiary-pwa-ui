@@ -98,9 +98,8 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           }
         }}
       />
-
       {isInvalid && touched && (
-        <Stack>
+        <Stack spacing={1} mt={1}>
           <FormErrorMessage>{errorMessage}</FormErrorMessage>
         </Stack>
       )}

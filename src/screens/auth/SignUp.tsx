@@ -93,17 +93,17 @@ const Signup: React.FC = () => {
   const validatePasswordMatch = (password: string, confirmPassword: string) => {
     // Check if either password or confirmPassword is empty
     if (password.trim() === "" || confirmPassword.trim() === "") {
-      return "Both Password and Confirm Password are required.";
+      return t("SIGNUP_PASSWORD_CONFIRM_PASSWORD_IS_REQUIRED");
     }
     // Check if password and confirmPassword are the same
     if (password !== confirmPassword) {
-      return "Passwords do not match.";
+      return t("SIGNUP_PASSWORD_NOT_MATCHING");
     }
     // Regular expression to ensure the password contains letters, special characters, and numbers
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[@!#$%]).{8,}$/;
     // Validate password format
     if (!passwordPattern.test(password)) {
-      return "Password must contain at least one letter, one number, and one special character (@, !, #, $, %).";
+      return t("SIGNUP_PASSWORD_VALIDATION_MESSAGE");
     }
     // Return an empty string if all validations pass
     return "";
@@ -140,7 +140,11 @@ const Signup: React.FC = () => {
       }
     } catch (error) {
       setLoading(false);
-      setError(error.message || "An error occurred.");
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An error occurred.");
+      }
       clearError();
     }
   };
