@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
 import Navbar from "./Navbar"; // Import your Navbar component
 import HeadingText from "./HeadingText"; // Import your HeadingText component
-import BottomBar from "./Bottombar";
+import BottomBar from "./BottomBar";
 
 interface LayoutProps {
   isScrollable?: boolean;

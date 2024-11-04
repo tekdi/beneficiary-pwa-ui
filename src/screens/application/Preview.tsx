@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, useDisclosure, Stack } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
-import CustomDisableInput from "../../components/common/inputs/DisabledInput";
+import CustomDisableInput from "../../components/common/input/DisabledInput";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
 import { useNavigate } from "react-router-dom";

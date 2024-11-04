@@ -11,9 +11,9 @@ import {
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
-import FloatingPasswordInput from "../../components/common/inputs/FloatingPasswordInput";
-import { registerUser } from "../../service/auth/auth";
-import FloatingInput from "../../components/common/inputs/FlotingInput";
+import FloatingPasswordInput from "../../components/common/input/PasswordInput";
+import { registerUser } from "../../services/auth/auth";
+import FloatingInput from "../../components/common/input/Input";
 import { useTranslation } from "react-i18next";
 
 interface UserDetails {

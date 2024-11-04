@@ -13,7 +13,7 @@ import {
   useDisclosure,
   FormControl,
 } from "@chakra-ui/react";
-import FloatingSelect from "../../components/common/inputs/FloatingSelect";
+import FloatingSelect from "../../components/common/input/FloatingSelect";
 import BenefitCard from "../../components/common/Card";
 import { scholarships } from "../../assets/mockdata/benefit";
 import CommonButton from "../../components/common/button/Button";
