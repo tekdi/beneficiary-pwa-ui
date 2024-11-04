@@ -8,7 +8,6 @@ import {
   Icon,
   BoxProps,
   FormErrorMessage,
-  Stack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
