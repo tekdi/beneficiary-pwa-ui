@@ -56,7 +56,6 @@ const Signup: React.FC = () => {
 
     setMobileError(mobileError);
     setPasswordMatchError(passwordMatchError);
-    console.log(mobileError, passwordMatchError);
 
     // Ensure isFormValid is strictly boolean
     setIsFormValid(

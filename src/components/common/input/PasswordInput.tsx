@@ -63,6 +63,9 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
         <Input
           id="password"
           name={name}
+          autoComplete="new-password"
+          spellCheck="false"
+          autoCorrect="off"
           placeholder={isFocused ? "" : label}
           type={show ? "text" : "password"} // Toggle between text and password
           onFocus={() => {
