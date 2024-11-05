@@ -52,7 +52,7 @@ const SignIn: React.FC = () => {
       const response = await loginUser({ username, password });
       setLoading(false); // Hide loading indicator after response
       saveToken(response.data.access_token, response.data.refresh_token);
-      await init();
+      init();
       setDialogVisible(true);
     } catch (error) {
       setError(t("SIGNIN_ERROR_FETCHING_DATA"));
