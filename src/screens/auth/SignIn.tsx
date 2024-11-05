@@ -63,6 +63,7 @@ const SignIn: React.FC = () => {
       setDialogVisible(true);
     } catch (error) {
       setError(t("SIGNIN_ERROR_FETCHING_DATA"));
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -82,7 +83,7 @@ const SignIn: React.FC = () => {
     }
   };
 
-  const handleCofirmation = async () => {
+  const handleConfirmation = async () => {
     try {
       await sendConsent(userData?.user_id);
       checkToken();
@@ -142,7 +143,7 @@ const SignIn: React.FC = () => {
           loading={loading}
           dialogVisible={dialogVisible}
           closeDialog={setDialogVisible}
-          handleConfirmation={handleCofirmation}
+          handleConfirmation={handleConfirmation}
           documents={documents}
           consentText={t("SIGNIN_CONSENT_TEXT")}
         />
