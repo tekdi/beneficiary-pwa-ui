@@ -33,6 +33,7 @@ interface ConfirmationDialogProps {
   documents?: Document[];
   loading?: boolean;
   consentText?: string;
+  redirectPath?: string;
 }
 
 const LeftIcon: React.FC = () => <CheckIcon color="blue.600" w={5} h={5} />;
@@ -54,10 +55,15 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     closeDialog(false);
   };
 
-  const openSubmitDialog = () => {
+  const openSubmitDialog = async () => {
     if (handleConfirmation) {
-      handleConfirmation();
-      navigate("/userprofile");
+      try {
+        await handleConfirmation();
+        navigate(redirectPath || "/userprofile");
+      } catch (error) {
+        // Handle error appropriately
+        console.error("Confirmation failed:", error);
+      }
     }
   };
 

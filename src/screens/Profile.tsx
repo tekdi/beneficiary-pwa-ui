@@ -27,7 +27,7 @@ const UserProfile: React.FC = () => {
       const data = await getDocumentsList();
       updateUserData(result.data, data.data); // Update user data and document list in context
     } catch (error) {
-      console.log("Error fetching user data or documents:", error);
+      console.error("Error fetching user data or documents:", error);
     }
   };
 
@@ -42,10 +42,10 @@ const UserProfile: React.FC = () => {
     <Layout
       _heading={{
         beneficiary: true,
-        heading: `${userData?.first_name} ${userData?.last_name}`,
+        heading: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
         subHeading: t("PROFILE_LOGGED_IN_WITH_E_Wallet"),
         label:
-          userData?.last_name?.length > 1
+          userData && userData?.last_name?.length > 1
             ? `${userData?.first_name?.[0]}${userData?.last_name?.[0]}`
             : userData?.first_name?.[0],
       }}
@@ -54,23 +54,24 @@ const UserProfile: React.FC = () => {
         <VStack spacing={4} align="stretch">
           <List spacing={3}>
             <ListItem className="border-bottom" pb={4}>
-              {documents.map((document) => (
-                <Flex align="center" key={document.name} mt={4}>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor="green.500"
-                    borderRadius="full"
-                    boxSize="25px"
-                    color="white"
-                    marginRight="10px"
-                  >
-                    <CheckIcon boxSize="15px" />
-                  </Box>
-                  <Box> {document.name}</Box>
-                </Flex>
-              ))}
+              {documents &&
+                documents.map((document) => (
+                  <Flex align="center" key={document.name} mt={4}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      backgroundColor="green.500"
+                      borderRadius="full"
+                      boxSize="25px"
+                      color="white"
+                      marginRight="10px"
+                    >
+                      <CheckIcon boxSize="15px" />
+                    </Box>
+                    <Box> {document.name}</Box>
+                  </Flex>
+                ))}
             </ListItem>
           </List>
           <CommonButton
