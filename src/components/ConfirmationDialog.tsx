@@ -99,8 +99,8 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 {loading ? (
                   <Spinner color="blue.600" />
                 ) : (
-                  documents.map((document) => (
-                    <UnorderedList mt={4}>
+                  <UnorderedList mt={4}>
+                    {documents.map((document) => (
                       <ListItem key={document.name} display="flex">
                         <LeftIcon />
                         <Text
@@ -112,8 +112,8 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                           {document.name}
                         </Text>
                       </ListItem>
-                    </UnorderedList>
-                  ))
+                    ))}
+                  </UnorderedList>
                 )}
               </VStack>
             </ModalBody>

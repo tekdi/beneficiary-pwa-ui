@@ -62,13 +62,9 @@ const SignIn: React.FC = () => {
       await init();
       setDialogVisible(true);
     } catch (error) {
-      setLoading(false); // Hide loading indicator
-      if (error.error === "INVALID_USERNAME_PASSWORD_MESSAGE") {
-        setError("Invalid username or password");
-      } else {
-        setError(error.message);
-      }
-      clearError();
+      setError(t("SIGNIN_ERROR_FETCHING_DATA"));
+    } finally {
+      setLoading(false);
     }
   };
 
