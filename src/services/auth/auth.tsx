@@ -34,7 +34,7 @@ export const loginUser = async (loginData) => {
   }
 };
 
-const logoutUser = async (accessToken, refreshToken) => {
+export const logoutUser = async (accessToken, refreshToken) => {
   try {
     const response = await axios.post(
       `${apiBaseUrl}/auth/logout`,
@@ -159,6 +159,7 @@ export const getApplicationList = async (searchText, user_id) => {
     throw error;
   }
 };
+
 export const getApplicationDetails = async (applicationId) => {
   try {
     const { token } = await getToken();

@@ -57,16 +57,10 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
   const openSubmitDialog = async () => {
     if (handleConfirmation) {
-      try {
-        await handleConfirmation();
-        navigate(redirectPath || "/userprofile");
-      } catch (error) {
-        // Handle error appropriately
-        console.error("Confirmation failed:", error);
-      }
+      handleConfirmation();
+      navigate("/userprofile");
     }
   };
-
   const closeSubmitDialog = () => {
     closeDialog(false);
   };
