@@ -47,13 +47,6 @@ const SignIn: React.FC = () => {
   }, [username, password]);
 
   const handleLogin = async () => {
-    // Clear error after 3 seconds
-    const clearError = () => {
-      setTimeout(() => {
-        setError("");
-      }, 3000);
-    };
-
     try {
       setLoading(true); // Show loading indicator
       const response = await loginUser({ username, password });
