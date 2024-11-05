@@ -39,8 +39,6 @@ const SignIn: React.FC = () => {
   const { checkToken, documents, updateUserData, userData } =
     useContext(AuthContext);
 
-  const passwordRef = useRef(null);
-
   useEffect(() => {
     // Check for empty fields
     const isValid = username.trim() !== "" && password.trim() !== "";
@@ -48,8 +46,6 @@ const SignIn: React.FC = () => {
     // Set form validity
     setIsFormValid(isValid);
   }, [username, password]);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleLogin = async () => {
     // Clear error after 3 seconds
@@ -97,11 +93,6 @@ const SignIn: React.FC = () => {
     } catch (error) {
       console.log(error.message);
     }
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    onOpen(); // Open the modal
   };
 
   const handleBack = () => {
