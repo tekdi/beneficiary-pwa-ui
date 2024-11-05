@@ -31,7 +31,7 @@ interface ConfirmationDialogProps {
   handleConfirmation?: () => void;
   documents?: Document[];
   loading?: boolean;
-  concentText?: string;
+  consentText?: string;
 }
 
 const LeftIcon: React.FC = () => <CheckIcon color="blue.600" w={5} h={5} />;
@@ -42,9 +42,11 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   handleConfirmation,
   documents = [],
   loading = false,
-  concentText = "Share my documents with the provider for processing my application",
+  consentText,
 }) => {
   const { t } = useTranslation();
+  consentText = consentText || t("CONFIRMATION_DIALOGUE_CONSENT_TEXT");
+
   // Function to call the parent's function
   const sendCloseDialog = () => {
     closeDialog(false);
@@ -91,7 +93,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
             <ModalBody py={4}>
               <Text fontSize="md" mb={4} color="gray.600">
-                {concentText}
+                {consentText}
               </Text>
               <VStack spacing={3}>
                 {loading ? (

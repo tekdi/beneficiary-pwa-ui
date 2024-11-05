@@ -59,7 +59,7 @@ const SignIn: React.FC = () => {
       const response = await loginUser({ username, password });
       setLoading(false); // Hide loading indicator after response
       saveToken(response.data.access_token, response.data.refresh_token);
-      init();
+      await init();
       setDialogVisible(true);
     } catch (error) {
       setLoading(false); // Hide loading indicator
@@ -74,13 +74,14 @@ const SignIn: React.FC = () => {
 
   const init = async () => {
     try {
+      setLoading(true);
       const { sub } = await getTokenData(); // Assuming sub is the user identifier
       const result = await getUser(sub);
       const data = await getDocumentsList();
       updateUserData(result?.data, data?.data);
-      setLoading(false);
     } catch (error) {
-      console.log("Error fetching user data or documents:", error.message);
+      setError(t("SIGNIN_ERROR_FETCHING_DATA"));
+      throw error;
       setLoading(false);
     }
   };
@@ -147,7 +148,7 @@ const SignIn: React.FC = () => {
           closeDialog={setDialogVisible}
           handleConfirmation={handleCofirmation}
           documents={documents}
-          concentText="Please provide your consent to share the following with Fast Pass"
+          consentText={t("SIGNIN_CONSENT_TEXT")}
         />
         <Center>
           <Text mt={6}>

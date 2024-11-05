@@ -25,7 +25,10 @@
   "SIGNIN_USER_NAME_IS_REQUIRED": "User Name is required",
   "SIGNIN_PASSWORD_IS_REQUIRED": "Password is required",
   "SIGNIN_DONT_HAVE_AN_ACCOUNT": "Don't Have An Account?",
+  "SIGNIN_ERROR_FETCHING_DATA": "Error fetching user data or documents",
   "CONFIRMATION_DIALOGUE_SHARE_INFORMATION": "Share Information",
   "CONFIRMATION_DIALOGUE_DENY": "Deny",
-  "CONFIRMATION_DIALOGUE_ACCEPT": "Accept"
+  "CONFIRMATION_DIALOGUE_ACCEPT": "Accept",
+  "CONFIRMATION_DIALOGUE_CONSENT_TEXT": "Share my documents with the provider for processing my application",
+  "SIGNIN_CONSENT_TEXT": "Please provide your consent to share the following with Fast Pass"
 }
