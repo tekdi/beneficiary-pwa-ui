@@ -30,5 +30,7 @@
   "CONFIRMATION_DIALOGUE_DENY": "Deny",
   "CONFIRMATION_DIALOGUE_ACCEPT": "Accept",
   "CONFIRMATION_DIALOGUE_CONSENT_TEXT": "Share my documents with the provider for processing my application",
-  "SIGNIN_CONSENT_TEXT": "Please provide your consent to share the following with Fast Pass"
+  "SIGNIN_CONSENT_TEXT": "Please provide your consent to share the following with Fast Pass",
+  "PROFILE_LOGGED_IN_WITH_E_Wallet": "Logged in with E-Wallet",
+  "PROFILE_EXPLORE_BENEFITS": "Explore Benefits"
 }
