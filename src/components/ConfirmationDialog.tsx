@@ -29,11 +29,10 @@ interface Document {
 interface ConfirmationDialogProps {
   dialogVisible: boolean;
   closeDialog: (isVisible: boolean) => void;
-  handleConfirmation?: () => void;
+  handleConfirmation: () => Promise<void>;
   documents?: Document[];
   loading?: boolean;
   consentText?: string;
-  redirectPath?: string;
 }
 
 const LeftIcon: React.FC = () => <CheckIcon color="blue.600" w={5} h={5} />;
