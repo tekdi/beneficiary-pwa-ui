@@ -1,10 +1,9 @@
 import { createContext, useState, useEffect } from "react";
-import { getToken } from "../../service/auth/asyncStorage";
+import { getToken } from "../../services/auth/asyncStorage";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  // Auth states
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [applicationId, setApplicationId] = useState();
   // User data states

@@ -11,7 +11,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import CustomSelect from "../inputs/Select";
+import CustomSelect from "../input/Select";
 const options = [{ value: "en", label: "English" }];
 const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
   return (

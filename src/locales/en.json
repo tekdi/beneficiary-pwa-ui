@@ -20,5 +20,12 @@
   "SIGNUP_PASSWORD_NOT_MATCHING": "Passwords do not match.",
   "SIGNUP_ALREADY_HAVE_AN_ACCOUNT": "Already Have An Account?",
   "SIGNUP_FIRST_NAME_REQUIRED": "First name is required.",
-  "SIGNUP_LAST_NAME_REQUIRED": "Last name is required."
+  "SIGNUP_LAST_NAME_REQUIRED": "Last name is required.",
+  "SIGNIN_INVALID_USERNAME_PASSWORD_MESSAGE": "Invalid Username and Password",
+  "SIGNIN_USER_NAME_IS_REQUIRED": "User Name is required",
+  "SIGNIN_PASSWORD_IS_REQUIRED": "Password is required",
+  "SIGNIN_DONT_HAVE_AN_ACCOUNT": "Don't Have An Account?",
+  "CONFIRMATION_DIALOGUE_SHARE_INFORMATION": "Share Information",
+  "CONFIRMATION_DIALOGUE_DENY": "Deny",
+  "CONFIRMATION_DIALOGUE_ACCEPT": "Accept"
 }
