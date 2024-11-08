@@ -1,7 +1,5 @@
 :root {
-  --input-color {
-    color: #767680;
-  }
+  --input-color: #767680;
 }
 
 .purple-bg {

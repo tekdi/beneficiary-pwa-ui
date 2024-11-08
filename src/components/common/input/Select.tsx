@@ -24,7 +24,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   placeholder = "Select an option",
   width = "60px",
   height = "35px",
-  border = "1px solid #767680",
+  border = "1px solid var(--input-color)",
   placeholderStyle,
 }) => {
   return (
