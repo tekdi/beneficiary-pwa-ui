@@ -1,3 +1,9 @@
+:root {
+  --input-color {
+    color: #767680;
+  }
+}
+
 .purple-bg {
   background-color: #121943;
 }
@@ -73,6 +79,30 @@
 }
 
 .card-scroll {
-  height: 75vh;
+  height: 70vh;
   overflow-y: scroll;
+}
+
+.login-form {
+  border-radius: 27px 24px 0px 0px;
+  margin-top: -6% !important;
+  z-index: 999;
+  background: #fff;
+}
+
+.invisible_scroll::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
+.invisible_scroll::-webkit-scrollbar {
+  width: 0px;
+  background-color: #f5f5f5;
+}
+
+.invisible_scroll::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #d9d7d7;
 }

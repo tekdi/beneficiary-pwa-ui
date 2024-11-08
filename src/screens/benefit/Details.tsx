@@ -35,7 +35,7 @@ const BenefitsDetails: React.FC = () => {
         handleBack,
       }}
     >
-      <Box className="card-scroll">
+      <Box className="card-scroll invisible_scroll">
         <Box maxW="2xl" m={4}>
           <Heading size="md" color="#484848" fontWeight={500} mt={2}>
             Benefits

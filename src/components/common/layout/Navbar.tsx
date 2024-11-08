@@ -39,8 +39,6 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
           setSuccess(t("NAVBAR_LOGGED_OUT_SUCCESSFULLY"));
           navigate("/signin");
         }
-
-        console.log(response, "responseresponse");
       } catch (error) {
         console.error("Logout failed:", error.massage);
       }
@@ -72,7 +70,7 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
             </Menu>
           )}
 
-          <Text>Fast Pass</Text>
+          <Text fontStyle={"italic"}>Fast Pass</Text>
         </Box>
         <Box>
           {success && (

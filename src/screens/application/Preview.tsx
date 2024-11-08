@@ -32,7 +32,7 @@ const Preview: React.FC = () => {
         handleBack,
       }}
     >
-      <Box className="card-scroll">
+      <Box className="card-scroll invisible_scroll">
         <Box maxW="2xl" m={4} className="border-bottom">
           <Stack gap="4" align="flex-start">
             <CustomDisableInput label="Full Name" placeholder="Anay Gupta" />

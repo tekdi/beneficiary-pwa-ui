@@ -43,15 +43,15 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
     zIndex: 100,
     transition: "all 0.2s ease-out",
     pointerEvents: "none",
-    top: isFocused ? "-10px" : "40%",
-    color: isFocused ? "blue.500" : "gray.500",
-    fontSize: isFocused ? "0.85rem" : "1rem",
+    top: isFocused ? "-10px" : "32%",
+    color: isFocused ? "gray.500" : "gray.500",
+    fontSize: isFocused ? "17px" : "16px",
     transform: isFocused ? "scale(0.85)" : "translateY(-50%)",
   };
 
   return (
     <FormControl
-      height="80px"
+      height="90px"
       position="relative"
       mt={2}
       isInvalid={isInvalid && touched}
@@ -80,10 +80,10 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
           size="md"
           height="60px"
           pl="12px"
-          borderColor="gray.300"
+          borderColor="var(--input-color)"
           borderWidth="2px"
           _focus={{
-            borderColor: "blue.500",
+            borderColor: "gray.500",
           }}
         />
         <InputRightElement
@@ -97,7 +97,7 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
         </InputRightElement>
       </InputGroup>
       {isInvalid && touched && (
-        <Box mt={1} sx={{ mb: 2 }}>
+        <Box my={2}>
           <FormErrorMessage>
             {errorMessage || "This field is required."}
           </FormErrorMessage>

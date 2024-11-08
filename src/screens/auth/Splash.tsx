@@ -29,7 +29,6 @@ const Login: React.FC = () => {
   };
 
   const options = [{ label: t("LOGIN_ENGLISH"), value: "en" }];
-
   const handleRedirect = () => {
     navigate("/signin");
   };
@@ -46,7 +45,7 @@ const Login: React.FC = () => {
           height="400px"
         />
       </Flex>
-      <Stack p={4} mt={4} borderRadius="10rem 9rem 5px 35px" shadow="lg">
+      <Stack p={4} mt={4} pt={12} className="login-form" shadow="lg">
         <form>
           <FormControl>
             <FormLabel color={"#45464F"}>

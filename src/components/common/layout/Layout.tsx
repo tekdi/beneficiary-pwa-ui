@@ -45,7 +45,6 @@ const Layout: React.FC<LayoutProps> = ({
           <Box
             width="550px"
             height="100vh"
-            borderRadius="lg"
             shadow="lg"
             background="#fff"
             className="layout"

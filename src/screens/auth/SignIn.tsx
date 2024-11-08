@@ -143,9 +143,14 @@ const SignIn: React.FC = () => {
         <Center>
           <Text mt={6}>
             {t("SIGNIN_DONT_HAVE_AN_ACCOUNT")}
-            <Link to="/signup" className="text-color text-decoration-underline">
-              {t("SIGNUP_SIGN_UP")}
-            </Link>
+            <Box as="span" ml={2}>
+              <Link
+                to="/signup"
+                className="text-color text-decoration-underline"
+              >
+                {t("SIGNUP_SIGN_UP")}
+              </Link>
+            </Box>
           </Text>
         </Center>
       </Box>

@@ -20,12 +20,11 @@ interface CustomSelectProps {
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
-  label,
   options,
   placeholder = "Select an option",
-  width = "58px",
-  height = "26px",
-  border = "1px solid #4D4639",
+  width = "60px",
+  height = "35px",
+  border = "1px solid #767680",
   placeholderStyle,
 }) => {
   return (
@@ -39,10 +38,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           color: placeholderStyle?.color || "gray.500", // Default placeholder color
           fontSize: "12px", // Set the placeholder font size
           marginLeft: "3px",
-          paddingLeft: 2,
+          paddingLeft: 10,
           ...placeholderStyle,
         },
-        fontSize: "12px", // Set the font size for the select input itself
+        fontSize: "15px", // Set the font size for the select input itself
         marginLeft: "3px",
         paddingLeft: 2, // Remove padding from the select input
       }}

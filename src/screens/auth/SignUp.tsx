@@ -223,12 +223,14 @@ const Signup: React.FC = () => {
         <Center>
           <Text mt={6}>
             {t("SIGNUP_ALREADY_HAVE_AN_ACCOUNT")}
-            <RouterLink
-              to="/signin"
-              style={{ color: "blue", textDecoration: "underline" }}
-            >
-              {t("SIGNUP_SIGN_IN")}
-            </RouterLink>
+            <Box as="span" ml={2}>
+              <RouterLink
+                to="/signin"
+                style={{ color: "blue", textDecoration: "underline" }}
+              >
+                {t("SIGNUP_SIGN_IN")}
+              </RouterLink>
+            </Box>
           </Text>
         </Center>
       </Box>

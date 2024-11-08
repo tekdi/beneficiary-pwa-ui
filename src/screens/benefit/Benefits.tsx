@@ -49,7 +49,7 @@ const ExploreBenefits: React.FC = () => {
         handleOpen: { handleOpen },
       }}
     >
-      <Box className="card-scroll">
+      <Box className="card-scroll invisible_scroll">
         {/* Map through the scholarships data and render BenefitCard */}
         {scholarships.map((scholarship) => (
           <BenefitCard

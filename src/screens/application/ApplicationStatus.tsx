@@ -18,7 +18,7 @@ const MyApplications: React.FC = () => {
         handleBack,
       }}
     >
-      <Box className="card-scroll">
+      <Box className="card-scroll invisible_scroll">
         <Stack spacing="4">
           <Box
             m={4}

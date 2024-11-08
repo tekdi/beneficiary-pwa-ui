@@ -30,6 +30,7 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({
       height="80px"
       variant="outlined"
       width="100%"
+      border={"#767680"}
     >
       <FormLabel
         htmlFor={name}
@@ -40,8 +41,8 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({
         px={1}
         transform={isFocused || value ? "scale(0.85)" : "translateY(-50%)"}
         transition="all 0.2s ease-out"
-        color={isFocused ? "blue.500" : "gray.500"}
-        fontSize={isFocused || value ? "0.85rem" : "1rem"}
+        color={isFocused ? "gray.500" : "gray.500"}
+        fontSize={isFocused || value ? "17px" : "16px"}
         zIndex={100}
         pointerEvents="none"
       >
@@ -59,9 +60,9 @@ const FloatingSelect: React.FC<FloatingSelectProps> = ({
         onFocus={() => setIsFocused(true)}
         placeholder={label}
         border="2px"
-        borderColor="gray.300"
+        style={{ borderColor: "var(--input-color)" }}
         _focus={{
-          borderColor: "blue.500",
+          borderColor: "gray.500",
         }}
         height="60px"
         mt={4}

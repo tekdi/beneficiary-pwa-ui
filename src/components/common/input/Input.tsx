@@ -38,7 +38,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
     transition: "all 0.2s ease-out",
     pointerEvents: "none",
     top: isFocused ? "-10px" : "40%", // Dynamic top value based on focus
-    color: isFocused ? "blue.500" : "gray.500",
+    color: "gray.500",
     fontSize: isFocused ? "0.85rem" : "1rem",
     transform: isFocused ? "scale(0.85)" : "translateY(-50%)",
   };
@@ -46,14 +46,14 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   const focusedLabelStyles = isFocused
     ? {
         top: "-10px",
-        color: "blue.500",
-        fontSize: "0.85rem",
+        color: "gray.500",
+        fontSize: "17px",
         transform: "scale(0.85)",
       }
     : {
         top: "34%",
         color: "gray.500",
-        fontSize: "1rem",
+        fontSize: "16px",
         transform: "translateY(-50%)",
       };
 
@@ -62,10 +62,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
     size: "md",
     height: "60px",
     pl: "12px",
-    borderColor: "gray.300",
+    borderColor: "var(--input-color)",
     borderWidth: "2px",
     _focus: {
-      borderColor: "blue.500",
+      borderColor: "gray.500",
     },
   };
 
@@ -99,9 +99,9 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
         }}
       />
       {isInvalid && touched && (
-        <Stack spacing={1} mt={1}>
+        <Box my={2}>
           <FormErrorMessage>{errorMessage}</FormErrorMessage>
-        </Stack>
+        </Box>
       )}
     </FormControl>
   );
