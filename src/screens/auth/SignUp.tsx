@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  FormControl,
-  Text,
-  VStack,
-  Center,
-  Alert,
-  AlertIcon,
-} from "@chakra-ui/react";
+import { Box, FormControl, Text, VStack, Center } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";

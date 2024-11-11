@@ -38,17 +38,15 @@ const Toaster = ({ message, type }) => {
       isClosable: true,
       position: "bottom",
       render: () => (
-        <>
-          <HStack
-            p={3}
-            borderRadius="md"
-            {...getToastStyles(type)}
-            color={"white"}
-          >
-            {getToastStyles(type).icon}
-            <Text>{message}</Text>
-          </HStack>
-        </>
+        <HStack
+          p={3}
+          borderRadius="md"
+          {...getToastStyles(type)}
+          color={"white"}
+        >
+          {getToastStyles(type).icon}
+          <Text>{message}</Text>
+        </HStack>
       ),
     });
   };
