@@ -1,14 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Box,
-  FormControl,
-  Text,
-  VStack,
-  Center,
-  Alert,
-  AlertIcon,
-  Stack,
-} from "@chakra-ui/react";
+import { Box, FormControl, Text, VStack, Center } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
@@ -24,16 +15,19 @@ import { getTokenData, saveToken } from "../../services/auth/asyncStorage";
 import { AuthContext } from "../../utils/context/checkToken";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useTranslation } from "react-i18next";
+import Toaster from "../../components/common/ToasterMessage";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [error, setError] = useState("");
+  const [error, setError] = useState();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState(false);
+  const [success, setSuccess] = useState<string>("");
 
   const { checkToken, documents, updateUserData, userData } =
     useContext(AuthContext);
@@ -50,12 +44,17 @@ const SignIn: React.FC = () => {
     try {
       setLoading(true); // Show loading indicator
       const response = await loginUser({ username, password });
+      if (response.statusCode === 200) {
+        setToastMessage(true);
+        setSuccess(t("SIGNIN_LOGGEDIN_SUCCESSFULLY"));
+      }
       setLoading(false); // Hide loading indicator after response
       saveToken(response.data.access_token, response.data.refresh_token);
       init();
       setDialogVisible(true);
     } catch (error) {
-      setError(t("SIGNIN_ERROR_FETCHING_DATA"));
+      setError(t("SIGNIN_INVALID_USERNAME_PASSWORD_MESSAGE"));
+      setToastMessage(true);
       throw error;
     } finally {
       setLoading(false);
@@ -123,14 +122,6 @@ const SignIn: React.FC = () => {
             onClick={handleLogin}
             label="Sign In"
           />
-          <Stack mt={4}>
-            {error && (
-              <Alert status="error" variant="solid">
-                <AlertIcon />
-                {error}
-              </Alert>
-            )}
-          </Stack>
         </VStack>
         <ConfirmationDialog
           loading={loading}
@@ -154,6 +145,8 @@ const SignIn: React.FC = () => {
           </Text>
         </Center>
       </Box>
+      {toastMessage && success && <Toaster message={success} type="success" />}
+      {toastMessage && error && <Toaster message={error} type="error" />}
     </Layout>
   );
 };

@@ -15,6 +15,7 @@ import FloatingPasswordInput from "../../components/common/input/PasswordInput";
 import { registerUser } from "../../services/auth/auth";
 import FloatingInput from "../../components/common/input/Input";
 import { useTranslation } from "react-i18next";
+import Toaster from "../../components/common/ToasterMessage";
 
 interface UserDetails {
   firstName: string;
@@ -42,6 +43,7 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [passwordMatchError, setPasswordMatchError] = useState<string>("");
   const [mobileError, setMobileError] = useState<string>("");
+  const [toastMessage, setToastMessage] = useState(false);
 
   const handleBack = () => {
     navigate(-1);
@@ -129,11 +131,13 @@ const Signup: React.FC = () => {
         setSuccess(
           response.message || t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE")
         );
+        setToastMessage(true);
         setTimeout(() => {
           navigate("/signin");
         }, 3000);
       } else {
         setLoading(false);
+        setToastMessage(true);
         setError(response.message || "An error occurred.");
         clearError();
       }
@@ -141,8 +145,10 @@ const Signup: React.FC = () => {
       setLoading(false);
       if (error instanceof Error) {
         setError(error.message);
+        setToastMessage(true);
       } else {
         setError("An error occurred.");
+        setToastMessage(true);
       }
       clearError();
     }
@@ -207,18 +213,6 @@ const Signup: React.FC = () => {
             onClick={handleSignUp}
             isDisabled={!isFormValid || loading}
           />
-          {error && (
-            <Alert status="error" variant="solid">
-              <AlertIcon />
-              {error}
-            </Alert>
-          )}
-          {success && (
-            <Alert status="success" variant="solid">
-              <AlertIcon />
-              {success}
-            </Alert>
-          )}
         </VStack>
         <Center>
           <Text mt={6}>
@@ -234,6 +228,8 @@ const Signup: React.FC = () => {
           </Text>
         </Center>
       </Box>
+      {toastMessage && success && <Toaster message={success} type="success" />}
+      {toastMessage && error && <Toaster message={error} type="error" />}
     </Layout>
   );
 };

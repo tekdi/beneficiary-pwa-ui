@@ -26,6 +26,7 @@
   "SIGNIN_PASSWORD_IS_REQUIRED": "Password is required",
   "SIGNIN_DONT_HAVE_AN_ACCOUNT": "Don't Have An Account?",
   "SIGNIN_ERROR_FETCHING_DATA": "Error fetching user data or documents",
+  "SIGNIN_LOGGEDIN_SUCCESSFULLY": "You are successfully logged in",
   "CONFIRMATION_DIALOGUE_SHARE_INFORMATION": "Share Information",
   "CONFIRMATION_DIALOGUE_DENY": "Deny",
   "CONFIRMATION_DIALOGUE_ACCEPT": "Accept",
