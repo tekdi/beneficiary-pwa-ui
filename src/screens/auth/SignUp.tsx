@@ -220,8 +220,12 @@ const Signup: React.FC = () => {
           </Text>
         </Center>
       </Box>
-      {toastMessage && success && <Toaster message={success} type="success" />}
-      {toastMessage && error && <Toaster message={error} type="error" />}
+      {(success || error) && (
+        <Toaster
+          message={success || error}
+          type={success ? "success" : "error"}
+        />
+      )}
     </Layout>
   );
 };
