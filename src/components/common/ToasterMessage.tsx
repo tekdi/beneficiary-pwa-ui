@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { HStack, Text, useToast } from "@chakra-ui/react";
 import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
-interface ToasterProps {
-  message: string;
-  type: "success" | "error" | "warning";
-}
-const Toaster: React.FC<ToasterProps> = ({ message, type }) => {
+
+const Toaster = ({ message, type }) => {
+  const toast = useToast();
+  console.log(message, "message");
+
   const getToastStyles = (toastType) => {
     switch (toastType) {
       case "success":
@@ -55,7 +55,7 @@ const Toaster: React.FC<ToasterProps> = ({ message, type }) => {
     if (message) {
       showToast();
     }
-  }, [message, showToast]);
+  }, [[message, showToast]]);
 
   return null;
 };

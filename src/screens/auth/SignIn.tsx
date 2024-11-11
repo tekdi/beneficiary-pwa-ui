@@ -145,13 +145,8 @@ const SignIn: React.FC = () => {
           </Text>
         </Center>
       </Box>
-
-      {(success || error) && (
-        <Toaster
-          message={success || error}
-          type={success ? "success" : "error"}
-        />
-      )}
+      {toastMessage && success && <Toaster message={success} type="success" />}
+      {toastMessage && error && <Toaster message={error} type="error" />}
     </Layout>
   );
 };
