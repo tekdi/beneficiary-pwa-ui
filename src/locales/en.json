@@ -34,5 +34,9 @@
   "SIGNIN_CONSENT_TEXT": "Please provide your consent to share the following with Fast Pass",
   "PROFILE_LOGGED_IN_WITH_E_Wallet": "Logged in with E-Wallet",
   "PROFILE_EXPLORE_BENEFITS": "Explore Benefits",
-  "NAVBAR_LOGGED_OUT_SUCCESSFULLY": "Logged Out Successfully"
+  "NAVBAR_LOGGED_OUT_SUCCESSFULLY": "Logged Out Successfully",
+  "NAVBAR_LOGOUT": "Logout",
+  "NAVBAR_FAST_PASS": "Fast Pass",
+  "NAVBAR_PROFILE": "Profile",
+  "GENERAL_Loading": "Loading..."
 }

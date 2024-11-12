@@ -34,6 +34,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
   const formattedDate = formatDateString(dateStr);
   const eligibility = extractEligibilityValues(item?.item?.tags[0]?.list);
   const id = item?.item_id;
+  console.log(eligibility, "eligibility");
 
   return (
     <Card
@@ -46,7 +47,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
         <Box className="badge-box" width={"auto"}>
           {formattedDate}
         </Box>
-        <Heading marginTop={"15px"} size="md">
+        <Heading size="md" mt={2}>
           {item?.title}
         </Heading>
         <Heading size="sm" color="#484848" fontWeight={400} mt={2}>
@@ -57,24 +58,31 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
             align="center"
             flexDirection={"row"}
             alignItems={"center"}
-            mt={1.5}
+            mt={4}
           >
             {" "}
             <Icon as={MdCurrencyRupee} boxSize={4} color="#484848" />{" "}
-            <Text fontSize="12px" marginLeft="1">
+            <Text color="#484848" marginLeft="1">
               {" "}
               {item?.item?.price?.value}{" "}
             </Text>{" "}
-            <Text fontSize="12px" marginLeft="1">
+            <Text color="#484848" marginLeft="1">
               {" "}
               {item?.item?.price?.currency || "INR"}{" "}
             </Text>{" "}
           </HStack>
         )}
-        <Flex alignItems="center" mt={2} mb={2}>
+        <Flex alignItems="center" mt={4}>
           {eligibility?.length > 0 ? (
             eligibility.map((category) => (
-              <Box key={category} mr={2}>
+              <Box
+                key={category}
+                mr={2}
+                color={"#0037B9"}
+                border={"1px"}
+                borderRadius={"6px"}
+                p={"2px 10px"}
+              >
                 {category.toUpperCase()}
               </Box>
             ))

@@ -21,7 +21,7 @@ import { AuthContext } from "../../../utils/context/checkToken";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const options = [{ value: "en", label: "English" }];
+const options = [];
 const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
   const { checkToken, removeContextData } = useContext(AuthContext);
   const [success, setSuccess] = useState<string>("");
@@ -63,14 +63,15 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
                 rightIcon={<HamburgerIcon w={5} h={5} />}
                 paddingLeft={0}
               ></MenuButton>
-              <MenuList>
-                <MenuItem>Profile</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuList bg="#FBF8FF">
+                <MenuItem bg="#FBF8FF"> {t("NAVBAR_PROFILE")}</MenuItem>
+                <MenuItem bg="#FBF8FF" onClick={handleLogout}>
+                  {t("NAVBAR_LOGOUT")}
+                </MenuItem>
               </MenuList>
             </Menu>
           )}
-
-          <Text fontStyle={"italic"}>Fast Pass</Text>
+          <Text fontStyle={"italic"}> {t("NAVBAR_FAST_PASS")}</Text>
         </Box>
         <Box>
           {success && (

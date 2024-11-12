@@ -9,18 +9,15 @@ import {
   Text,
   IconButton,
   VStack,
-  Spinner,
-  ListItem,
   Button,
   HStack,
-  UnorderedList,
 } from "@chakra-ui/react";
 
 import { CloseIcon, CheckIcon } from "@chakra-ui/icons";
 import SubmitDialog from "./SubmitDialog";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import Loader from "./common/Loader";
+import DocumentList from "./DocumentList";
 
 interface Document {
   name: string;
@@ -93,30 +90,12 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               />
             </ModalHeader>
 
-            <ModalBody py={4}>
+            <ModalBody py={4} className="card-scroll invisible_scroll">
               <Text fontSize="md" mb={4} color="gray.600">
                 {consentText}
               </Text>
-              <VStack spacing={3}>
-                {loading ? (
-                  <Loader />
-                ) : (
-                  <UnorderedList mt={4}>
-                    {documents.map((document) => (
-                      <ListItem key={document.name} display="flex">
-                        <LeftIcon />
-                        <Text
-                          ml={3}
-                          fontSize="sm"
-                          fontWeight="normal"
-                          color="gray.700"
-                        >
-                          {document.name}
-                        </Text>
-                      </ListItem>
-                    ))}
-                  </UnorderedList>
-                )}
+              <VStack>
+                {loading ? <Loader /> : <DocumentList documents={documents} />}
               </VStack>
             </ModalBody>
 

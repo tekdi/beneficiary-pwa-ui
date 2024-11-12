@@ -9,7 +9,6 @@ import { getTokenData } from "../services/auth/asyncStorage";
 import { AuthContext } from "../utils/context/checkToken";
 import { useTranslation } from "react-i18next";
 import DocumentList from "../components/DocumentList";
-import { document } from "../assets/mockdata/document";
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -52,31 +51,15 @@ const UserProfile: React.FC = () => {
             : userData?.first_name?.[0],
       }}
     >
-      <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
+      <Box
+        p={5}
+        shadow="md"
+        borderWidth="1px"
+        borderRadius="md"
+        className="card-scroll invisible_scroll"
+      >
         <VStack spacing={4} align="stretch">
-          {/* <List spacing={3}>
-            <ListItem className="border-bottom" pb={4}>
-              {documents &&
-                documents.map((document) => (
-                  <Flex align="center" key={document.name} mt={4}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      backgroundColor="green.500"
-                      borderRadius="full"
-                      boxSize="25px"
-                      color="white"
-                      marginRight="10px"
-                    >
-                      <CheckIcon boxSize="15px" />
-                    </Box>
-                    <Box> {document.name}</Box>
-                  </Flex>
-                ))}
-            </ListItem>
-          </List> */}
-          <DocumentList documents={document} />
+          <DocumentList documents={documents} />
           <CommonButton
             onClick={handleRedirect}
             label={t("PROFILE_EXPLORE_BENEFITS")}

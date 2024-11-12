@@ -1,6 +1,6 @@
 // BenefitsDetails.tsx
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Heading,
@@ -17,6 +17,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Stack,
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
 import { useNavigate, useParams } from "react-router-dom";
@@ -34,6 +35,7 @@ import {
 import { MdCurrencyRupee } from "react-icons/md";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import WebViewFormSubmitWithRedirect from "../../components/WebView";
+import { AuthContext } from "../../utils/context/checkToken";
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,7 +48,9 @@ const BenefitsDetails: React.FC = () => {
   const [authUser, setAuthUser] = useState();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+
   const [webFormProp, setWebFormProp] = useState({});
+  const { documents } = useContext(AuthContext);
 
   const handleConfirmation = async () => {
     setLoading(true);
@@ -226,23 +230,6 @@ const BenefitsDetails: React.FC = () => {
             Details
           </Heading>
           <Text mt={4}> {item?.descriptor?.long_desc}</Text>
-          {/* <Heading size="md" color="#484848" fontWeight={500} mt={6}>
-            Objectives of the Pre-matric Scholarship-ST:
-          </Heading>
-          <UnorderedList mt={4}>
-            <ListItem>
-              Provide financial assistance to ST students in Classes 9 and 10 to
-              encourage continued education.
-            </ListItem>
-            <ListItem>
-              Support low-income families by reducing the financial burden of
-              schooling.
-            </ListItem>
-            <ListItem>
-              Promote equal educational opportunities for students with
-              disabilities through higher financial aid.
-            </ListItem>
-          </UnorderedList> */}
           <Heading size="md" color="#484848" fontWeight={500} mt={6}>
             Mandatory Documents:
           </Heading>
