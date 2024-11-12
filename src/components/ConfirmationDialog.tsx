@@ -20,7 +20,7 @@ import { CloseIcon, CheckIcon } from "@chakra-ui/icons";
 import SubmitDialog from "./SubmitDialog";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-// import CustomButton from "./common/button/Button";
+import Loader from "./common/Loader";
 
 interface Document {
   name: string;
@@ -99,7 +99,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               </Text>
               <VStack spacing={3}>
                 {loading ? (
-                  <Spinner color="blue.600" />
+                  <Loader />
                 ) : (
                   <UnorderedList mt={4}>
                     {documents.map((document) => (
@@ -122,7 +122,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
             <ModalFooter display="flex" justifyContent="space-between" mt={4}>
               {loading ? (
-                <Spinner color="blue.600" />
+                <Loader />
               ) : (
                 <HStack spacing={4}>
                   <Button variant="outline" onClick={sendCloseDialog} size="md">

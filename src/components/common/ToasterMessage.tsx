@@ -34,7 +34,7 @@ const Toaster = ({ message, type }) => {
   const showToast = () => {
     toast({
       status: type,
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
       position: "bottom",
       render: () => (
@@ -55,7 +55,7 @@ const Toaster = ({ message, type }) => {
     if (message) {
       showToast();
     }
-  }, [[message, showToast]]);
+  }, [message, showToast]);
 
   return null;
 };
