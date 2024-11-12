@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import { Box, VStack, Flex, List, ListItem } from "@chakra-ui/react";
-import { CheckIcon } from "@chakra-ui/icons";
+import { Box, VStack } from "@chakra-ui/react";
+
 import { getUser, getDocumentsList } from "../services/auth/auth";
 import { useNavigate } from "react-router-dom";
 import CommonButton from "../components/common/button/Button";
@@ -8,6 +8,8 @@ import Layout from "../components/common/layout/Layout";
 import { getTokenData } from "../services/auth/asyncStorage";
 import { AuthContext } from "../utils/context/checkToken";
 import { useTranslation } from "react-i18next";
+import DocumentList from "../components/DocumentList";
+import { document } from "../assets/mockdata/document";
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -52,7 +54,7 @@ const UserProfile: React.FC = () => {
     >
       <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
         <VStack spacing={4} align="stretch">
-          <List spacing={3}>
+          {/* <List spacing={3}>
             <ListItem className="border-bottom" pb={4}>
               {documents &&
                 documents.map((document) => (
@@ -73,7 +75,8 @@ const UserProfile: React.FC = () => {
                   </Flex>
                 ))}
             </ListItem>
-          </List>
+          </List> */}
+          <DocumentList documents={document} />
           <CommonButton
             onClick={handleRedirect}
             label={t("PROFILE_EXPLORE_BENEFITS")}

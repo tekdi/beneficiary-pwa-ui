@@ -3,6 +3,7 @@ import { Box, Flex, Spinner } from "@chakra-ui/react";
 import Navbar from "./Navbar"; // Import your Navbar component
 import HeadingText from "./HeadingText"; // Import your HeadingText component
 import BottomBar from "./BottomBar";
+import SearchBar from "./SearchBar";
 
 interface LayoutProps {
   isScrollable?: boolean;
@@ -10,9 +11,15 @@ interface LayoutProps {
   children: React.ReactNode;
   isMenu?: boolean;
   isNavbar?: boolean;
-  afterHeader?: React.ReactNode; // Optional: Additional components to render after the header
-  _heading?: object; // Optional: Props to pass to HeadingText,
+  afterHeader?: React.ReactNode;
+  _heading?: {
+    heading?: string;
+    isFilter?: boolean;
+    handleOpen?: () => void;
+    onSearch?: (query: string) => void;
+  };
   isBottombar?: boolean;
+  isSearchbar?: boolean;
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -24,14 +31,17 @@ const Layout: React.FC<LayoutProps> = ({
   afterHeader,
   _heading = {},
   isBottombar = true,
+  isSearchbar = false,
 }) => {
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <Spinner size="lg" />
-      </Box>
-    );
-  }
+  const { onSearch } = _heading;
+
+  // if (loading) {
+  //   return (
+  //     <Box display="flex" justifyContent="center" alignItems="center">
+  //       <Spinner size="lg" />
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box>
@@ -55,12 +65,20 @@ const Layout: React.FC<LayoutProps> = ({
               <>
                 <Navbar isMenu={isMenu} />
                 <HeadingText {..._heading} />
+                {isSearchbar && onSearch && <SearchBar onSearch={onSearch} />}
                 {afterHeader}
               </>
             )}
-            <Box overflow={isScrollable ? "auto" : "hidden"} flex="1">
-              {children}
-            </Box>
+            {loading ? (
+              <Flex align="center" justify="center" height="100vh" bg="#F7F7F7">
+                <Spinner size="xl" color="teal.500" />
+              </Flex>
+            ) : (
+              <Box overflow={isScrollable ? "auto" : "hidden"} flex="1">
+                {children}
+              </Box>
+            )}
+
             {isBottombar && <BottomBar />}
           </Box>
         </Flex>

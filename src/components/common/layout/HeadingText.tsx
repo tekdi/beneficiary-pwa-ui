@@ -1,23 +1,24 @@
 import * as React from "react";
 import { Box, Text, IconButton, Avatar, VStack } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { MdOutlineFilterAlt } from "react-icons/md";
+import FilterDialog from "./Filters";
 
 interface HeadingTextProps {
   beneficiary?: boolean;
   heading?: string;
   subHeading?: string;
-  handleBack?: () => void; // This should always expect a function
-  isFilter?: boolean; // New prop to determine if the filter icon should be shown
-  handleOpen?: () => void;
+  handleBack?: () => void;
+  isFilter?: boolean;
+  filterInputs?: { label: string; key: string; value: string; data: any[] }[];
+  onFilter?: (values: Record<string, string>) => void;
 }
 
 const LeftContent: React.FC<{ label: string; size?: string }> = ({
   label,
-  size = "45px", // Default size if not provided
+  size = "45px",
 }) => (
   <Avatar
-    boxSize={size} // Use boxSize for custom dimensions
+    boxSize={size}
     name={label}
     src="https://bit.ly/broken-link"
     marginRight={1}
@@ -36,14 +37,39 @@ const BackIcon: React.FC<{ onClick: () => void; iconSize?: number }> = ({
     size="sm"
   />
 );
+const dummyInputs = [
+  {
+    label: "Category",
+    key: "category",
+    value: "1",
+    data: ["Scholarship", "Grant", "Loan"],
+  },
+  {
+    label: "Status",
+    key: "status",
+    value: "2",
+    data: ["Active", "Expired", "Upcoming", "sw", "dshva"],
+  },
+  {
+    label: "Amount",
+    key: "amount",
+    value: "3",
+    data: ["< 1000", "1000 - 5000", "> 5000"],
+  },
+];
+
+const handleFilter = (values: Record<string, string>) => {
+  console.log("Applied Filter Values:", values);
+};
 
 const HeadingText: React.FC<HeadingTextProps> = ({
   beneficiary,
   heading,
   subHeading,
-  handleBack, // Expecting a function or undefined
-  isFilter, // New prop
-  handleOpen,
+  handleBack,
+  isFilter,
+  filterInputs = dummyInputs,
+  onFilter = handleFilter,
 }) => {
   return (
     <Box
@@ -72,15 +98,13 @@ const HeadingText: React.FC<HeadingTextProps> = ({
                   {heading}
                 </Text>
               )}
-              {/* Use IconButton for the filter icon */}
-              {isFilter && (
-                <IconButton
-                  aria-label="Filter"
-                  icon={<MdOutlineFilterAlt />}
-                  fontSize="25px"
-                  marginLeft="auto"
-                  onClick={handleOpen}
-                  variant="ghost" // You can change this variant if you want a different style
+
+              {isFilter && filterInputs && onFilter && (
+                <FilterDialog
+                  inputs={filterInputs}
+                  onFilter={(values) => {
+                    onFilter(values);
+                  }}
                 />
               )}
             </Box>

@@ -46,7 +46,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   consentText,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+
   consentText = consentText || t("CONFIRMATION_DIALOGUE_CONSENT_TEXT");
 
   // Function to call the parent's function
@@ -57,7 +57,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   const openSubmitDialog = async () => {
     if (handleConfirmation) {
       handleConfirmation();
-      navigate("/userprofile");
+      // navigate("/userprofile");
     }
   };
   const closeSubmitDialog = () => {

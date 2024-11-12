@@ -60,10 +60,9 @@ export const getUser = async () => {
   try {
     // Destructure and retrieve the token from getToken()
     const { token } = await getToken();
-
     // Make the API call to fetch user data
     const response = await axios.get(
-      `${apiBaseUrl}/users/get_one?decryptData=true`,
+      `${apiBaseUrl}/users/get_one/?decryptData=true`,
       {
         headers: {
           Accept: "application/json", // 'application/json' is more specific and commonly used for APIs
@@ -76,7 +75,8 @@ export const getUser = async () => {
     return response.data;
   } catch (error) {
     // Log more comprehensive error information
-    console.error(`Failed to fetch user with ID ${userId}:`, error.message);
+
+    console.error("Failed to fetch user:", error.message);
 
     // Re-throw the error for further handling if needed
     throw error;

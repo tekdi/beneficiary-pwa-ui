@@ -1,7 +1,9 @@
 import axios from "axios";
-import { generateUUID } from "../utils/JsHelper/helper";
-import { getToken } from "./asyncStorage";
-const apiBaseUrl = import.meta.env.apiBaseUrl;
+
+import { getToken } from "../auth/asyncStorage";
+import { generateUUID } from "../../utils/jsHelper/helper";
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function handleError(error) {
   throw error.response ? error.response.data : new Error("Network Error");
