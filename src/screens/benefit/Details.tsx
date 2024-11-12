@@ -1,6 +1,6 @@
 // BenefitsDetails.tsx
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Heading,
@@ -34,7 +34,6 @@ import {
 import { MdCurrencyRupee } from "react-icons/md";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import WebViewFormSubmitWithRedirect from "../../components/WebView";
-import { AuthContext } from "../../utils/context/checkToken";
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

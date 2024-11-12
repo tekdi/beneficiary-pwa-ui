@@ -13,7 +13,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
-import { CloseIcon, CheckIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "@chakra-ui/icons";
 import SubmitDialog from "./SubmitDialog";
 import { useTranslation } from "react-i18next";
 import Loader from "./common/Loader";

@@ -63,9 +63,12 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
                 rightIcon={<HamburgerIcon w={5} h={5} />}
                 paddingLeft={0}
               ></MenuButton>
-              <MenuList bg="#FBF8FF">
-                <MenuItem bg="#FBF8FF"> {t("NAVBAR_PROFILE")}</MenuItem>
-                <MenuItem bg="#FBF8FF" onClick={handleLogout}>
+              <MenuList bg="var(--menu-background)">
+                <MenuItem bg="var(--menu-background)">
+                  {" "}
+                  {t("NAVBAR_PROFILE")}
+                </MenuItem>
+                <MenuItem bg="var(--menu-background)" onClick={handleLogout}>
                   {t("NAVBAR_LOGOUT")}
                 </MenuItem>
               </MenuList>
