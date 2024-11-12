@@ -17,7 +17,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Stack,
 } from "@chakra-ui/react";
 import "../../assets/styles/App.css";
 import { useNavigate, useParams } from "react-router-dom";
@@ -50,7 +49,6 @@ const BenefitsDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   const [webFormProp, setWebFormProp] = useState({});
-  const { documents } = useContext(AuthContext);
 
   const handleConfirmation = async () => {
     setLoading(true);

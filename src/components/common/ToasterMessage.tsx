@@ -55,7 +55,7 @@ const Toaster = ({ message, type }) => {
     if (message) {
       showToast();
     }
-  }, [message, showToast]);
+  }, [message]);
 
   return null;
 };

@@ -1,13 +1,6 @@
 import * as React from "react";
-import {
-  VStack,
-  Text,
-  Spinner,
-  Icon,
-  HStack,
-  useTheme,
-} from "@chakra-ui/react";
-import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
+import { VStack, Text, Icon, HStack, useTheme } from "@chakra-ui/react";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import Loader from "./common/Loader";
 
 interface StatusIconProps {
@@ -24,11 +17,11 @@ const StatusIcon: React.FC<StatusIconProps> = ({
   const theme = useTheme();
   return (
     <Icon
-      as={status ? CheckCircleIcon : CheckCircleIcon}
-      color={status ? theme.colors.success : theme.colors.success} // Use theme tokens
+      as={status ? CheckCircleIcon : ""}
+      color={status ? theme.colors.success : ""} // Use theme tokens
       boxSize={size}
       aria-label={
-        ariaLabel || `Document status: ${status ? "Available" : "Available"}`
+        ariaLabel || `Document status: ${status ? "Available" : "incomplete"}`
       }
     />
   );

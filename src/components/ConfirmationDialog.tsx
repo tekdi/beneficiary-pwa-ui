@@ -32,8 +32,6 @@ interface ConfirmationDialogProps {
   consentText?: string;
 }
 
-const LeftIcon: React.FC = () => <CheckIcon color="blue.600" w={5} h={5} />;
-
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   dialogVisible,
   closeDialog,
