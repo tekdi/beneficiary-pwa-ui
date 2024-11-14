@@ -6,13 +6,15 @@ interface OutlineButton {
   mt?: number;
   width?: string;
   label?: string;
+  disabled: boolean;
 }
 
 const OutlineButton: React.FC<OutlineButton> = ({
   onClick,
-  mt = 4,
+  mt,
   width = "100%",
   label = "Submit",
+  disabled = false,
 }) => {
   return (
     <Button
@@ -21,6 +23,7 @@ const OutlineButton: React.FC<OutlineButton> = ({
       mt={mt}
       width={width}
       onClick={onClick}
+      disabled={disabled}
     >
       {label}
     </Button>

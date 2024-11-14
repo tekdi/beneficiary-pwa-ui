@@ -10,14 +10,17 @@
 
 .custom-btn {
   padding: 24px 63px !important;
-  font-weight: bold;
   background-color: #3c5fdd !important;
   color: #fff !important;
   border-radius: 100px !important;
 }
 
-.custom-btn:hover {
-  background-color: #3c5fdd;
+.outline-custom-btn {
+  padding: 24px 63px !important;
+  background-color: #fff !important;
+  border-radius: 100px !important;
+  border: 1px solid #3c5fdd !important;
+  color: #3c5fdd !important;
 }
 
 .text-color {
@@ -31,7 +34,7 @@
 .heading {
   color: #45464f;
   font-weight: 400 !important;
-  font-size: 25px !important;
+  font-size: 22px !important;
 }
 
 .custom-outline-btn {
@@ -111,4 +114,10 @@ button:disabled {
   background-color: #c6c2d2 !important;
   cursor: not-allowed;
   color: #1A1B21 !important;
+}
+
+.chakra-accordion__item button {
+  color: var(--theme-color);
+  border: none !important;
+  background-color: none;
 }

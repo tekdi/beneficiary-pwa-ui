@@ -13,6 +13,7 @@ import i18n from "../../components/common/i18n";
 import Layout from "../../components/common/layout/Layout";
 import { useTranslation } from "react-i18next";
 import FloatingSelect from "../../components/common/input/FloatingSelect";
+import CommonButton from "../../components/common/button/Button";
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ const Login: React.FC = () => {
 
   const options = [{ label: t("LOGIN_ENGLISH"), value: "en" }];
   const handleRedirect = () => {
-    navigate("/signin");
+    navigate("/SignUp");
   };
 
   return (
@@ -63,14 +64,18 @@ const Login: React.FC = () => {
             </FormHelperText>
           </FormControl>
         </form>
-
-        <Button
-          className="custom-btn"
-          mt={8}
+        <CommonButton
           onClick={handleRedirect}
-          width="100%"
+          label={t("LOGIN_REGISTER_BUTTON")}
+          mt={8}
+        />
+        <Button
+          className="outline-custom-btn"
+          variant="outline"
+          mt={2}
+          //onClick={handleRedirect}
         >
-          {t("LOGIN_SIGN_IN/SIGN_UI_WITH_YOUR_E-WALLET")}
+          {t("LOGIN_LOGIN_BUTTON")}
         </Button>
       </Stack>
     </Layout>

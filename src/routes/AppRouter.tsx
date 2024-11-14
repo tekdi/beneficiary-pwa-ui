@@ -9,6 +9,7 @@ import BenefitsDetails from "../screens/benefit/Details";
 import Preview from "../screens/application/Preview";
 import MyApplications from "../screens/application/ApplicationStatus";
 import PrivateRoute from "./ProtectedRoute";
+import UploadDocuments from "../components/common/layout/UploadDocuments";
 
 const AppRouter = () => (
   <Router>
@@ -16,6 +17,7 @@ const AppRouter = () => (
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<SignIn />} />
+      <Route path="/uploaddocuments" element={<UploadDocuments />} />
 
       <Route
         path="/userprofile"

@@ -11,6 +11,7 @@ import {
   Stack,
   Alert,
   AlertIcon,
+  Image,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import CustomSelect from "../input/Select";
@@ -63,13 +64,23 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
                 rightIcon={<HamburgerIcon w={5} h={5} />}
                 paddingLeft={0}
               ></MenuButton>
-              <MenuList bg="var(--menu-background)">
-                <MenuItem bg="var(--menu-background)">
-                  {" "}
-                  {t("NAVBAR_PROFILE")}
+              <MenuList bg="var(--menu-background)" mt={"15px"}>
+                <MenuItem
+                  bg="var(--menu-background)"
+                  className="border-bottom"
+                  p={4}
+                >
+                  <Image src="../src/assets/images/profile.png" />
+                  <Text ml={4}>{t("NAVBAR_PROFILE")}</Text>
                 </MenuItem>
-                <MenuItem bg="var(--menu-background)" onClick={handleLogout}>
-                  {t("NAVBAR_LOGOUT")}
+                <MenuItem
+                  bg="var(--menu-background)"
+                  onClick={handleLogout}
+                  p={4}
+                >
+                  <Image ml={1} src="../src/assets/images/logout.png" />
+
+                  <Text ml={4}>{t("NAVBAR_LOGOUT")}</Text>
                 </MenuItem>
               </MenuList>
             </Menu>

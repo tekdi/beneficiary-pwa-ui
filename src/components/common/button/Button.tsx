@@ -11,7 +11,7 @@ interface CustomButton {
 
 const CommonButton: React.FC<CustomButton> = ({
   onClick,
-  mt = 4,
+  mt,
   width = "100%",
   label = "Submit",
   isDisabled = false,
