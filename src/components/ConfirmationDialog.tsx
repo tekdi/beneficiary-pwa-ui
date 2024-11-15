@@ -24,6 +24,7 @@ interface ConfirmationDialogProps {
   handleConfirmation: () => Promise<void>;
   loading?: boolean;
   consentText?: string;
+  documents?: string[];
 }
 
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({

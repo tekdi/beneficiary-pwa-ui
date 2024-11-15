@@ -33,7 +33,7 @@ interface Document {
 }
 
 interface DocumentListProps {
-  documents: Document[];
+  documents: Document[] | string[];
 }
 
 const DocumentList: React.FC<DocumentListProps> = ({ documents }) => {

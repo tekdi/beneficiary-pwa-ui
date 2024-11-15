@@ -88,7 +88,6 @@ const BenefitsDetails: React.FC = () => {
     setLoading(true);
     try {
       const result = await applyApplication({ id, context });
-
       setWebFormProp({
         url: result?.data?.responses?.[0]?.message?.order?.items?.[0]?.xinput
           ?.form?.url,
@@ -113,7 +112,13 @@ const BenefitsDetails: React.FC = () => {
         item_id: id,
         context: context ?? {},
       });
-      const orderId = result?.data?.responses?.[0]?.message?.order?.id;
+      const orderId = (
+        result as {
+          data: { responses: { message: { order: { id: string } } }[] };
+        }
+      )?.data?.responses?.[0]?.message?.order?.id;
+
+      //  const orderId = result?.data?.responses?.[0]?.message?.order?.id;
       if (orderId) {
         const payload = {
           user_id: authUser?.user_id,

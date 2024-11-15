@@ -32,13 +32,17 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
   const { t } = useTranslation();
 
   const handleLogout = async () => {
-    const token = await getToken();
+    const token = (await getToken()) as {
+      token: string;
+      refreshToken: string;
+    } | null;
+
     if (token?.token && token?.refreshToken) {
       try {
         const response = await logoutUser(token.token, token.refreshToken); // Call the logout function
         removeContextData();
         checkToken();
-        if (response.statusCode == 200) {
+        if (response.statusCode === 200) {
           setSuccess(t("NAVBAR_LOGGED_OUT_SUCCESSFULLY"));
           navigate("/signin");
         }
@@ -49,6 +53,7 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
       console.error("No tokens found, user is not logged in");
     }
   };
+
   return (
     <Stack bg="#EDEFFF" p="6">
       <Flex justifyContent="space-between" alignItems="center">

@@ -3,17 +3,18 @@ import { getToken, removeToken } from "./asyncStorage";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 interface UserData {
-  // Define the properties of userData object based on your requirements
-  username: string;
-  email: string;
+  username?: string; // optional if not always required
+  email?: string;
   password: string;
-  // Add other properties if necessary
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
 }
-
 interface RegisterResponse {
   // Define the expected response structure from the API
   success: boolean;
   message: string;
+  statusCode: string | number;
   // Add other properties if necessary
 }
 
