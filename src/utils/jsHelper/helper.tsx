@@ -1,12 +1,3 @@
-// interface EligibilityItem {
-//   descriptor: {
-//     code: string;
-//     name: string;
-//     short_desc: string;
-//   };
-//   display: boolean;
-//   value: string;
-// }
 interface DocumentItem {
   descriptor?: {
     code?: string;
@@ -55,7 +46,7 @@ interface EligibilityItem {
     short_desc: string;
   };
   display: boolean;
-  value: string;
+  item: string;
 }
 
 export const extractEligibilityValues = (
@@ -65,7 +56,7 @@ export const extractEligibilityValues = (
     throw new Error("Invalid input: expected an array of eligibility items");
   }
   // Extracting the 'value' field from each item in the array
-  return data.map((item) => item.value);
+  return data.map((item) => item.item);
 };
 
 export function generateUUID(): string {

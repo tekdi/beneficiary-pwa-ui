@@ -18,10 +18,22 @@ import { Castes, Gender, IncomeRange } from "../../assets/mockdata/FilterData";
 
 // Define types for benefit data and filter structure
 interface Benefit {
-  item_id: string;
+  item_id: number;
   title: string;
+  provider_name: string;
   description: string;
-  [key: string]: unknown; // Additional fields as necessary
+  item: {
+    price?: {
+      value?: number;
+      currency?: string;
+    };
+    tags: { list?: string[] }[];
+    time?: {
+      range?: {
+        end?: string;
+      };
+    };
+  };
 }
 interface Filter {
   "social-eligibility"?: string;
