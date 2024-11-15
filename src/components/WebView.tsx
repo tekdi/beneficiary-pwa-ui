@@ -4,7 +4,13 @@ import { MutableRefObject, useEffect, useRef } from "react";
 
 import CommonButton from "./common/button/Button";
 interface FormData {
-  [key: string]: string | number | boolean | string[];
+  user_id?: string;
+  name?: string;
+  current_class?: string;
+  previous_year_marks?: string;
+  phone_number?: string;
+  username?: string;
+  email?: string;
 }
 interface WebViewFormSubmitWithRedirectProps {
   url?: string;
