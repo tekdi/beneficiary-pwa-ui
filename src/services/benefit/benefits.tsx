@@ -1,14 +1,10 @@
 import axios, { AxiosError } from "axios";
-
 import { getToken } from "../auth/asyncStorage";
 import { generateUUID } from "../../utils/jsHelper/helper";
-
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-
 function handleError(error: any) {
   throw error.response ? error.response.data : new Error("Network Error");
 }
-
 export const getAll = async (userData: {
   filters: {
     "ann-hh-inc": string;
@@ -19,7 +15,7 @@ export const getAll = async (userData: {
 }) => {
   try {
     const tokenData = await getToken();
-    if (!tokenData?.token) {
+    if (!tokenData || !tokenData.token) {
       throw new Error("Token not found");
     }
     const { token } = tokenData;
@@ -38,17 +34,14 @@ export const getAll = async (userData: {
     handleError(error);
   }
 };
-
 /**
  * Login a user
  * @param {Object} loginData - Contains phone_number, password
  */
-
-interface GetOneProps {
+interface getOneParams {
   id: string | undefined;
 }
-
-export const getOne = async ({ id }: GetOneProps) => {
+export const getOne = async ({ id }: getOneParams) => {
   const loginData = {
     context: {
       domain: "onest:financial-support",
@@ -78,7 +71,7 @@ export const getOne = async ({ id }: GetOneProps) => {
   };
   try {
     const tokenData = await getToken();
-    if (tokenData?.token) {
+    if (!tokenData || !tokenData.token) {
       throw new Error("Token not found");
     }
     const { token } = tokenData;
@@ -100,7 +93,6 @@ interface ApplyApplicationParams {
     bap_uri?: string;
   };
 }
-
 export const applyApplication = async ({
   id,
   context,
@@ -122,7 +114,7 @@ export const applyApplication = async ({
   };
   try {
     const tokenData = await getToken();
-    if (!tokenData?.token) {
+    if (!tokenData || !tokenData.token) {
       throw new Error("Token not found");
     }
     const { token } = tokenData;
@@ -137,7 +129,6 @@ export const applyApplication = async ({
     handleError(error);
   }
 };
-
 interface ConfirmApplicationParams {
   submission_id: string | undefined;
   item_id: string | undefined;
@@ -146,7 +137,6 @@ interface ConfirmApplicationParams {
     bap_uri?: string;
   };
 }
-
 export const confirmApplication = async ({
   submission_id,
   item_id,
@@ -214,7 +204,7 @@ export const confirmApplication = async ({
   };
   try {
     const tokenData = await getToken();
-    if (!tokenData?.token) {
+    if (!tokenData || !tokenData.token) {
       throw new Error("Token not found");
     }
     const { token } = tokenData;
@@ -229,7 +219,7 @@ export const confirmApplication = async ({
     handleError(error);
   }
 };
-interface CreateApplicationParams {
+interface createApplicationParams {
   user_id: string | undefined;
   benefit_id: string | undefined;
   benefit_provider_id: string | undefined;
@@ -239,11 +229,10 @@ interface CreateApplicationParams {
   status: string;
   application_data: unknown;
 }
-
-export const createApplication = async (data: CreateApplicationParams) => {
+export const createApplication = async (data: createApplicationParams) => {
   try {
     const tokenData = await getToken();
-    if (!tokenData?.token) {
+    if (!tokenData || !tokenData.token) {
       throw new Error("Token not found");
     }
     const { token } = tokenData;
@@ -262,22 +251,19 @@ export const createApplication = async (data: CreateApplicationParams) => {
     handleError(error);
   }
 };
-
 interface Filters {
   // Define the expected shape of the filters object
   // Example:
   user_id: string | undefined;
   benefit_id: string | undefined;
 }
-
 export const getApplication = async (filters: Filters) => {
   try {
     const tokenData = await getToken();
-    if (!tokenData?.token) {
+    if (!tokenData || !tokenData.token) {
       throw new Error("Token not found");
     }
     const { token } = tokenData;
-
     const response = await axios.post(
       `${apiBaseUrl}/users/user_applications_list`,
       { filters },

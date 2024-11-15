@@ -1,19 +1,45 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { getToken, removeToken } from "./asyncStorage";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+interface UserData {
+  // Define the properties of userData object based on your requirements
+  username: string;
+  email: string;
+  password: string;
+  // Add other properties if necessary
+}
 
-export const registerUser = async (userData) => {
+interface RegisterResponse {
+  // Define the expected response structure from the API
+  success: boolean;
+  message: string;
+  // Add other properties if necessary
+}
+
+export const registerUser = async (
+  userData: UserData
+): Promise<RegisterResponse> => {
   try {
-    const response = await axios.post(`${apiBaseUrl}/auth/register`, userData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response: AxiosResponse<RegisterResponse> = await axios.post(
+      `${apiBaseUrl}/auth/register`,
+      userData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     return response.data;
-  } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Handle the error with specific type if it's an Axios error
+      return Promise.reject(error.response.data);
+    } else {
+      // For other types of errors (like network errors)
+      return Promise.reject(new Error("Network Error"));
+    }
   }
 };
 
@@ -21,7 +47,7 @@ export const registerUser = async (userData) => {
  * Login a user
  * @param {Object} loginData - Contains phone_number, password
  */
-export const loginUser = async (loginData) => {
+export const loginUser = async (loginData: object) => {
   try {
     const response = await axios.post(`${apiBaseUrl}/auth/login`, loginData, {
       headers: {
@@ -29,12 +55,18 @@ export const loginUser = async (loginData) => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Handle the error with specific type if it's an Axios error
+      return Promise.reject(error.response.data);
+    } else {
+      // For other types of errors (like network errors)
+      return Promise.reject(new Error("Network Error"));
+    }
   }
 };
 
-export const logoutUser = async (accessToken, refreshToken) => {
+export const logoutUser = async (accessToken: string, refreshToken: string) => {
   try {
     const response = await axios.post(
       `${apiBaseUrl}/auth/logout`,
@@ -51,8 +83,14 @@ export const logoutUser = async (accessToken, refreshToken) => {
 
     await removeToken();
     return response.data;
-  } catch (error) {
-    throw error.response ? error.response.data : new Error("Network Error");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Handle the error with specific type if it's an Axios error
+      return Promise.reject(error.response.data);
+    } else {
+      // For other types of errors (like network errors)
+      return Promise.reject(new Error("Network Error"));
+    }
   }
 };
 
@@ -73,17 +111,18 @@ export const getUser = async () => {
 
     // Return the user data from the response
     return response.data;
-  } catch (error) {
-    // Log more comprehensive error information
-
-    console.error("Failed to fetch user:", error.message);
-
-    // Re-throw the error for further handling if needed
-    throw error;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Handle the error with specific type if it's an Axios error
+      return Promise.reject(error.response.data);
+    } else {
+      // For other types of errors (like network errors)
+      return Promise.reject(new Error("Network Error"));
+    }
   }
 };
 
-export const sendConsent = async (user_id) => {
+export const sendConsent = async (user_id: string | number) => {
   const { token } = await getToken();
   const data = {
     user_id: user_id,
@@ -102,8 +141,14 @@ export const sendConsent = async (user_id) => {
       headers,
     });
     return response.data;
-  } catch (error) {
-    console.error("Error:", error);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Handle the error with specific type if it's an Axios error
+      return Promise.reject(error.response.data);
+    } else {
+      // For other types of errors (like network errors)
+      return Promise.reject(new Error("Network Error"));
+    }
   }
 };
 export const getDocumentsList = async () => {
@@ -118,12 +163,20 @@ export const getDocumentsList = async () => {
 
     // Return the documents list data
     return response.data;
-  } catch (error) {
-    console.error("Failed to fetch documents list:", error);
-    throw error; // Optionally re-throw the error for further handling
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Handle the error with specific type if it's an Axios error
+      return Promise.reject(error.response.data);
+    } else {
+      // For other types of errors (like network errors)
+      return Promise.reject(new Error("Network Error"));
+    }
   }
 };
-export const getApplicationList = async (searchText, user_id) => {
+export const getApplicationList = async (
+  searchText: string,
+  user_id: string | number
+) => {
   try {
     // Create the request body, conditionally adding searchText if it's not empty
     const requestBody =
@@ -154,25 +207,35 @@ export const getApplicationList = async (searchText, user_id) => {
     );
 
     return response.data;
-  } catch (error) {
-    console.error("Failed to fetch application list:", error);
-    throw error;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Handle the error with specific type if it's an Axios error
+      return Promise.reject(error.response.data);
+    } else {
+      // For other types of errors (like network errors)
+      return Promise.reject(new Error("Network Error"));
+    }
   }
 };
 
-export const getApplicationDetails = async (applicationId) => {
+export const getApplicationDetails = async (applicationId: string | number) => {
   try {
-    const { token } = await getToken();
-    const response = await axios.get(
-      `${apiBaseUrl}/users/user_application/${applicationId}`,
-      {
-        headers: {
-          Accept: "*/*",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data;
+    const { token } = (await getToken()) ?? {};
+    if (token) {
+      const response = await axios.get(
+        `${apiBaseUrl}/users/user_application/${applicationId}`,
+        {
+          headers: {
+            Accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } else {
+      console.error("Token not found");
+      // Handle the case when token is not found
+    }
   } catch (error) {
     console.error("Failed to fetch application details:", error);
     throw error;

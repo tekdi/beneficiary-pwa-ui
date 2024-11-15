@@ -35,6 +35,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
   const dateStr = item?.item?.time?.range?.end;
   const formattedDate = dateStr ? formatDateString(dateStr) : "";
   const eligibility = extractEligibilityValues(item?.item?.tags[0]?.list);
+
   const id = item?.item_id;
 
   return (
