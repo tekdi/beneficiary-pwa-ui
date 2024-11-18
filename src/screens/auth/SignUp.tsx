@@ -12,10 +12,10 @@ import {
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
-import { registerUser } from "../../services/auth/auth";
+// import { registerUser } from "../../services/auth/auth";
 import FloatingInput from "../../components/common/input/Input";
 import { useTranslation } from "react-i18next";
-import Toaster from "../../components/common/ToasterMessage";
+// import Toaster from "../../components/common/ToasterMessage";
 import CommonDialogue from "../../components/common/layout/Dialogue";
 
 interface UserDetails {
@@ -36,17 +36,17 @@ const Signup: React.FC = () => {
     otp: "",
   });
 
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
+  // const [error, setError] = useState<string>("");
+  // const [success, setSuccess] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [mobileError, setMobileError] = useState<string>("");
-  const [toastMessage, setToastMessage] = useState(false);
+  // const [toastMessage, setToastMessage] = useState(false);
   const otpArray = Array(6).fill("");
   const [isModalOpen, setModalOpen] = useState(false);
 
   const termsAndConditions = true;
-  const openModal = () => setModalOpen(true);
+  // const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
   const handleBack = () => {
@@ -171,7 +171,7 @@ const Signup: React.FC = () => {
               errorMessage={mobileError}
             />
           </FormControl>
-          {userDetails.mobile.length === 10 && (
+          {!mobileError && (
             <FormControl isInvalid={userDetails.otp.length !== 6}>
               <Text fontSize={"16px"}>{t("SIGNUP_OTP_ENTER_OTP_LABEL")}</Text>
               <HStack mt={4}>
@@ -242,8 +242,8 @@ const Signup: React.FC = () => {
         onClose={closeModal}
         termsAndConditions={termsAndConditions}
       ></CommonDialogue>
-      {toastMessage && success && <Toaster message={success} type="success" />}
-      {toastMessage && error && <Toaster message={error} type="error" />}
+      {/* {toastMessage && success && <Toaster message={success} type="success" />}
+      {toastMessage && error && <Toaster message={error} type="error" />} */}
     </Layout>
   );
 };

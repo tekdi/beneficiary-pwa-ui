@@ -19,7 +19,17 @@ import OutlineButton from "../button/OutlineButton";
 import CommonButton from "../button/Button";
 import { useState } from "react";
 
-const CommonDialogue = ({ isOpen, onClose, termsAndConditions }) => {
+interface CommonDialogueProps {
+  isOpen: boolean;
+  onClose: () => void;
+  termsAndConditions: boolean;
+}
+
+const CommonDialogue: React.FC<CommonDialogueProps> = ({
+  isOpen,
+  onClose,
+  termsAndConditions,
+}) => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const handleAccordionChange = (expandedIndex) => {
     setIsAccordionOpen(expandedIndex.length > 0);
@@ -29,15 +39,13 @@ const CommonDialogue = ({ isOpen, onClose, termsAndConditions }) => {
       <ModalOverlay />
       <ModalContent borderRadius="md">
         <ModalHeader className="border-bottom">
-          {termsAndConditions ? (
+          {termsAndConditions && (
             <>
               <Box className="heading">Terms and Conditions</Box>
               <Box color="gray.600" fontWeight="300" fontSize="18px">
                 Confirmation
               </Box>
             </>
-          ) : (
-            ""
           )}
         </ModalHeader>
         <ModalCloseButton />

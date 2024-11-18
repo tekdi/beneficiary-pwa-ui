@@ -69,12 +69,7 @@ const Login: React.FC = () => {
           label={t("LOGIN_REGISTER_BUTTON")}
           mt={8}
         />
-        <Button
-          className="outline-custom-btn"
-          variant="outline"
-          mt={2}
-          //onClick={handleRedirect}
-        >
+        <Button className="outline-custom-btn" variant="outline" mt={2}>
           {t("LOGIN_LOGIN_BUTTON")}
         </Button>
       </Stack>
