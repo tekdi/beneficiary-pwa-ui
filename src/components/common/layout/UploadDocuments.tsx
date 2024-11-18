@@ -30,10 +30,6 @@ function UploadDocuments() {
         return;
       }
       setFileName(file.name);
-      // TODO: Implement file upload logic
-      // const formData = new FormData();
-      // formData.append('file', file);
-      // await uploadFile(formData);
     }
   };
 

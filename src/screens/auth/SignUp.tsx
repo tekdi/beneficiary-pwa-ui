@@ -39,7 +39,7 @@ const Signup: React.FC = () => {
   // const [error, setError] = useState<string>("");
   // const [success, setSuccess] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   const [mobileError, setMobileError] = useState<string>("");
   // const [toastMessage, setToastMessage] = useState(false);
   const otpArray = Array(6).fill("");
@@ -220,7 +220,7 @@ const Signup: React.FC = () => {
             label={t("GENERAL_PROCEED")}
             onClick={handleSignUp}
             // onClick={openModal}
-            isDisabled={!isFormValid || loading}
+            isDisabled={!isFormValid}
           />
         </VStack>
         <Center>
@@ -237,11 +237,13 @@ const Signup: React.FC = () => {
           </Text>
         </Center>
       </Box>
+
       <CommonDialogue
         isOpen={isModalOpen}
         onClose={closeModal}
         termsAndConditions={termsAndConditions}
-      ></CommonDialogue>
+      />
+
       {/* {toastMessage && success && <Toaster message={success} type="success" />}
       {toastMessage && error && <Toaster message={error} type="error" />} */}
     </Layout>
