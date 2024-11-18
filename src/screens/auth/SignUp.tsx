@@ -43,7 +43,7 @@ const Signup: React.FC = () => {
   const [mobileError, setMobileError] = useState<string>("");
   // const [toastMessage, setToastMessage] = useState(false);
   const otpArray = Array(6).fill("");
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const termsAndConditions = true;
   // const openModal = () => setModalOpen(true);
@@ -239,7 +239,7 @@ const Signup: React.FC = () => {
       </Box>
 
       <CommonDialogue
-        isOpen={isModalOpen}
+        isOpen={modalOpen}
         onClose={closeModal}
         termsAndConditions={termsAndConditions}
       />
