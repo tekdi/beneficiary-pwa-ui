@@ -1,8 +1,9 @@
 import { Box, useToast } from "@chakra-ui/react";
-import axios from "axios";
 import { MutableRefObject, useEffect, useRef } from "react";
 
-import CommonButton from "./common/button/Button";
+import BenefitFormUI from "../screens/benefit/details/DetailsFormUI";
+import Layout from "./common/layout/Layout";
+import { useNavigate } from "react-router-dom";
 interface FormData {
   user_id?: string;
   name?: string;
@@ -23,30 +24,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
 > = ({ url, formData, setPageContent }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const toast = useToast();
-  const submitFormDetail = async (
-    action: string,
-    urlencoded: URLSearchParams
-  ) => {
-    try {
-      const axiosResponse = await axios.post(action, urlencoded, {
-        headers: {
-          "Content-Type": `application/x-www-form-urlencoded`,
-        },
-      });
-
-      if (
-        axiosResponse.data &&
-        typeof axiosResponse.data === "string" &&
-        setPageContent
-      ) {
-        setPageContent(axiosResponse.data);
-      } else {
-        throw new Error("Invalid response format");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
+  const navigate = useNavigate();
 
   const searchForm = async (url: string) => {
     try {
@@ -120,39 +98,22 @@ const WebViewFormSubmitWithRedirect: React.FC<
     }
   };
 
-  const handleExternalFormSubmit = async () => {
-    if (formRef.current) {
-      const formDataObj = new FormData(formRef.current);
-      const urlencoded = new URLSearchParams();
-      const formDataObject: FormData = {};
-
-      // Check if any input is empty
-      formDataObj.forEach((value, key) => {
-        formDataObject[key] =
-          typeof value === "string" ? value : value.toString();
-        urlencoded.append(key, value.toString());
-      });
-
-      await submitFormDetail(formRef.current.action, urlencoded);
-    }
-  };
-
   useEffect(() => {
     if (url) {
       searchForm(url);
     }
   }, [url]);
-
+  const handleBack = () => {
+    navigate(-1);
+  };
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" p={4}>
-      <div id="formContainer"></div>
-
-      {/* External Button to Submit the Form */}
-      {/* <Button onClick={handleExternalFormSubmit} colorScheme="teal" mt={4}>
-        Submit Form
-      </Button> */}
-      <CommonButton onClick={handleExternalFormSubmit} label="Submit Form" />
-    </Box>
+    <Layout _heading={{ heading: "Complete Application", handleBack }}>
+      <Box display="flex" flexDirection="column" alignItems="center" p={4}>
+        <Box className="card-scroll invisible_scroll">
+          <BenefitFormUI />
+        </Box>
+      </Box>
+    </Layout>
   );
 };
 
