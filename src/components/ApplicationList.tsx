@@ -7,7 +7,7 @@ interface Application {
   application_name: string;
   internal_application_id: string;
   status: "submitted" | "approved" | "rejected";
-  application_data: Record<string, any>;
+  application_data: Record<string, unknown>;
 }
 
 interface ApplicationListProps {

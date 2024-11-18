@@ -7,6 +7,7 @@ const theme = extendTheme({
     body: "Poppins, sans-serif",
   },
   colors: {
+    primary:"#3C5FDD",
     success: "#0B7B69", 
     warning: "#EDA145", 
     text: "#1F1B13",   

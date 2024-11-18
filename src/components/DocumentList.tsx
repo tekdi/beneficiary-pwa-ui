@@ -17,18 +17,28 @@ const StatusIcon: React.FC<StatusIconProps> = ({
   const theme = useTheme();
   return (
     <Icon
-      as={status ? CheckCircleIcon : ""}
-      color={status ? theme.colors.success : ""} // Use theme tokens
+      as={CheckCircleIcon}
+      color={status ? theme.colors.success : theme.colors.error}
       boxSize={size}
       aria-label={
-        ariaLabel || `Document status: ${status ? "Available" : "incomplete"}`
+        ariaLabel || `Document status: ${status ? "Available" : "Incomplete"}`
       }
     />
   );
 };
 
-const DocumentList: React.FC = ({ documents }) => {
+interface Document {
+  name: string;
+  code: string;
+}
+
+interface DocumentListProps {
+  documents: Document[] | string[];
+}
+
+const DocumentList: React.FC<DocumentListProps> = ({ documents }) => {
   const theme = useTheme();
+
   return documents && documents.length > 0 ? (
     <VStack
       align="stretch"
@@ -38,9 +48,9 @@ const DocumentList: React.FC = ({ documents }) => {
     >
       {documents.map((document) => (
         <HStack
-          key={document.name}
+          key={document.code}
           borderBottomWidth="1px"
-          borderBottomColor={theme.colors.border} // Use theme token for border
+          borderBottomColor={theme.colors.border}
           paddingY={3}
           alignItems="center"
           spacing={3}
@@ -48,9 +58,9 @@ const DocumentList: React.FC = ({ documents }) => {
           width="100%"
           pl={2}
         >
-          <StatusIcon status={document.status} />
+          {/* Default status to false if not provided */}
+          <StatusIcon status={false} />
           <Text fontSize="16px" fontWeight="400" color={theme.colors.text}>
-            {" "}
             {document.name}
           </Text>
         </HStack>

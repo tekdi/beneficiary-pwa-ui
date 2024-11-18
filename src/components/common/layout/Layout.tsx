@@ -14,9 +14,20 @@ interface LayoutProps {
   afterHeader?: React.ReactNode;
   _heading?: {
     heading?: string;
+    subHeading?: string;
     isFilter?: boolean;
+    beneficiary?: boolean;
     handleOpen?: () => void;
     onSearch?: (query: string) => void;
+    setFilter?: React.Dispatch<React.SetStateAction<unknown>>;
+    inputs?: {
+      label: string;
+      key: string;
+      value: string;
+      data: Array<{ label: string; value: string }>;
+    }[];
+    handleBack?: () => void;
+    label?: string;
   };
   isBottombar?: boolean;
   isSearchbar?: boolean;

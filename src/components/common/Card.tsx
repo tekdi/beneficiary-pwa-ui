@@ -18,21 +18,30 @@ import {
 } from "../../utils/jsHelper/helper";
 import { MdCurrencyRupee } from "react-icons/md";
 interface BenefitCardProps {
-  item_id: string;
-  title: string;
-  provider_name: string;
-  description: string;
   item: {
-    time?: { range?: { end?: string } };
-    tags?: Array<{ list?: string[] }>;
-    price?: { value?: number; currency?: string };
+    item_id: number;
+    title: string;
+    provider_name: string;
+    description: string;
+    item: {
+      price?: { value?: number; currency?: string };
+      tags: Array<{ list?: string[] }>;
+      time?: { range?: { end?: string } };
+    };
   };
 }
 
 const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
   const dateStr = item?.item?.time?.range?.end;
-  const formattedDate = formatDateString(dateStr);
-  const eligibility = extractEligibilityValues(item?.item?.tags[0]?.list);
+  const formattedDate = dateStr ? formatDateString(dateStr) : "";
+  // const eligibility = extractEligibilityValues(
+  //   item?.item?.tags[0]?.list.map((item) => ({
+  //     descriptor: { code: "", name: "", short_desc: "" },
+  //     display: true,
+  //     item,
+  //   }))
+  // );
+
   const id = item?.item_id;
 
   return (
@@ -72,22 +81,22 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
           </HStack>
         )}
         <Flex alignItems="center" mt={4}>
-          {eligibility?.length > 0 ? (
-            eligibility.map((category) => (
+          {/* {eligibility?.length > 0 ? (
+            eligibility.map((category, index) => (
               <Box
-                key={category}
+                key={index}
                 mr={2}
                 color={"#0037B9"}
                 border={"1px"}
                 borderRadius={"6px"}
                 p={"2px 10px"}
               >
-                {category.toUpperCase()}
+                {category.item.toUpperCase()}
               </Box>
             ))
           ) : (
             <Box mr={2}>No eligibility criteria specified</Box>
-          )}
+          )} */}
         </Flex>
         <Text mt={4}>{item?.description}</Text>
       </CardBody>

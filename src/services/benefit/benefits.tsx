@@ -1,17 +1,24 @@
-import axios from "axios";
-
+import axios, { AxiosError } from "axios";
 import { getToken } from "../auth/asyncStorage";
 import { generateUUID } from "../../utils/jsHelper/helper";
-
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-
-function handleError(error) {
+function handleError(error: any) {
   throw error.response ? error.response.data : new Error("Network Error");
 }
-
-export const getAll = async (userData) => {
+export const getAll = async (userData: {
+  filters: {
+    "ann-hh-inc": string;
+    "social-eligibility"?: string;
+    "gender-eligibility"?: string;
+  };
+  search: string;
+}) => {
   try {
-    const { token } = await getToken();
+    const tokenData = await getToken();
+    if (!tokenData || !tokenData.token) {
+      throw new Error("Token not found");
+    }
+    const { token } = tokenData;
     const response = await axios.post(
       `${apiBaseUrl}/content/search`,
       userData,
@@ -27,12 +34,14 @@ export const getAll = async (userData) => {
     handleError(error);
   }
 };
-
 /**
  * Login a user
  * @param {Object} loginData - Contains phone_number, password
  */
-export const getOne = async ({ id }) => {
+interface getOneParams {
+  id: string | undefined;
+}
+export const getOne = async ({ id }: getOneParams) => {
   const loginData = {
     context: {
       domain: "onest:financial-support",
@@ -61,7 +70,11 @@ export const getOne = async ({ id }) => {
     },
   };
   try {
-    const { token } = await getToken();
+    const tokenData = await getToken();
+    if (!tokenData || !tokenData.token) {
+      throw new Error("Token not found");
+    }
+    const { token } = tokenData;
     const response = await axios.post(`${apiBaseUrl}/select`, loginData, {
       headers: {
         "Content-Type": "application/json",
@@ -73,8 +86,17 @@ export const getOne = async ({ id }) => {
     handleError(error);
   }
 };
-
-export const applyApplication = async ({ id, context }) => {
+interface ApplyApplicationParams {
+  id: string | undefined;
+  context: {
+    bpp_id?: string;
+    bap_uri?: string;
+  };
+}
+export const applyApplication = async ({
+  id,
+  context,
+}: ApplyApplicationParams) => {
   const loginData = {
     context: {
       ...context,
@@ -91,7 +113,11 @@ export const applyApplication = async ({ id, context }) => {
     },
   };
   try {
-    const { token } = await getToken();
+    const tokenData = await getToken();
+    if (!tokenData || !tokenData.token) {
+      throw new Error("Token not found");
+    }
+    const { token } = tokenData;
     const response = await axios.post(`${apiBaseUrl}/init`, loginData, {
       headers: {
         "Content-Type": "application/json",
@@ -103,8 +129,19 @@ export const applyApplication = async ({ id, context }) => {
     handleError(error);
   }
 };
-
-export const confirmApplication = async ({ submission_id, context }) => {
+interface ConfirmApplicationParams {
+  submission_id: string | undefined;
+  item_id: string | undefined;
+  context: {
+    bpp_id?: string;
+    bap_uri?: string;
+  };
+}
+export const confirmApplication = async ({
+  submission_id,
+  item_id,
+  context,
+}: ConfirmApplicationParams) => {
   const data = {
     context: {
       ...context,
@@ -115,20 +152,22 @@ export const confirmApplication = async ({ submission_id, context }) => {
     message: {
       order: {
         provider: {
-          id: "79",
+          id: item_id,
           descriptor: {
-            name: "",
+            name: "Pre-matric Scholarship-SC",
             images: [],
-            short_desc: "",
+            short_desc:
+              "This scholarship supports SC students from Madhya Pradesh",
           },
           rateable: false,
         },
         items: [
           {
-            id: "79",
+            id: item_id,
             descriptor: {
-              name: "",
-              long_desc: "",
+              name: "Pre-matric Scholarship-SCc",
+              long_desc:
+                "This scholarship supports SC students from Madhya Pradesh",
             },
             price: {
               currency: "INR",
@@ -140,7 +179,7 @@ export const confirmApplication = async ({ submission_id, context }) => {
                 url: "http://localhost:8001/bpp/public/getAdditionalDetails/1113/5d96c1e2-8963-4e71-8f13-83438d8780e6/1938a8597a944c7884bfa7f20abcdfe4",
                 data: {},
                 mime_type: "text/html",
-                submission_id,
+                submission_id: submission_id,
               },
             },
           },
@@ -164,7 +203,11 @@ export const confirmApplication = async ({ submission_id, context }) => {
     },
   };
   try {
-    const { token } = await getToken();
+    const tokenData = await getToken();
+    if (!tokenData || !tokenData.token) {
+      throw new Error("Token not found");
+    }
+    const { token } = tokenData;
     const response = await axios.post(`${apiBaseUrl}/confirm`, data, {
       headers: {
         "Content-Type": "application/json",
@@ -176,10 +219,23 @@ export const confirmApplication = async ({ submission_id, context }) => {
     handleError(error);
   }
 };
-
-export const createApplication = async (data) => {
+interface createApplicationParams {
+  user_id: string | undefined;
+  benefit_id: string | undefined;
+  benefit_provider_id: string | undefined;
+  benefit_provider_uri: string | undefined;
+  external_application_id: string | undefined;
+  application_name: string | undefined;
+  status: string;
+  application_data: unknown;
+}
+export const createApplication = async (data: createApplicationParams) => {
   try {
-    const { token } = await getToken();
+    const tokenData = await getToken();
+    if (!tokenData || !tokenData.token) {
+      throw new Error("Token not found");
+    }
+    const { token } = tokenData;
     const response = await axios.post(
       `${apiBaseUrl}/users/user_application`,
       data,
@@ -195,15 +251,22 @@ export const createApplication = async (data) => {
     handleError(error);
   }
 };
-
-export const getApplication = async (filters) => {
+interface Filters {
+  // Define the expected shape of the filters object
+  // Example:
+  user_id: string | undefined;
+  benefit_id: string | undefined;
+}
+export const getApplication = async (filters: Filters) => {
   try {
-    const { token } = await getToken();
+    const tokenData = await getToken();
+    if (!tokenData || !tokenData.token) {
+      throw new Error("Token not found");
+    }
+    const { token } = tokenData;
     const response = await axios.post(
       `${apiBaseUrl}/users/user_applications_list`,
-      {
-        filters,
-      },
+      { filters },
       {
         headers: {
           accept: "application/json",
@@ -214,6 +277,6 @@ export const getApplication = async (filters) => {
     );
     return response.data;
   } catch (error) {
-    handleError(error);
+    handleError(error as AxiosError);
   }
 };

@@ -1,6 +1,3 @@
-interface EligibilityItem {
-  value: string;
-}
 interface DocumentItem {
   descriptor?: {
     code?: string;
@@ -42,11 +39,24 @@ export const extractMandatoryDocuments = (list: unknown): string[] => {
     .filter((value) => value !== ""); // Ensure no empty strings in the result
 };
 
-export const extractEligibilityValues = (data: EligibilityItem[]): string[] => {
-  if (!Array.isArray(data)) {
+interface EligibilityItem {
+  descriptor: {
+    code: string;
+    name: string;
+    short_desc: string;
+  };
+  display: boolean;
+  item: string;
+}
+
+export const extractEligibilityValues = (
+  data: EligibilityItem[] | undefined
+): string[] => {
+  if (!data || !Array.isArray(data)) {
     throw new Error("Invalid input: expected an array of eligibility items");
   }
-  return data.map((item) => item.value);
+  // Extracting the 'value' field from each item in the array
+  return data.map((item) => item.item);
 };
 
 export function generateUUID(): string {

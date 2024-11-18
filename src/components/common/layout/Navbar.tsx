@@ -22,31 +22,39 @@ import { AuthContext } from "../../../utils/context/checkToken";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const options = [];
+const options: { value: string; label: string }[] = [];
 const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
-  const { checkToken, removeContextData } = useContext(AuthContext);
+  const { checkToken, removeContextData } = useContext(AuthContext) as {
+    checkToken: () => void;
+    removeContextData: () => void;
+  };
   const [success, setSuccess] = useState<string>("");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleLogout = async () => {
-    const token = await getToken();
+    const token = (await getToken()) as {
+      token: string;
+      refreshToken: string;
+    } | null;
+
     if (token?.token && token?.refreshToken) {
       try {
         const response = await logoutUser(token.token, token.refreshToken); // Call the logout function
         removeContextData();
         checkToken();
-        if (response.statusCode == 200) {
+        if (response.statusCode === 200) {
           setSuccess(t("NAVBAR_LOGGED_OUT_SUCCESSFULLY"));
           navigate("/signin");
         }
       } catch (error) {
-        console.error("Logout failed:", error.massage);
+        console.error("Logout failed:", (error as Error).message);
       }
     } else {
       console.error("No tokens found, user is not logged in");
     }
   };
+
   return (
     <Stack bg="#EDEFFF" p="6">
       <Flex justifyContent="space-between" alignItems="center">

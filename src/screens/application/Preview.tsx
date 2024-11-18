@@ -5,10 +5,10 @@ import CustomDisableInput from "../../components/common/input/DisabledInput";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
 import { useNavigate } from "react-router-dom";
-import ConfirmationDialog from "../../components/common/ConfirmationDialog";
+// import ConfirmationDialog from "../../components/common/ConfirmationDialog";
 
 const Preview: React.FC = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { onOpen } = useDisclosure();
 
   const navigate = useNavigate();
 
@@ -66,7 +66,7 @@ const Preview: React.FC = () => {
           <CommonButton onClick={openModal} label="Confirm Submission" />
         </Box>
       </Box>
-      <ConfirmationDialog isOpen={isOpen} onClose={onClose} />
+      {/* <ConfirmationDialog isOpen={isOpen} onClose={onClose} /> */}
     </Layout>
   );
 };

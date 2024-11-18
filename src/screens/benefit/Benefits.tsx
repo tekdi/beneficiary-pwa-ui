@@ -12,44 +12,67 @@ import {
 } from "@chakra-ui/react";
 import BenefitCard from "../../components/common/Card";
 import Layout from "../../components/common/layout/Layout";
-import { getTokenData } from "../../services/auth/asyncStorage";
 import { getUser } from "../../services/auth/auth";
 import { getAll } from "../../services/benefit/benefits";
+import { Castes, Gender, IncomeRange } from "../../assets/mockdata/FilterData";
 
+// Define types for benefit data and filter structure
+interface Benefit {
+  item_id: number;
+  title: string;
+  provider_name: string;
+  description: string;
+  item: {
+    price?: {
+      value?: number;
+      currency?: string;
+    };
+    tags: { list?: string[] }[];
+    time?: {
+      range?: {
+        end?: string;
+      };
+    };
+  };
+}
+interface Filter {
+  "social-eligibility"?: string;
+  "ann-hh-inc"?: string;
+  "gender-eligibility"?: string;
+  [key: string]: string | undefined; // This allows any string key to be used
+}
 const ExploreBenefits: React.FC = () => {
-  const [loading, setLoading] = useState(true);
-  const [search] = useState("");
-  const [filter, setFilter] = useState({});
-  const [initState, setInitState] = useState("yes");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>("");
+  const [filter, setFilter] = useState<Filter>({});
+  const [initState, setInitState] = useState<string>("yes");
+  const [error, setError] = useState<string | null>(null); // Allow null for error state
+  const [benefits, setBenefits] = useState<Benefit[]>([]); // Use Benefit[] type for benefits
+
   const handleOpen = () => {};
-  const [benefits, setBenefits] = useState([]);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const { sub } = await getTokenData();
-        const user = await getUser(sub);
+        const user = await getUser();
 
-        const filters = {
+        const filters: Filter = {
           "social-eligibility": user?.data?.caste,
           "ann-hh-inc": user?.data?.income,
           "gender-eligibility": user?.data?.gender,
         };
-        const newFilter = {};
+
+        const newFilter: Filter = {};
         Object.keys(filters).forEach((key) => {
           if (filters[key] && filters[key] !== "") {
-            if (typeof filters[key] === "string") {
-              newFilter[key] = filters[key].toLowerCase();
-            } else {
-              newFilter[key] = filters[key];
-            }
+            newFilter[key] = filters[key]?.toLowerCase() || filters[key];
           }
         });
+
         setFilter(newFilter);
         setInitState("no");
       } catch (e) {
-        setError(`Failed to initialize user data: ${e.message}`);
+        setError(`Failed to initialize user data: ${(e as Error).message}`);
         setInitState("no");
       }
     };
@@ -60,29 +83,28 @@ const ExploreBenefits: React.FC = () => {
     const init = async () => {
       setLoading(true);
       try {
-        if (initState == "no") {
+        if (initState === "no") {
           const result = await getAll({
-            // filters: {
-            //   ...filter,
-            //   "ann-hh-inc": filter?.["ann-hh-inc"]
-            //     ? `0-${filter?.["ann-hh-inc"]}`
-            //     : "",
-            // },
+            filters: {
+              ...filter,
+              "ann-hh-inc": filter?.["ann-hh-inc"]
+                ? `0-${filter?.["ann-hh-inc"]}`
+                : "",
+            },
             search,
           });
 
           setBenefits(result?.data?.ubi_network_cache || []);
-
-          setLoading(false);
         }
       } catch (e) {
-        setError(`Failed to fetch benefits: ${e.message}`);
+        setError(`Failed to fetch benefits: ${(e as Error).message}`);
       } finally {
         setLoading(false);
       }
     };
     init();
   }, [filter, search, initState]);
+
   return (
     <Layout
       loading={loading}
@@ -90,10 +112,33 @@ const ExploreBenefits: React.FC = () => {
         heading: "Browse Benefits",
         isFilter: true,
         handleOpen: handleOpen,
+        setFilter: setFilter,
+        onSearch: setSearch,
+        inputs: [
+          {
+            label: "Caste",
+            data: Castes,
+            value: filter?.["social-eligibility"] || "",
+            key: "social-eligibility",
+          },
+          {
+            label: "Income Range",
+            data: IncomeRange,
+            value: filter?.["ann-hh-inc"] || "",
+            key: "ann-hh-inc",
+          },
+          {
+            label: "Gender",
+            data: Gender,
+            value: filter?.["gender-eligibility"] || "",
+            key: "gender-eligibility",
+          },
+        ],
       }}
+      isSearchbar={true}
     >
       {error && (
-        <Modal isOpen={!!error} onClose={() => setError("")}>
+        <Modal isOpen={!!error} onClose={() => setError(null)}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Error</ModalHeader>
@@ -101,13 +146,14 @@ const ExploreBenefits: React.FC = () => {
               <Text>{error}</Text>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" onClick={() => setError("")}>
+              <Button colorScheme="blue" onClick={() => setError(null)}>
                 Close
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
       )}
+
       {benefits.length === 0 ? (
         <Box
           display="flex"
@@ -124,11 +170,9 @@ const ExploreBenefits: React.FC = () => {
         </Box>
       ) : (
         <Box className="card-scroll">
-          {benefits?.map((scholarship) => {
-            return (
-              <BenefitCard item={scholarship} key={scholarship?.item_id} />
-            );
-          })}
+          {benefits.map((benefit) => (
+            <BenefitCard item={benefit} key={benefit.item_id} />
+          ))}
         </Box>
       )}
 
@@ -137,65 +181,6 @@ const ExploreBenefits: React.FC = () => {
           Load More
         </Button>
       </Box>
-
-      {/* <Modal
-        isCentered
-        finalFocusRef={finalRef}
-        isOpen={isOpen}
-        onClose={onClose}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader className="border-bottom">
-            <Box className="heading">Filters</Box>
-          </ModalHeader>
-          <Divider />
-
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl>
-              <FloatingSelect
-                label="Education level"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                options={options}
-              />
-              <FloatingSelect
-                label="Gender"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                options={options}
-              />
-              <FloatingSelect
-                label="Annual Income"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                options={options}
-              />
-              <FloatingSelect
-                label="Benefit Amount"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                options={options}
-              />
-              <FloatingSelect
-                label="Subject"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                options={options}
-              />
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <CommonButton label="Apply Filters" />
-          </ModalFooter>
-        </ModalContent>
-      </Modal> */}
     </Layout>
   );
 };

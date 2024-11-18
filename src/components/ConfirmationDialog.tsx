@@ -17,26 +17,20 @@ import { CloseIcon } from "@chakra-ui/icons";
 import SubmitDialog from "./SubmitDialog";
 import { useTranslation } from "react-i18next";
 import Loader from "./common/Loader";
-import DocumentList from "./DocumentList";
-
-interface Document {
-  name: string;
-}
 
 interface ConfirmationDialogProps {
   dialogVisible: boolean;
   closeDialog: (isVisible: boolean) => void;
   handleConfirmation: () => Promise<void>;
-  documents?: Document[];
   loading?: boolean;
   consentText?: string;
+  documents?: string[];
 }
 
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   dialogVisible,
   closeDialog,
   handleConfirmation,
-  documents = [],
   loading = false,
   consentText,
 }) => {
@@ -93,7 +87,8 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 {consentText}
               </Text>
               <VStack>
-                {loading ? <Loader /> : <DocumentList documents={documents} />}
+                {/* need to add new document list as per figma {loading ? <Loader /> : <DocumentList documents={documents} />} */}
+                {loading ? <Loader /> : <Text>List of documents</Text>}
               </VStack>
             </ModalBody>
 

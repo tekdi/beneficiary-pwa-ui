@@ -13,12 +13,12 @@ import React, { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 interface FloatingSelectProps {
-  label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isInvalid?: boolean;
   errorMessage?: string;
-  name: string;
+  name?: string;
 }
 
 const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({

@@ -4,17 +4,16 @@ import {
   Input,
   FormErrorMessage,
   Box,
-  Stack,
   BoxProps,
 } from "@chakra-ui/react";
 
 interface FloatingInputProps {
-  label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isInvalid?: boolean;
   errorMessage?: string;
-  name: string;
+  name?: string;
 }
 
 const FloatingInput: React.FC<FloatingInputProps> = ({

@@ -5,7 +5,6 @@ import { getUser, getDocumentsList } from "../services/auth/auth";
 import { useNavigate } from "react-router-dom";
 import CommonButton from "../components/common/button/Button";
 import Layout from "../components/common/layout/Layout";
-import { getTokenData } from "../services/auth/asyncStorage";
 import { AuthContext } from "../utils/context/checkToken";
 import { useTranslation } from "react-i18next";
 import DocumentList from "../components/DocumentList";
@@ -18,13 +17,12 @@ const UserProfile: React.FC = () => {
     navigate("/explorebenefits");
   };
 
-  const { userData, documents, updateUserData } = useContext(AuthContext);
+  const { userData, documents, updateUserData } = useContext(AuthContext)!;
 
   // Function to fetch user data and documents
   const init = async () => {
     try {
-      const { sub } = await getTokenData(); // Assuming sub is the user identifier
-      const result = await getUser(sub);
+      const result = await getUser();
       const data = await getDocumentsList();
       updateUserData(result.data, data.data); // Update user data and document list in context
     } catch (error) {
@@ -46,9 +44,9 @@ const UserProfile: React.FC = () => {
         heading: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
         subHeading: t("PROFILE_LOGGED_IN_WITH_E_Wallet"),
         label:
-          userData && userData?.last_name?.length > 1
-            ? `${userData?.first_name?.[0]}${userData?.last_name?.[0]}`
-            : userData?.first_name?.[0],
+          userData?.last_name?.length && userData?.last_name.length > 1
+            ? `${userData.first_name?.[0]}${userData.last_name[0]}`
+            : userData?.first_name?.[0] ?? "",
       }}
     >
       <Box

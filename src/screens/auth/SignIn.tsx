@@ -11,16 +11,16 @@ import {
   getDocumentsList,
   sendConsent,
 } from "../../services/auth/auth";
-import { getTokenData, saveToken } from "../../services/auth/asyncStorage";
 import { AuthContext } from "../../utils/context/checkToken";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useTranslation } from "react-i18next";
 import Toaster from "../../components/common/ToasterMessage";
+import { saveToken } from "../../services/auth/asyncStorage";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [error, setError] = useState();
+  const [error, setError] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ const SignIn: React.FC = () => {
   const [success, setSuccess] = useState<string>("");
 
   const { checkToken, documents, updateUserData, userData } =
-    useContext(AuthContext);
+    useContext(AuthContext)!;
 
   useEffect(() => {
     // Check for empty fields
@@ -65,8 +65,8 @@ const SignIn: React.FC = () => {
   const init = async () => {
     try {
       setLoading(true);
-      const { sub } = await getTokenData(); // Assuming sub is the user identifier
-      const result = await getUser(sub);
+
+      const result = await getUser();
       const data = await getDocumentsList();
       updateUserData(result?.data, data?.data);
     } catch (error) {

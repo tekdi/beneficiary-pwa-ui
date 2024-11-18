@@ -9,8 +9,13 @@ interface HeadingTextProps {
   subHeading?: string;
   handleBack?: () => void;
   isFilter?: boolean;
-  filterInputs?: { label: string; key: string; value: string; data: any[] }[];
-  onFilter?: (values: Record<string, string>) => void;
+  inputs?: {
+    label: string;
+    key: string;
+    value: string;
+    data: Array<{ label: string; value: string }>;
+  }[];
+  setFilter?: React.Dispatch<React.SetStateAction<unknown>>;
 }
 
 const LeftContent: React.FC<{ label: string; size?: string }> = ({
@@ -37,30 +42,6 @@ const BackIcon: React.FC<{ onClick: () => void; iconSize?: number }> = ({
     size="sm"
   />
 );
-const dummyInputs = [
-  {
-    label: "Category",
-    key: "category",
-    value: "1",
-    data: ["Scholarship", "Grant", "Loan"],
-  },
-  {
-    label: "Status",
-    key: "status",
-    value: "2",
-    data: ["Active", "Expired", "Upcoming", "sw", "dshva"],
-  },
-  {
-    label: "Amount",
-    key: "amount",
-    value: "3",
-    data: ["< 1000", "1000 - 5000", "> 5000"],
-  },
-];
-
-const handleFilter = (values: Record<string, string>) => {
-  console.log("Applied Filter Values:", values);
-};
 
 const HeadingText: React.FC<HeadingTextProps> = ({
   beneficiary,
@@ -68,8 +49,8 @@ const HeadingText: React.FC<HeadingTextProps> = ({
   subHeading,
   handleBack,
   isFilter,
-  filterInputs = dummyInputs,
-  onFilter = handleFilter,
+  inputs,
+  setFilter,
 }) => {
   return (
     <Box
@@ -99,13 +80,8 @@ const HeadingText: React.FC<HeadingTextProps> = ({
                 </Text>
               )}
 
-              {isFilter && filterInputs && onFilter && (
-                <FilterDialog
-                  inputs={filterInputs}
-                  onFilter={(values) => {
-                    onFilter(values);
-                  }}
-                />
+              {isFilter && inputs && setFilter && (
+                <FilterDialog inputs={inputs} setFilter={setFilter} />
               )}
             </Box>
           )}
