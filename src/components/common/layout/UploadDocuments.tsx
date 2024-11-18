@@ -79,24 +79,22 @@ function UploadDocuments() {
       </Box>
 
       {fileName && (
-        <>
-          <Flex align={"center"} justifyContent={"space-between"} mt="4" mb="4">
-            <Box>
-              <List spacing={3}>
-                <ListItem>
-                  <ListIcon as={CheckIcon} color="var(--theme-color)" />
-                  Caste Certificate
-                </ListItem>
-              </List>
-              <Text mt={2}>{fileName}</Text>
-            </Box>
+        <Flex align={"center"} justifyContent={"space-between"} mt="4" mb="4">
+          <Box>
+            <List spacing={3}>
+              <ListItem>
+                <ListIcon as={CheckIcon} color="var(--theme-color)" />
+                Caste Certificate
+              </ListItem>
+            </List>
+            <Text mt={2}>{fileName}</Text>
+          </Box>
 
-            <Box>
-              {" "}
-              <CloseIcon onClick={removeFile} cursor={"pointer"} />
-            </Box>
-          </Flex>
-        </>
+          <Box>
+            {" "}
+            <CloseIcon onClick={removeFile} cursor={"pointer"} />
+          </Box>
+        </Flex>
       )}
     </>
   );

@@ -14,12 +14,10 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-  Stack,
 } from "@chakra-ui/react";
 import OutlineButton from "../button/OutlineButton";
 import CommonButton from "../button/Button";
 import { useState } from "react";
-import UploadDocuments from "./UploadDocuments";
 
 const CommonDialogue = ({ isOpen, onClose, termsAndConditions }) => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);

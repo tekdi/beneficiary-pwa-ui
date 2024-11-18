@@ -44,6 +44,7 @@ const Signup: React.FC = () => {
   const [toastMessage, setToastMessage] = useState(false);
   const otpArray = Array(6).fill("");
   const [isModalOpen, setModalOpen] = useState(false);
+
   const termsAndConditions = true;
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -86,47 +87,51 @@ const Signup: React.FC = () => {
   };
 
   const handleSignUp = async () => {
-    const clearError = () => {
-      setTimeout(() => {
-        setError("");
-      }, 3000);
-    };
-
-    try {
-      setLoading(true);
-      const response = await registerUser({
-        first_name: userDetails.firstName,
-        last_name: userDetails.lastName,
-        phone_number: userDetails.mobile,
-      });
-
-      if (response && response?.statusCode === 200) {
-        setLoading(false);
-        setSuccess(
-          response.message || t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE")
-        );
-        setToastMessage(true);
-        setTimeout(() => {
-          navigate("/signin");
-        }, 3000);
-      } else {
-        setLoading(false);
-        setToastMessage(true);
-        setError(response.message || "An error occurred.");
-        clearError();
-      }
-    } catch (error) {
-      setLoading(false);
-      if (error instanceof Error) {
-        setError(error.message);
-        setToastMessage(true);
-      } else {
-        setError("An error occurred.");
-        setToastMessage(true);
-      }
-      clearError();
-    }
+    console.log("register api will call here");
   };
+
+  // const handleSignUp = async () => {
+  //   const clearError = () => {
+  //     setTimeout(() => {
+  //       setError("");
+  //     }, 3000);
+  //   };
+
+  //   try {
+  //     setLoading(true);
+  //     const response = await registerUser({
+  //       first_name: userDetails.firstName,
+  //       last_name: userDetails.lastName,
+  //       phone_number: userDetails.mobile,
+  //     });
+
+  //     if (response && response?.statusCode === 200) {
+  //       setLoading(false);
+  //       setSuccess(
+  //         response.message || t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE")
+  //       );
+  //       setToastMessage(true);
+  //       setTimeout(() => {
+  //         navigate("/signin");
+  //       }, 3000);
+  //     } else {
+  //       setLoading(false);
+  //       setToastMessage(true);
+  //       setError(response.message || "An error occurred.");
+  //       clearError();
+  //     }
+  //   } catch (error) {
+  //     setLoading(false);
+  //     if (error instanceof Error) {
+  //       setError(error.message);
+  //       setToastMessage(true);
+  //     } else {
+  //       setError("An error occurred.");
+  //       setToastMessage(true);
+  //     }
+  //     clearError();
+  //   }
+  // };
   return (
     <Layout
       isMenu={false}
@@ -213,8 +218,8 @@ const Signup: React.FC = () => {
           <CommonButton
             mt={4}
             label={t("GENERAL_PROCEED")}
-            //  onClick={handleSignUp}
-            onClick={openModal}
+            onClick={handleSignUp}
+            // onClick={openModal}
             isDisabled={!isFormValid || loading}
           />
         </VStack>
