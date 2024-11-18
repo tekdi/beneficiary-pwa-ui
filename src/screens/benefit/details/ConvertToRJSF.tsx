@@ -23,12 +23,12 @@ interface EligibilityFormField {
     condition: string;
     conditionValues: string[] | string;
   };
-  allowedproofs?: string[];
+  allowedProofs?: string[];
 }
 interface Document {
   documentType: string;
   isRequired: boolean;
-  allowedproofs: string[];
+  allowedProofs: string[];
 }
 
 interface ScholarshipSchema {
@@ -176,7 +176,7 @@ export const convertEligibilityFields = (eligibility: any[]): JSONSchema7 => {
 
   return schema;
 };
-export const convertDocumentFields = (documents: any[]): JSONSchema7 => {
+export const convertDocumentFields = (documents: Document[]): JSONSchema7 => {
   const schema: JSONSchema7 = {
     type: "object",
     properties: {},

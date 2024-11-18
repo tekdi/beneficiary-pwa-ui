@@ -12,7 +12,6 @@ import {
   convertDocumentFields,
   checkUniqueField,
 } from "./ConvertToRJSF";
-import {} from "./converFun";
 import { SubmitButtonProps, getSubmitButtonOptions } from "@rjsf/utils";
 import CommonButton from "../../../components/common/button/Button";
 
@@ -59,37 +58,43 @@ const BenefitFormUI: React.FC = () => {
 
   //   const { applicationForm, document } = schemaDetails;
   useEffect(() => {
-    // if (id === 80) {
-    const applicationSchema = preMatricScholarshipSC.en.applicationForm;
+    if (id) {
+      const applicationSchema = preMatricScholarshipSC.en.applicationForm;
 
-    const eligibilitySchema = preMatricScholarshipSC.en.eligibility.map(
-      (eligibility: any) => ({
-        ...eligibility,
+      const eligibilitySchema = preMatricScholarshipSC.en.eligibility.map(
+        (eligibility: any) => ({
+          ...eligibility,
 
-        name: eligibility.evidence,
-        label: eligibility?.criteria?.name,
-        required: eligibility.allowedproofs?.length > 0,
-      })
-    );
-    const documentSchema = preMatricScholarshipSC.en.documents;
+          name: eligibility.evidence,
+          label: eligibility?.criteria?.name,
+          required: eligibility.allowedproofs?.length > 0,
+        })
+      );
+      const documentSchema = preMatricScholarshipSC.en.documents;
 
-    //   const applicationformSchema = convertToRJSFFormat(scholarshipSchema);
-    const applicationFormSchema =
-      convertApplicationFormFields(applicationSchema);
-    const isEligibilityUnique = checkUniqueField(eligibilitySchema, "evidence");
-    const isDocumentsUnique = checkUniqueField(documentSchema, "documentType");
-    if (isEligibilityUnique && isDocumentsUnique) {
-      const eligibilityFormSchema = convertEligibilityFields(eligibilitySchema);
-      const documentFormSchema = convertDocumentFields(documentSchema);
-      setEligibilityFormDetails(eligibilityFormSchema);
-      setDocumentFormDetails(documentFormSchema);
+      //   const applicationformSchema = convertToRJSFFormat(scholarshipSchema);
+      const applicationFormSchema =
+        convertApplicationFormFields(applicationSchema);
+      const isEligibilityUnique = checkUniqueField(
+        eligibilitySchema,
+        "evidence"
+      );
+      const isDocumentsUnique = checkUniqueField(
+        documentSchema,
+        "documentType"
+      );
+      if (isEligibilityUnique && isDocumentsUnique) {
+        const eligibilityFormSchema =
+          convertEligibilityFields(eligibilitySchema);
+        const documentFormSchema = convertDocumentFields(documentSchema);
+        setEligibilityFormDetails(eligibilityFormSchema);
+        setDocumentFormDetails(documentFormSchema);
+      }
+
+      setApplicationFormDetails(applicationFormSchema);
+    } else {
+      console.log("");
     }
-
-    setApplicationFormDetails(applicationFormSchema);
-
-    // } else if (id === "B2") {
-    //   console.log("");
-    // }
   }, [id]);
 
   const handleFormChange = ({ formData }: any) => {
@@ -100,6 +105,9 @@ const BenefitFormUI: React.FC = () => {
   }, [applicationFormDetails]);
 
   if (!applicationFormDetails) {
+    return <Box>Loading...</Box>;
+  }
+  if (!eligibilityFormDetails || !documentFormDetails) {
     return <Box>Loading...</Box>;
   }
   const handleExternalFormSubmit = async () => {
