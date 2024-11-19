@@ -21,12 +21,24 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { keycloak } = useKeycloak();
-  console.log(keycloak, "keycloak");
 
-  const decodedToken = keycloak?.token ? jwtDecode(keycloak.token) : null;
-  console.log("--------------------decodedToken", decodedToken);
-  if (decodedToken) {
-    navigate("/userprofile");
+  interface DecodedToken {
+    exp: number;
+    // add other expected token fields
+  }
+
+  try {
+    if (keycloak?.token) {
+      const decodedToken = jwtDecode<DecodedToken>(keycloak.token);
+      if (decodedToken.exp * 1000 > Date.now()) {
+        navigate("/userprofile", { replace: true });
+      }
+    }
+  } catch (error) {
+    console.error(
+      "Error decoding token:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
   }
 
   const [formData, setFormData] = useState({ name: "" });
@@ -45,6 +57,17 @@ const Login: React.FC = () => {
     navigate("/SignUp");
   };
 
+  const handleLogin = async () => {
+    try {
+      await keycloak.login();
+    } catch (error) {
+      console.error(
+        "Login failed:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+      // Add appropriate error handling/user notification
+    }
+  };
   return (
     <Layout isNavbar={false} isBottombar={false}>
       <Flex height="50%" justifyContent="flex-end" className="purple-bg">
@@ -84,7 +107,7 @@ const Login: React.FC = () => {
           className="outline-custom-btn"
           variant="outline"
           mt={2}
-          onClick={() => keycloak.login()}
+          onClick={handleLogin}
         >
           {t("LOGIN_LOGIN_BUTTON")}
         </Button>
