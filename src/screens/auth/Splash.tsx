@@ -14,9 +14,20 @@ import Layout from "../../components/common/layout/Layout";
 import { useTranslation } from "react-i18next";
 import FloatingSelect from "../../components/common/input/FloatingSelect";
 import CommonButton from "../../components/common/button/Button";
+import { useKeycloak } from "@react-keycloak/web";
+import { jwtDecode } from "jwt-decode";
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { keycloak } = useKeycloak();
+  console.log(keycloak, "keycloak");
+
+  const decodedToken = keycloak?.token ? jwtDecode(keycloak.token) : null;
+  console.log("--------------------decodedToken", decodedToken);
+  if (decodedToken) {
+    navigate("/userprofile");
+  }
 
   const [formData, setFormData] = useState({ name: "" });
 
@@ -69,7 +80,12 @@ const Login: React.FC = () => {
           label={t("LOGIN_REGISTER_BUTTON")}
           mt={8}
         />
-        <Button className="outline-custom-btn" variant="outline" mt={2}>
+        <Button
+          className="outline-custom-btn"
+          variant="outline"
+          mt={2}
+          onClick={() => keycloak.login()}
+        >
           {t("LOGIN_LOGIN_BUTTON")}
         </Button>
       </Stack>
