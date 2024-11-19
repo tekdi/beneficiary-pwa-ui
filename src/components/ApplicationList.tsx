@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Text, VStack, HStack } from "@chakra-ui/react";
 import { CheckCircleIcon, WarningIcon, CloseIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 interface Application {
   benefit_id: string;
@@ -97,6 +98,7 @@ const StatusIcon: React.FC<{ status: string }> = ({ status }) => {
 const ApplicationList: React.FC<ApplicationListProps> = ({
   applicationList = [],
 }) => {
+  const navigate = useNavigate();
   const groupedApplications = React.useMemo(
     () =>
       applicationList.reduce((acc, app) => {
@@ -124,16 +126,16 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
       }}
     >
       <VStack spacing={4} align="stretch">
-        {statusOrder.map((status) =>
+        {statusOrder.map((status, index) =>
           groupedApplications[status]?.length > 0 ? (
             <Box
-              key={status}
               borderRadius={10}
               bg="#FFFFFF"
               shadow="md"
               borderWidth="0.5px"
               borderColor="#DDDDDD"
               width="100%"
+              key={`${status}${index}`}
             >
               <HStack
                 alignItems="center"
@@ -143,25 +145,37 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
                 alignContent="center"
                 width="100%"
                 paddingLeft="16px"
+                bg={"#EDEFFF"}
               >
                 <StatusIcon status={status} />
               </HStack>
               <VStack align="stretch" spacing={2}>
                 {groupedApplications[status].map((app) => (
-                  <HStack
-                    key={app.benefit_id}
+                  <Box
+                    as="button"
+                    onClick={() =>
+                      navigate(
+                        `/previewapplication/${app?.internal_application_id}`
+                      )
+                    } // Add your function here
                     width="100%"
-                    height={53}
-                    padding="20px 8px 16px 16px"
-                    justifyContent="space-between"
+                    key={app.internal_application_id}
                   >
-                    <Text fontSize="14px" color={COLORS.text} border="none">
-                      {app.application_name}
-                    </Text>
-                    {status === STATUS.APPROVED && (
-                      <StatusIcon status={STATUS.DISBURSAL_COMPLETE} />
-                    )}
-                  </HStack>
+                    <HStack
+                      key={app.benefit_id}
+                      width="100%"
+                      height={53}
+                      padding="20px 8px 16px 16px"
+                      justifyContent="space-between"
+                    >
+                      <Text fontSize="14px" color={COLORS.text} border="none">
+                        {app.application_name}
+                      </Text>
+                      {status === STATUS.APPROVED && (
+                        <StatusIcon status={STATUS.DISBURSAL_COMPLETE} />
+                      )}
+                    </HStack>
+                  </Box>
                 ))}
               </VStack>
             </Box>

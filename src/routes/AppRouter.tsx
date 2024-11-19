@@ -44,7 +44,7 @@ const AppRouter = () => (
         }
       />
       <Route
-        path="/previewapplication"
+        path={`/previewapplication/:id`}
         element={
           <PrivateRoute>
             <Preview />
