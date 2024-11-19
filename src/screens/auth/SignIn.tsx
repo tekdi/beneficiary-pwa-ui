@@ -29,8 +29,7 @@ const SignIn: React.FC = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState(false);
   const [success, setSuccess] = useState<string>("");
-  const { keycloak, initialized } = useKeycloak();
-  const [digilockerUrl, setDigilockerUrl] = useState("");
+  const { keycloak } = useKeycloak();
 
   const { checkToken, documents, updateUserData, userData } =
     useContext(AuthContext)!;
