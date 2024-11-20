@@ -36,16 +36,16 @@ const BottomBar: React.FC = () => {
         <Flex
           direction="column"
           align="center"
-          onClick={() => handleNavigation("/userprofile")}
+          onClick={() => handleNavigation("/home")}
         >
           <IconButton
             aria-label="Home"
             icon={<MdHome />}
             fontSize="29px"
             variant="ghost"
-            color={getTabColor("/userprofile")}
+            color={getTabColor("/home")}
           />
-          <Text fontSize="xs" color={getTabColor("/userprofile")}>
+          <Text fontSize="xs" color={getTabColor("/home")}>
             Home
           </Text>
         </Flex>

@@ -14,11 +14,7 @@ export const getAll = async (userData: {
   search: string;
 }) => {
   try {
-    const tokenData = await getToken();
-    if (!tokenData || !tokenData.token) {
-      throw new Error("Token not found");
-    }
-    const { token } = tokenData;
+    const token = localStorage.getItem("authToken");
     const response = await axios.post(
       `${apiBaseUrl}/content/search`,
       userData,
@@ -70,11 +66,7 @@ export const getOne = async ({ id }: getOneParams) => {
     },
   };
   try {
-    const tokenData = await getToken();
-    if (!tokenData || !tokenData.token) {
-      throw new Error("Token not found");
-    }
-    const { token } = tokenData;
+    const token = localStorage.getItem("authToken");
     const response = await axios.post(`${apiBaseUrl}/select`, loginData, {
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +109,7 @@ export const applyApplication = async ({
     if (!tokenData || !tokenData.token) {
       throw new Error("Token not found");
     }
-    const { token } = tokenData;
+    const token = localStorage.getItem("authToken");
     const response = await axios.post(`${apiBaseUrl}/init`, loginData, {
       headers: {
         "Content-Type": "application/json",
@@ -203,11 +195,7 @@ export const confirmApplication = async ({
     },
   };
   try {
-    const tokenData = await getToken();
-    if (!tokenData || !tokenData.token) {
-      throw new Error("Token not found");
-    }
-    const { token } = tokenData;
+    const token = localStorage.getItem("authToken");
     const response = await axios.post(`${apiBaseUrl}/confirm`, data, {
       headers: {
         "Content-Type": "application/json",
@@ -231,11 +219,8 @@ interface createApplicationParams {
 }
 export const createApplication = async (data: createApplicationParams) => {
   try {
-    const tokenData = await getToken();
-    if (!tokenData || !tokenData.token) {
-      throw new Error("Token not found");
-    }
-    const { token } = tokenData;
+    const token = localStorage.getItem("authToken");
+
     const response = await axios.post(
       `${apiBaseUrl}/users/user_application`,
       data,
@@ -259,11 +244,8 @@ interface Filters {
 }
 export const getApplication = async (filters: Filters) => {
   try {
-    const tokenData = await getToken();
-    if (!tokenData || !tokenData.token) {
-      throw new Error("Token not found");
-    }
-    const { token } = tokenData;
+    const token = localStorage.getItem("authToken");
+
     const response = await axios.post(
       `${apiBaseUrl}/users/user_applications_list`,
       { filters },

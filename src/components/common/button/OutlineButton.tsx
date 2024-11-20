@@ -2,11 +2,11 @@ import React from "react";
 import { Button } from "@chakra-ui/react";
 
 interface OutlineButton {
-  onClick: () => void;
+  onClick?: () => void;
   mt?: number;
   width?: string;
   label?: string;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 const OutlineButton: React.FC<OutlineButton> = ({

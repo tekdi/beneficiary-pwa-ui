@@ -8,8 +8,10 @@ import Layout from "../components/common/layout/Layout";
 import { AuthContext } from "../utils/context/checkToken";
 import { useTranslation } from "react-i18next";
 import DocumentList from "../components/DocumentList";
+import { useKeycloak } from "@react-keycloak/web";
+import { jwtDecode } from "jwt-decode";
 
-const UserProfile: React.FC = () => {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -22,7 +24,9 @@ const UserProfile: React.FC = () => {
   // Function to fetch user data and documents
   const init = async () => {
     try {
+      console.log("calling init");
       const result = await getUser();
+      console.log("get user in ", result);
       const data = await getDocumentsList();
       updateUserData(result.data, data.data); // Update user data and document list in context
     } catch (error) {
@@ -37,16 +41,34 @@ const UserProfile: React.FC = () => {
     }
   }, [userData, documents]);
 
+  const { keycloak } = useKeycloak();
+  const decodedToken = keycloak?.token ? jwtDecode(keycloak.token) : null;
+  console.log("--------------------decodedToken", decodedToken);
+
+  if (keycloak?.token) {
+    try {
+      console.log("Keycloak Token:", keycloak.token);
+
+      // Save the token in localStorage
+      localStorage.setItem("authToken", keycloak.token);
+
+      // Decode the token
+      const decodedToken = jwtDecode(keycloak.token);
+      console.log("--------------------Decoded Token", decodedToken);
+    } catch (error) {
+      console.error("Failed to decode or save token:", error);
+    }
+  } else {
+    console.warn("No token available on Keycloak instance.");
+  }
+
   return (
     <Layout
       _heading={{
         beneficiary: true,
-        heading: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
+        heading: keycloak.tokenParsed?.preferred_username,
         subHeading: t("PROFILE_LOGGED_IN_WITH_E_Wallet"),
-        label:
-          userData?.last_name?.length && userData?.last_name.length > 1
-            ? `${userData.first_name?.[0]}${userData.last_name[0]}`
-            : userData?.first_name?.[0] ?? "",
+        label: keycloak.tokenParsed?.preferred_username,
       }}
     >
       <Box
@@ -68,4 +90,4 @@ const UserProfile: React.FC = () => {
   );
 };
 
-export default UserProfile;
+export default Home;

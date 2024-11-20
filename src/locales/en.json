@@ -5,6 +5,7 @@
   "LOGIN_SELECT_LANGUAGE": "Select Language",
   "LOGIN_REGISTER_BUTTON": "Register",
   "LOGIN_LOGIN_BUTTON": "Log in",
+  
   "SIGNUP_OTP_ENTER_OTP_LABEL": "Enter the 6-digit OTP sent via SMS",
   "SIGNUP_OTP_REQUEST_MESSAGE": "Request to",
   "SIGNUP_RESENT_OTP": "Resend OTP",
@@ -42,7 +43,6 @@
   "NAVBAR_PROFILE": "My Profile",
   "GENERAL_LOADING": "Loading...",
   "GENERAL_PROCEED": "Proceed",
-  "NAVBAR_LOGGED_OUT_SUCCESSFULLY": "Logged Out Successfully",
   "BENEFIT_DETAILS_HEADING_TITLE": "Benefit",
   "BENEFIT_DETAILS_HEADING_DETAILS": "Details",
   "BENEFIT_DETAILS_MANDATORY_DOCUMENTS": "Mandatory Documents",
@@ -53,5 +53,18 @@
   "SUBMIT_DIALOGUE_CONTENT_TEXT": "Your application to the",
   "SUBMIT_DIALOGUE_SUBMITTED_TEXT": "Benefit has been submitted",
   "SUBMIT_DIALOGUE_APPLICATION_ID_TEXT": " Application ID",
-  "SUBMIT_DIALOGUE_BUTTON": "Okay"
+  "SUBMIT_DIALOGUE_BUTTON": "Okay",
+  "USER_DETAILS_FATHER_NAME": "Father’s Name",
+  "USER_DETAILS_MOTHER_NAME": "Mother’s Name",
+  "USER_DETAILS_DOB": "DoB (DD/MM/YYYY)",
+  "USER_DETAILS_GENDER": "Gender",
+  "USER_DETAILS_CASTE": "Caste",
+  "USER_DETAILS_DISABILITY": "Disability",
+  "USER_DETAILS_CLASS": "Class",
+  "USER_DETAILS_ANNUAL_INCOME": "Annual Income",
+  "USER_DETAILS_DAY_SCHOLAR_HOSTLER": "Day Scholar/Hostler",
+  "USER_PROFILE_HEADING": "My Profile",
+  "USER_PROFILE_BASIC_DETAILS": "Basic Details",
+  "USER_PROFILE_UPLOAD_MISSING_DOCUMENTS": "Upload Missing Documents",
+  "USER_PROFILE_ERROR_FETCHING_DATA": "Error fetching user data or documents"
 }

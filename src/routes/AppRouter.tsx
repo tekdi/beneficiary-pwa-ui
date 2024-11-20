@@ -3,13 +3,15 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "../screens/auth/Splash";
 import Signup from "../screens/auth/SignUp";
 import SignIn from "../screens/auth/SignIn";
-import UserProfile from "../screens/Profile";
+
 import ExploreBenefits from "../screens/benefit/Benefits";
 import BenefitsDetails from "../screens/benefit/Details";
 import Preview from "../screens/application/Preview";
 import MyApplications from "../screens/application/ApplicationStatus";
 import PrivateRoute from "./ProtectedRoute";
 import UploadDocuments from "../components/common/layout/UploadDocuments";
+import Home from "../screens/Home";
+import UserProfile from "../screens/UserProfile";
 
 const AppRouter = () => (
   <Router>
@@ -24,6 +26,14 @@ const AppRouter = () => (
         element={
           <PrivateRoute>
             <UserProfile />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/home"
+        element={
+          <PrivateRoute>
+            <Home />
           </PrivateRoute>
         }
       />

@@ -96,9 +96,11 @@ export const logoutUser = async (accessToken: string, refreshToken: string) => {
 };
 
 export const getUser = async () => {
+  const token = localStorage.getItem("authToken");
+  console.log("token in getuser", token);
   try {
     // Destructure and retrieve the token from getToken()
-    const { token } = await getToken();
+
     // Make the API call to fetch user data
     const response = await axios.get(
       `${apiBaseUrl}/users/get_one/?decryptData=true`,
@@ -118,13 +120,15 @@ export const getUser = async () => {
       return Promise.reject(error.response.data);
     } else {
       // For other types of errors (like network errors)
+      console.log("get user failed");
+
       return Promise.reject(new Error("Network Error"));
     }
   }
 };
 
 export const sendConsent = async (user_id: string | number) => {
-  const { token } = await getToken();
+  const token = localStorage.getItem("authToken");
   const data = {
     user_id: user_id,
     purpose: "Confirmation to access documents",
@@ -154,7 +158,7 @@ export const sendConsent = async (user_id: string | number) => {
 };
 export const getDocumentsList = async () => {
   try {
-    const { token } = await getToken();
+    const token = localStorage.getItem("authToken");
     const response = await axios.get(`${apiBaseUrl}/content/documents_list`, {
       headers: {
         Accept: "*/*",
@@ -195,7 +199,7 @@ export const getApplicationList = async (
           };
 
     // Send the dynamically created requestBody in the axios post request
-    const { token } = await getToken();
+    const token = localStorage.getItem("authToken");
     const response = await axios.post(
       `${apiBaseUrl}/users/user_applications_list`,
       requestBody, // Use the dynamically created requestBody
@@ -221,7 +225,7 @@ export const getApplicationList = async (
 
 export const getApplicationDetails = async (applicationId: string | number) => {
   try {
-    const { token } = (await getToken()) ?? {};
+    const token = localStorage.getItem("authToken");
     if (token) {
       const response = await axios.get(
         `${apiBaseUrl}/users/user_application/${applicationId}`,

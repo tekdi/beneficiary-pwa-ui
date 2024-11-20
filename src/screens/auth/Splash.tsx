@@ -14,9 +14,32 @@ import Layout from "../../components/common/layout/Layout";
 import { useTranslation } from "react-i18next";
 import FloatingSelect from "../../components/common/input/FloatingSelect";
 import CommonButton from "../../components/common/button/Button";
+import { useKeycloak } from "@react-keycloak/web";
+import { jwtDecode } from "jwt-decode";
+import { saveToken } from "../../services/auth/asyncStorage";
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { keycloak } = useKeycloak();
+
+  interface DecodedToken {
+    exp: number;
+    // add other expected token fields
+  }
+
+  try {
+    if (keycloak?.token) {
+      const decodedToken = jwtDecode<DecodedToken>(keycloak.token);
+      if (decodedToken.exp * 1000 > Date.now()) {
+        navigate("/userprofile", { replace: true });
+      }
+    }
+  } catch (error) {
+    console.error(
+      "Error decoding token:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
+  }
 
   const [formData, setFormData] = useState({ name: "" });
 
@@ -34,6 +57,21 @@ const Login: React.FC = () => {
     navigate("/SignUp");
   };
 
+  const handleLogin = async () => {
+    try {
+      console.log("keyclok===", keycloak.login());
+      await keycloak.login();
+      saveToken(keycloak.token, keycloak.token);
+      localStorage.setItem("authToken", keycloak.token);
+      navigate("/home");
+    } catch (error) {
+      console.error(
+        "Login failed:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+      // Add appropriate error handling/user notification
+    }
+  };
   return (
     <Layout isNavbar={false} isBottombar={false}>
       <Flex height="50%" justifyContent="flex-end" className="purple-bg">
@@ -69,7 +107,12 @@ const Login: React.FC = () => {
           label={t("LOGIN_REGISTER_BUTTON")}
           mt={8}
         />
-        <Button className="outline-custom-btn" variant="outline" mt={2}>
+        <Button
+          className="outline-custom-btn"
+          variant="outline"
+          mt={2}
+          onClick={handleLogin}
+        >
           {t("LOGIN_LOGIN_BUTTON")}
         </Button>
       </Stack>

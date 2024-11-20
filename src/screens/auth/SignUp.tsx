@@ -44,7 +44,7 @@ const Signup: React.FC = () => {
   // const [toastMessage, setToastMessage] = useState(false);
   const otpArray = Array(6).fill("");
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [timer, setTimer] = React.useState(300);
   const termsAndConditions = true;
   // const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -52,7 +52,19 @@ const Signup: React.FC = () => {
   const handleBack = () => {
     navigate(-1);
   };
-
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+  useEffect(() => {
+    if (timer > 0) {
+      const countdown = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(countdown);
+    }
+  }, [timer]);
   useEffect(() => {
     const mobileError = validateMobile(userDetails.mobile);
     setMobileError(mobileError);
@@ -211,7 +223,7 @@ const Signup: React.FC = () => {
                 >
                   {t("SIGNUP_RESENT_OTP")}
                 </RouterLink>
-                {t("SIGNUP_IN")} 4.59
+                {t("SIGNUP_IN")} {formatTime(timer)}
               </Text>
             </FormControl>
           )}

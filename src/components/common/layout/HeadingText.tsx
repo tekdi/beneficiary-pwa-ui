@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Text, IconButton, Avatar, VStack } from "@chakra-ui/react";
+import { Box, Text, IconButton, VStack, Avatar } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import FilterDialog from "./Filters";
 
@@ -17,18 +17,6 @@ interface HeadingTextProps {
   }[];
   setFilter?: React.Dispatch<React.SetStateAction<unknown>>;
 }
-
-const LeftContent: React.FC<{ label: string; size?: string }> = ({
-  label,
-  size = "45px",
-}) => (
-  <Avatar
-    boxSize={size}
-    name={label}
-    src="https://bit.ly/broken-link"
-    marginRight={1}
-  />
-);
 
 const BackIcon: React.FC<{ onClick: () => void; iconSize?: number }> = ({
   onClick,
@@ -65,7 +53,9 @@ const HeadingText: React.FC<HeadingTextProps> = ({
         <VStack align="start">
           {(handleBack || heading) && (
             <Box display="flex" alignItems="center" width="100%">
-              {beneficiary && heading && <LeftContent label={heading} />}
+              {beneficiary && heading && (
+                <Avatar variant="solid" name={heading} mr={2} />
+              )}
               {handleBack && <BackIcon onClick={handleBack} />}
               {heading && (
                 <Text
