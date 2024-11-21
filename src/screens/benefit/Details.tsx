@@ -48,6 +48,7 @@ interface BenefitItem {
   tags?: Array<{
     descriptor?: { code?: string };
     list?: Array<{ value?: string }>;
+    short_desc: string;
   }>;
 }
 
@@ -93,7 +94,6 @@ const BenefitsDetails: React.FC = () => {
       const result = await applyApplication({ id, context });
       const url = (result as { data: { responses: Array<any> } }).data
         ?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
-      console.log("url---", url);
       const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
 
       // Only set WebFormProps if the url exists
@@ -282,8 +282,8 @@ const BenefitsDetails: React.FC = () => {
           </Heading>
           <UnorderedList mt={4}>
             {item?.tags?.slice(0, 4).map((document) => (
-              <ListItem key={document.code}>
-                {document.descriptor.short_desc}
+              <ListItem key={document?.descriptor?.code}>
+                {document.short_desc || "No description available"}
               </ListItem>
             ))}
           </UnorderedList>
@@ -293,8 +293,8 @@ const BenefitsDetails: React.FC = () => {
           </Heading>
           <UnorderedList mt={4}>
             {item?.tags?.slice(0, 4).map((document) => (
-              <ListItem key={document.code}>
-                {document.descriptor.short_desc}
+              <ListItem key={document?.descriptor?.code}>
+                {document.short_desc || "No description available"}
               </ListItem>
             ))}
           </UnorderedList>
