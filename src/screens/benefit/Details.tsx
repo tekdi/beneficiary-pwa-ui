@@ -46,9 +46,8 @@ interface BenefitItem {
   };
   document?: string[];
   tags?: Array<{
-    descriptor?: { code?: string };
+    descriptor?: { code?: string; short_desc: string };
     list?: Array<{ value?: string }>;
-    short_desc: string;
   }>;
 }
 
@@ -277,16 +276,16 @@ const BenefitsDetails: React.FC = () => {
           </Heading>
           <Text mt={4}>{item?.descriptor?.long_desc}</Text>
 
-          <Heading size="md" mt={6} color="#484848" fontWeight={500}>
+          {/* <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_OBJECTIVE_DETAILS")}
           </Heading>
           <UnorderedList mt={4}>
             {item?.tags?.slice(0, 4).map((document) => (
               <ListItem key={document?.descriptor?.code}>
-                {document.short_desc || "No description available"}
+                {document?.short_desc}
               </ListItem>
             ))}
-          </UnorderedList>
+          </UnorderedList> */}
 
           <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_KEYPOINT_DETAILS")}
@@ -294,7 +293,7 @@ const BenefitsDetails: React.FC = () => {
           <UnorderedList mt={4}>
             {item?.tags?.slice(0, 4).map((document) => (
               <ListItem key={document?.descriptor?.code}>
-                {document.short_desc || "No description available"}
+                {document?.descriptor?.short_desc}
               </ListItem>
             ))}
           </UnorderedList>
