@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, VStack } from "@chakra-ui/react";
 
 import { getUser, getDocumentsList } from "../services/auth/auth";
@@ -9,12 +9,13 @@ import { AuthContext } from "../utils/context/checkToken";
 import { useTranslation } from "react-i18next";
 import DocumentList from "../components/DocumentList";
 import { useKeycloak } from "@react-keycloak/web";
-import { jwtDecode } from "jwt-decode";
+
+import UploadDocumentEwallet from "../components/common/UploadDocumentEwallet";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
+  const [showIframe, setShowIframe] = useState(true);
   const handleRedirect = () => {
     navigate("/explorebenefits");
   };
@@ -24,19 +25,15 @@ const Home: React.FC = () => {
   // Function to fetch user data and documents
   const init = async () => {
     try {
-      console.log("calling init");
       const result = await getUser();
-      const data = await getDocumentsList();
-      console.log("data---", result);
-      console.log("doc---", data);
 
-      updateUserData(result?.data, data?.data); // Update user data and document list in context
+      const data = await getDocumentsList();
+      updateUserData(result.data, data.data);
     } catch (error) {
       console.error("Error fetching user data or documents:", error);
     }
   };
 
-  // Call init if userData or documents is not available
   useEffect(() => {
     if (!userData || !documents || documents.length === 0) {
       init();
@@ -44,7 +41,6 @@ const Home: React.FC = () => {
   }, [userData, documents]);
 
   const { keycloak } = useKeycloak();
-  const decodedToken = keycloak?.token ? jwtDecode(keycloak.token) : null;
 
   if (keycloak?.token) {
     try {
@@ -52,7 +48,6 @@ const Home: React.FC = () => {
       localStorage.setItem("authToken", keycloak.token);
 
       // Decode the token
-      const decodedToken = jwtDecode(keycloak.token);
     } catch (error) {
       console.error("Failed to decode or save token:", error);
     }
@@ -77,11 +72,19 @@ const Home: React.FC = () => {
         className="card-scroll invisible_scroll"
       >
         <VStack spacing={4} align="stretch">
-          <DocumentList documents={documents} />
+          <DocumentList documents={documents} userData={userData?.docs} />
           <CommonButton
             onClick={handleRedirect}
             label={t("PROFILE_EXPLORE_BENEFITS")}
           />
+          {showIframe ? (
+            <UploadDocumentEwallet userId={userData?.user_id} />
+          ) : (
+            <CommonButton
+              onClick={() => setShowIframe(true)}
+              label="Upload  Document"
+            />
+          )}
         </VStack>
       </Box>
     </Layout>

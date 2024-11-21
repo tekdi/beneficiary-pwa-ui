@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { getToken, removeToken } from "./asyncStorage";
+import { removeToken } from "./asyncStorage";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 interface UserData {

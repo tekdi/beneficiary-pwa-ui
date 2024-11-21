@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Avatar, Box, HStack, Text, VStack } from "@chakra-ui/react";
-import { useTranslation } from "react-i18next";
+
 import { getUser, getDocumentsList } from "../services/auth/auth";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/common/layout/Layout";
@@ -9,18 +9,15 @@ import DocumentList from "../components/DocumentList";
 
 import ProgressBar from "../components/common/ProgressBar";
 import UserDetails from "../components/common/UserDetails";
-import OutlineButton from "../components/common/button/OutlineButton";
+
+import UploadDocumentEwallet from "../components/common/UploadDocumentEwallet";
+import CommonButton from "../components/common/button/Button";
 
 const UserProfile: React.FC = () => {
+  const [showIframe, setShowIframe] = useState(true);
   const navigate = useNavigate();
 
-  const handleRedirect = () => {
-    ///upload missing document function / api integration
-    navigate("/explorebenefits");
-  };
-
   const { userData, documents, updateUserData } = useContext(AuthContext)!;
-  const { t } = useTranslation();
   // Function to fetch user data and documents
   const init = async () => {
     try {
@@ -95,11 +92,15 @@ const UserProfile: React.FC = () => {
           className="card-scroll invisible_scroll"
         >
           <VStack spacing={4} align="stretch">
-            <DocumentList documents={documents} />
-            <OutlineButton
-              onClick={handleRedirect}
-              label={t("USER_PROFILE_UPLOAD_MISSING_DOCUMENTS")}
-            />
+            <DocumentList documents={documents} userData={userData.docs} />
+            {showIframe ? (
+              <UploadDocumentEwallet userId={userData?.user_id} />
+            ) : (
+              <CommonButton
+                onClick={() => setShowIframe(true)}
+                label="Upload  Document"
+              />
+            )}
           </VStack>
         </Box>
       </Box>

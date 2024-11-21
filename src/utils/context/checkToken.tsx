@@ -15,7 +15,22 @@ interface AuthContextType {
 }
 
 // Define UserData type
+interface UserDocument {
+  doc_id: string;
+  user_id: string;
+  doc_type: string;
+  doc_subtype: string;
+  doc_name: string;
+  imported_from: string;
+  doc_path: string;
+  doc_data: string; // You can parse this JSON string into an object when needed
+  doc_datatype: string;
+  doc_verified: boolean;
+  uploaded_at: string;
+  is_uploaded: boolean;
+}
 interface UserData {
+  docs: UserDocument;
   user_id?: string;
   name?: string;
   current_class?: string;
