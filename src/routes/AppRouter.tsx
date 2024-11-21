@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Login from "../screens/auth/Splash";
 import Signup from "../screens/auth/SignUp";
-import SignIn from "../screens/auth/SignIn";
 
 import ExploreBenefits from "../screens/benefit/Benefits";
 import BenefitsDetails from "../screens/benefit/Details";
@@ -16,9 +15,9 @@ import UserProfile from "../screens/UserProfile";
 const AppRouter = () => (
   <Router>
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="*" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/signin" element={<SignIn />} />
+      {/* <Route path="/signin" element={<SignIn />} /> */}
       <Route path="/uploaddocuments" element={<UploadDocuments />} />
 
       <Route

@@ -5,7 +5,7 @@
   "LOGIN_SELECT_LANGUAGE": "Select Language",
   "LOGIN_REGISTER_BUTTON": "Register",
   "LOGIN_LOGIN_BUTTON": "Log in",
-  
+
   "SIGNUP_OTP_ENTER_OTP_LABEL": "Enter the 6-digit OTP sent via SMS",
   "SIGNUP_OTP_REQUEST_MESSAGE": "Request to",
   "SIGNUP_RESENT_OTP": "Resend OTP",
@@ -39,12 +39,19 @@
   "PROFILE_EXPLORE_BENEFITS": "Explore Benefits",
   "NAVBAR_LOGGED_OUT_SUCCESSFULLY": "Logged Out Successfully",
   "NAVBAR_LOGOUT": "Log out",
-  "NAVBAR_FAST_PASS": "Fast Pass",
+  "NAVBAR_FAST_PASS": "Digi-Vritti",
   "NAVBAR_PROFILE": "My Profile",
   "GENERAL_LOADING": "Loading...",
   "GENERAL_PROCEED": "Proceed",
+  "OTP_SEND": "Send OTP",
+  "REGISTER_BUTTON": "Register",
+  "REGISTER_VERIFY_BUTTON": "Verify OTP",
+
   "BENEFIT_DETAILS_HEADING_TITLE": "Benefit",
   "BENEFIT_DETAILS_HEADING_DETAILS": "Details",
+  "BENEFIT_DETAILS_KEYPOINT_DETAILS": "Key Points:",
+  "BENEFIT_DETAILS_OBJECTIVE_DETAILS": "Objectives of the Pre-matric Scholarship-SC:",
+
   "BENEFIT_DETAILS_MANDATORY_DOCUMENTS": "Mandatory Documents",
   "BENEFIT_DETAILS_APPLICATION_SUBMITTED": "Application Already Submitted",
   "BENEFIT_DETAILS_PROCEED_TO_APPLY": "Proceed To Apply",

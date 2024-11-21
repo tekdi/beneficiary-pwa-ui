@@ -31,7 +31,7 @@ const Login: React.FC = () => {
     if (keycloak?.token) {
       const decodedToken = jwtDecode<DecodedToken>(keycloak.token);
       if (decodedToken.exp * 1000 > Date.now()) {
-        navigate("/userprofile", { replace: true });
+        navigate("/home", { replace: true });
       }
     }
   } catch (error) {
@@ -59,11 +59,12 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      console.log("keyclok===", keycloak.login());
       await keycloak.login();
       saveToken(keycloak.token, keycloak.token);
       localStorage.setItem("authToken", keycloak.token);
-      navigate("/home");
+      if (keycloak.token) {
+        navigate("/home");
+      }
     } catch (error) {
       console.error(
         "Login failed:",

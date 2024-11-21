@@ -26,9 +26,11 @@ const Home: React.FC = () => {
     try {
       console.log("calling init");
       const result = await getUser();
-      console.log("get user in ", result);
       const data = await getDocumentsList();
-      updateUserData(result.data, data.data); // Update user data and document list in context
+      console.log("data---", result);
+      console.log("doc---", data);
+
+      updateUserData(result?.data, data?.data); // Update user data and document list in context
     } catch (error) {
       console.error("Error fetching user data or documents:", error);
     }
@@ -43,18 +45,14 @@ const Home: React.FC = () => {
 
   const { keycloak } = useKeycloak();
   const decodedToken = keycloak?.token ? jwtDecode(keycloak.token) : null;
-  console.log("--------------------decodedToken", decodedToken);
 
   if (keycloak?.token) {
     try {
-      console.log("Keycloak Token:", keycloak.token);
-
       // Save the token in localStorage
       localStorage.setItem("authToken", keycloak.token);
 
       // Decode the token
       const decodedToken = jwtDecode(keycloak.token);
-      console.log("--------------------Decoded Token", decodedToken);
     } catch (error) {
       console.error("Failed to decode or save token:", error);
     }

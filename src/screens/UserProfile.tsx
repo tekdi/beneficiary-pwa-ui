@@ -26,7 +26,8 @@ const UserProfile: React.FC = () => {
     try {
       const result = await getUser();
       const data = await getDocumentsList();
-      updateUserData(result.data, data.data); // Update user data and document list in context
+      console.log("result---", result);
+      updateUserData(result?.data, data?.data); // Update user data and document list in context
     } catch (error) {
       console.error("Error fetching user data or documents:", error);
     }
@@ -37,18 +38,9 @@ const UserProfile: React.FC = () => {
       init();
     }
   }, [userData, documents]);
-  const handleBack = () => {
-    navigate(-1);
-  };
 
   return (
-    <Layout
-      _heading={{
-        heading: "My Profile",
-
-        handleBack,
-      }}
-    >
+    <Layout>
       <HStack m={5} mt={0} p={0} h={82}>
         <Avatar
           variant="solid"

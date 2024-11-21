@@ -7,10 +7,9 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   // const isLoggedIn = localStorage.getItem("authToken");
   const { keycloak } = useKeycloak();
-  console.log("keylockkk", keycloak);
   const isLoggedIn = keycloak.authenticated;
 
-  return isLoggedIn ? children : <Navigate to="/signin" />;
+  return isLoggedIn ? children : <Navigate to="/" />;
 };
 
 export default PrivateRoute;

@@ -12,11 +12,12 @@ import {
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
-// import { registerUser } from "../../services/auth/auth";
 import FloatingInput from "../../components/common/input/Input";
 import { useTranslation } from "react-i18next";
-// import Toaster from "../../components/common/ToasterMessage";
+import Toaster from "../../components/common/ToasterMessage";
 import CommonDialogue from "../../components/common/layout/Dialogue";
+import { registerUser, sendOTP, verifyOTP } from "../../services/auth/auth";
+import Loader from "../../components/common/Loader";
 
 interface UserDetails {
   firstName: string;
@@ -36,17 +37,20 @@ const Signup: React.FC = () => {
     otp: "",
   });
 
-  // const [error, setError] = useState<string>("");
-  // const [success, setSuccess] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
-  // const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [mobileError, setMobileError] = useState<string>("");
-  // const [toastMessage, setToastMessage] = useState(false);
+  const [toastMessage, setToastMessage] = useState(false);
+  const [oTPVerify, setOtpVerify] = useState(false);
+  const [otpToken, setOtpToken] = useState<string>("");
+
   const otpArray = Array(6).fill("");
   const [modalOpen, setModalOpen] = useState(false);
   const [timer, setTimer] = React.useState(300);
   const termsAndConditions = true;
-  // const openModal = () => setModalOpen(true);
+  const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
   const handleBack = () => {
@@ -72,9 +76,10 @@ const Signup: React.FC = () => {
     setIsFormValid(
       !!userDetails.firstName.trim() &&
         !!userDetails.lastName.trim() &&
-        !!userDetails.mobile.trim() &&
-        userDetails.otp?.length === 6 &&
-        !mobileError
+        !!userDetails.mobile.trim()
+      // &&
+      // userDetails.otp?.length === 6 &&
+      // !mobileError
     );
   }, [userDetails]);
 
@@ -98,52 +103,68 @@ const Signup: React.FC = () => {
     return "";
   };
 
-  const handleSignUp = async () => {
-    console.log("register api will call here");
+  const sendOTPAPI = async () => {
+    setLoading(true);
+    const formattedMobile = `+91-${userDetails.mobile}`;
+    const otpResponse = await sendOTP(formattedMobile);
+    if (otpResponse) {
+      setLoading(true);
+      setOtpVerify(true);
+      setOtpToken(otpResponse?.token);
+    } else {
+      setLoading(false);
+      setToastMessage(true);
+      setErrorMsg(otpResponse?.message || "An error occurred.");
+    }
   };
 
-  // const handleSignUp = async () => {
-  //   const clearError = () => {
-  //     setTimeout(() => {
-  //       setError("");
-  //     }, 3000);
-  //   };
+  const handleSignUp = async () => {
+    console.log("register api will call here");
+    setLoading(true);
+    const formattedMobile = `+91-${userDetails.mobile}`;
 
-  //   try {
-  //     setLoading(true);
-  //     const response = await registerUser({
-  //       first_name: userDetails.firstName,
-  //       last_name: userDetails.lastName,
-  //       phone_number: userDetails.mobile,
-  //     });
+    if (otpToken) {
+      setLoading(false);
+      setOtpVerify(true);
+      const verifyOTPResponse = await verifyOTP({
+        phone_number: formattedMobile,
+        otp: Number(userDetails.otp),
+        token: otpToken,
+      });
+      if (verifyOTPResponse?.statusCode === 200) {
+        setLoading(false);
+        setOtpVerify(false);
 
-  //     if (response && response?.statusCode === 200) {
-  //       setLoading(false);
-  //       setSuccess(
-  //         response.message || t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE")
-  //       );
-  //       setToastMessage(true);
-  //       setTimeout(() => {
-  //         navigate("/signin");
-  //       }, 3000);
-  //     } else {
-  //       setLoading(false);
-  //       setToastMessage(true);
-  //       setError(response.message || "An error occurred.");
-  //       clearError();
-  //     }
-  //   } catch (error) {
-  //     setLoading(false);
-  //     if (error instanceof Error) {
-  //       setError(error.message);
-  //       setToastMessage(true);
-  //     } else {
-  //       setError("An error occurred.");
-  //       setToastMessage(true);
-  //     }
-  //     clearError();
-  //   }
-  // };
+        const response = await registerUser({
+          first_name: userDetails.firstName,
+          last_name: userDetails.lastName,
+          phone_number: userDetails.mobile,
+        });
+        if (response && response?.statusCode === 200) {
+          setLoading(false);
+          setSuccess(
+            response?.message || t("SIGNUP_REGISTRATION_SUCCESS_MESSAGE")
+          );
+          setToastMessage(true);
+          navigate("/home");
+          // setTimeout(() => {
+          //   navigate("/home");
+          // }, 3000);
+        } else {
+          setLoading(false);
+          setToastMessage(true);
+          console.log("errro===", response);
+          setErrorMsg(response?.error || "An error occurred.");
+        }
+      } else {
+        setOtpVerify(true);
+        setLoading(false);
+        setToastMessage(true);
+        setErrorMsg(verifyOTPResponse.message || "An error occurred.");
+      }
+    }
+  };
+
   return (
     <Layout
       isMenu={false}
@@ -183,6 +204,15 @@ const Signup: React.FC = () => {
               errorMessage={mobileError}
             />
           </FormControl>
+          {userDetails.otp.length !== 6 && (
+            <CommonButton
+              mt={4}
+              label={t("OTP_SEND")}
+              onClick={sendOTPAPI}
+              // onClick={openModal}
+              isDisabled={!isFormValid}
+            />
+          )}
           {!mobileError && (
             <FormControl isInvalid={userDetails.otp.length !== 6}>
               <Text fontSize={"16px"}>{t("SIGNUP_OTP_ENTER_OTP_LABEL")}</Text>
@@ -227,13 +257,18 @@ const Signup: React.FC = () => {
               </Text>
             </FormControl>
           )}
-          <CommonButton
-            mt={4}
-            label={t("GENERAL_PROCEED")}
-            onClick={handleSignUp}
-            // onClick={openModal}
-            isDisabled={!isFormValid}
-          />
+
+          {userDetails.otp.length === 6 && (
+            <CommonButton
+              mt={4}
+              label={t("GENERAL_PROCEED")}
+              onClick={handleSignUp}
+              // onClick={openModal}
+              isDisabled={!isFormValid}
+            />
+          )}
+
+          {/*  */}
         </VStack>
         <Center>
           <Text mt={6}>
@@ -256,8 +291,8 @@ const Signup: React.FC = () => {
         termsAndConditions={termsAndConditions}
       />
 
-      {/* {toastMessage && success && <Toaster message={success} type="success" />}
-      {toastMessage && error && <Toaster message={error} type="error" />} */}
+      {toastMessage && success && <Toaster message={success} type="success" />}
+      {toastMessage && errorMsg && <Toaster message={errorMsg} type="error" />}
     </Layout>
   );
 };

@@ -93,7 +93,7 @@ const BenefitsDetails: React.FC = () => {
       const result = await applyApplication({ id, context });
       const url = (result as { data: { responses: Array<any> } }).data
         ?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
-
+      console.log("url---", url);
       const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
 
       // Only set WebFormProps if the url exists
@@ -259,7 +259,7 @@ const BenefitsDetails: React.FC = () => {
       />
     );
   }
-
+  console.log("Item----", item.tags);
   return (
     <Layout _heading={{ heading: item?.descriptor?.name || "", handleBack }}>
       <Box className="card-scroll invisible_scroll">
@@ -270,12 +270,34 @@ const BenefitsDetails: React.FC = () => {
           <HStack mt={2}>
             <Icon as={MdCurrencyRupee} boxSize={5} color="#484848" />
             <Text>{item?.price?.value}</Text>
-            <Text>{item?.price?.currency}</Text>
+            {/* <Text>{item?.price?.currency}</Text> */}
           </HStack>
           <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_HEADING_DETAILS")}
           </Heading>
           <Text mt={4}>{item?.descriptor?.long_desc}</Text>
+
+          <Heading size="md" mt={6} color="#484848" fontWeight={500}>
+            {t("BENEFIT_DETAILS_OBJECTIVE_DETAILS")}
+          </Heading>
+          <UnorderedList mt={4}>
+            {item?.tags?.slice(0, 4).map((document) => (
+              <ListItem key={document.code}>
+                {document.descriptor.short_desc}
+              </ListItem>
+            ))}
+          </UnorderedList>
+
+          <Heading size="md" mt={6} color="#484848" fontWeight={500}>
+            {t("BENEFIT_DETAILS_KEYPOINT_DETAILS")}
+          </Heading>
+          <UnorderedList mt={4}>
+            {item?.tags?.slice(0, 4).map((document) => (
+              <ListItem key={document.code}>
+                {document.descriptor.short_desc}
+              </ListItem>
+            ))}
+          </UnorderedList>
           <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_MANDATORY_DOCUMENTS")}
           </Heading>
@@ -285,7 +307,8 @@ const BenefitsDetails: React.FC = () => {
             ))}
           </UnorderedList>
           <CommonButton
-            onClick={onOpen}
+            mt={6}
+            onClick={handleConfirmation}
             label={
               isApplied
                 ? t("BENEFIT_DETAILS_APPLICATION_SUBMITTED")
