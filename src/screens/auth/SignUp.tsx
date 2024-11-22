@@ -43,14 +43,12 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [mobileError, setMobileError] = useState<string>("");
   const [toastMessage, setToastMessage] = useState(false);
-  const [oTPVerify, setOtpVerify] = useState(false);
   const [otpToken, setOtpToken] = useState<string>("");
 
   const otpArray = Array(6).fill("");
   const [modalOpen, setModalOpen] = useState(false);
   const [timer, setTimer] = React.useState(300);
   const termsAndConditions = true;
-  const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
   const handleBack = () => {
@@ -109,7 +107,6 @@ const Signup: React.FC = () => {
     const otpResponse = await sendOTP(formattedMobile);
     if (otpResponse) {
       setLoading(true);
-      setOtpVerify(true);
       setOtpToken(otpResponse?.token);
     } else {
       setLoading(false);
@@ -119,13 +116,11 @@ const Signup: React.FC = () => {
   };
 
   const handleSignUp = async () => {
-    console.log("register api will call here");
     setLoading(true);
     const formattedMobile = `+91-${userDetails.mobile}`;
 
     if (otpToken) {
       setLoading(false);
-      setOtpVerify(true);
       const verifyOTPResponse = await verifyOTP({
         phone_number: formattedMobile,
         otp: Number(userDetails.otp),
@@ -133,7 +128,6 @@ const Signup: React.FC = () => {
       });
       if (verifyOTPResponse?.statusCode === 200) {
         setLoading(false);
-        setOtpVerify(false);
 
         const response = await registerUser({
           first_name: userDetails.firstName,
@@ -153,11 +147,9 @@ const Signup: React.FC = () => {
         } else {
           setLoading(false);
           setToastMessage(true);
-          console.log("errro===", response);
           setErrorMsg(response?.error || "An error occurred.");
         }
       } else {
-        setOtpVerify(true);
         setLoading(false);
         setToastMessage(true);
         setErrorMsg(verifyOTPResponse.message || "An error occurred.");
@@ -174,6 +166,7 @@ const Signup: React.FC = () => {
       }}
       isBottombar={false}
     >
+      {loading && <Loader />}
       <Box p={5}>
         <VStack align="stretch" spacing={4}>
           <FormControl>

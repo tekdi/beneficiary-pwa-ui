@@ -15,7 +15,6 @@ import CommonButton from "../components/common/button/Button";
 
 const UserProfile: React.FC = () => {
   const [showIframe, setShowIframe] = useState(true);
-  const navigate = useNavigate();
 
   const { userData, documents, updateUserData } = useContext(AuthContext)!;
   // Function to fetch user data and documents

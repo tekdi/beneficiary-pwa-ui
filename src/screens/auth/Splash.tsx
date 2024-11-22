@@ -60,17 +60,21 @@ const Login: React.FC = () => {
   const handleLogin = async () => {
     try {
       await keycloak.login();
-      saveToken(keycloak.token, keycloak.token);
-      localStorage.setItem("authToken", keycloak.token);
       if (keycloak.token) {
-        navigate("/home");
+        const decodedToken = jwtDecode<DecodedToken>(keycloak.token);
+        if (decodedToken.exp * 1000 > Date.now()) {
+          saveToken(keycloak.token, keycloak.token);
+          localStorage.setItem("authToken", keycloak.token);
+          navigate("/home");
+        } else {
+          console.warn("Token expired. Consider refreshing the token.");
+        }
       }
     } catch (error) {
       console.error(
         "Login failed:",
         error instanceof Error ? error.message : "Unknown error"
       );
-      // Add appropriate error handling/user notification
     }
   };
   return (

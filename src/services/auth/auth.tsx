@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { removeToken } from "./asyncStorage";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -20,10 +20,6 @@ interface MobileData {
   token: string;
 }
 
-/**
- * Login a user
- * @param {Object} loginData - Contains phone_number, password
- */
 export const loginUser = async (loginData: object) => {
   try {
     const response = await axios.post(`${apiBaseUrl}/auth/login`, loginData, {
@@ -74,9 +70,6 @@ export const logoutUser = async (accessToken: string, refreshToken: string) => {
 export const getUser = async () => {
   const token = localStorage.getItem("authToken");
   try {
-    // Destructure and retrieve the token from getToken()
-
-    // Make the API call to fetch user data
     const response = await axios.get(
       `${apiBaseUrl}/users/get_one/?decryptData=true`,
       {
@@ -87,14 +80,11 @@ export const getUser = async () => {
       }
     );
 
-    // Return the user data from the response
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      // Handle the error with specific type if it's an Axios error
       return Promise.reject(error.response.data);
     } else {
-      // For other types of errors (like network errors)
       console.log("get user failed");
 
       return Promise.reject(new Error("Network Error"));
@@ -158,7 +148,6 @@ export const getApplicationList = async (
   user_id: string | number
 ) => {
   try {
-    // Create the request body, conditionally adding searchText if it's not empty
     const requestBody =
       searchText !== ""
         ? {
@@ -214,7 +203,6 @@ export const getApplicationDetails = async (applicationId: string | number) => {
       return response.data;
     } else {
       console.error("Token not found");
-      // Handle the case when token is not found
     }
   } catch (error) {
     console.error("Failed to fetch application details:", error);
@@ -227,7 +215,6 @@ export const sendOTP = async (mobileNumber: string) => {
       phone_number: mobileNumber,
     };
     const response = await axios.post(`${apiBaseUrl}/otp/send_otp`, payload);
-    console.log("response===", response.data.data);
     return response?.data?.data;
   } catch (error) {
     console.log(error);

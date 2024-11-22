@@ -72,7 +72,7 @@ interface Context {
 }
 
 const BenefitsDetails: React.FC = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useDisclosure();
   const [context, setContext] = useState<Context | null>(null);
   const [item, setItem] = useState<BenefitItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -258,7 +258,6 @@ const BenefitsDetails: React.FC = () => {
       />
     );
   }
-  console.log("Item----", item.tags);
   return (
     <Layout _heading={{ heading: item?.descriptor?.name || "", handleBack }}>
       <Box className="card-scroll invisible_scroll">
@@ -276,26 +275,33 @@ const BenefitsDetails: React.FC = () => {
           </Heading>
           <Text mt={4}>{item?.descriptor?.long_desc}</Text>
 
-          {/* <Heading size="md" mt={6} color="#484848" fontWeight={500}>
+          <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_OBJECTIVE_DETAILS")}
           </Heading>
           <UnorderedList mt={4}>
-            {item?.tags?.slice(0, 4).map((document) => (
-              <ListItem key={document?.descriptor?.code}>
-                {document?.short_desc}
-              </ListItem>
-            ))}
-          </UnorderedList> */}
+            {item?.descriptor && (
+              <ListItem>{item?.descriptor?.long_desc}</ListItem>
+            )}
+          </UnorderedList>
 
           <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_KEYPOINT_DETAILS")}
           </Heading>
           <UnorderedList mt={4}>
-            {item?.tags?.slice(0, 4).map((document) => (
-              <ListItem key={document?.descriptor?.code}>
-                {document?.descriptor?.short_desc}
-              </ListItem>
-            ))}
+            {item?.tags
+              ?.filter((tag) =>
+                [
+                  "educational-eligibility",
+                  "personal-eligibility",
+                  "economical-eligibility",
+                  "geographical-eligibility",
+                ].includes(tag.descriptor?.code)
+              )
+              .map((tag, index) => (
+                <ListItem key={tag?.descriptor?.code}>
+                  {tag.descriptor?.short_desc}
+                </ListItem>
+              ))}
           </UnorderedList>
           <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_MANDATORY_DOCUMENTS")}
