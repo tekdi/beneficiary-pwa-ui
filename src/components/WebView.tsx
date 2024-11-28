@@ -4,10 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Loader from "./common/Loader";
 import Layout from "./common/layout/Layout";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  transformData,
-  transformUserDataToFormData,
-} from "../utils/jsHelper/helper";
+import { transformData } from "../utils/jsHelper/helper";
 import {
   confirmApplication,
   createApplication,
@@ -133,7 +130,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
   }, [url, formData]);
 
   const sendDataToIframe = async () => {
-    const prefillData = transformUserDataToFormData(formData);
+    const prefillData = transformData(formData);
 
     iframeRef.current.contentWindow.postMessage(prefillData, "*");
   };
