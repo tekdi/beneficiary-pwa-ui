@@ -8,6 +8,7 @@ import {
   useDisclosure,
   HStack,
   Icon,
+  Spinner,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -22,8 +23,6 @@ import Layout from "../../components/common/layout/Layout";
 import { getUser } from "../../services/auth/auth";
 import {
   applyApplication,
-  confirmApplication,
-  createApplication,
   getApplication,
   getOne,
 } from "../../services/benefit/benefits";
@@ -49,35 +48,45 @@ interface BenefitItem {
     list?: Array<{ value?: string }>;
   }>;
 }
-
+interface FinancialSupportRequest {
+  domain: string;
+  action: string;
+  version: string;
+  bpp_id: string;
+  bpp_uri: string;
+  country: string;
+  city: string;
+  bap_id: string;
+  bap_uri: string;
+  transaction_id: string;
+  message_id: string;
+  ttl: string;
+  timestamp: string;
+}
 interface AuthUser {
   user_id?: string;
   name?: string;
-  class?: string;
-  previousYearMarks?: string;
-  phoneNumber?: string;
+  current_class?: string;
+  previous_year_marks?: string;
+  phone_number?: string;
   username: string;
   email: string;
 }
 
 interface WebFormProps {
   url?: string;
-  formData?: AuthUser;
-}
-interface Context {
-  bpp_id?: string;
-  bap_uri?: string;
-  // Add other fields as necessary
+  formData?: {};
+  item?: BenefitItem;
 }
 
 const BenefitsDetails: React.FC = () => {
   const { isOpen, onClose } = useDisclosure();
-  const [context, setContext] = useState<Context | null>(null);
+  const [context, setContext] = useState<FinancialSupportRequest | null>(null);
   const [item, setItem] = useState<BenefitItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isApplied, setIsApplied] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authUser, setAuthUser] = useState<Object | null>(null);
   const [webFormProp, setWebFormProp] = useState<WebFormProps>({});
   const [confirmationConsent, setConfirmationConsent] =
     useState<unknown>(false);
@@ -114,45 +123,46 @@ const BenefitsDetails: React.FC = () => {
     }
   };
 
-  const submitConfirm = async (submission_id: string) => {
-    setLoading(true);
-    try {
-      const result = await confirmApplication({
-        submission_id,
-        item_id: id,
-        context: context ?? {},
-      });
-      const orderId = (
-        result as {
-          data: { responses: { message: { order: { id: string } } }[] };
-        }
-      )?.data?.responses?.[0]?.message?.order?.id;
+  // const submitConfirm = async (submission_id: string) => {
+  //   setLoading(true);
+  //   try {
+  //     const result = await confirmApplication({
+  //       submission_id,
+  //       item_id: id,
+  //       benefit_id: id,
+  //       context: context ?? {},
+  //     });
+  //     const orderId = (
+  //       result as {
+  //         data: { responses: { message: { order: { id: string } } }[] };
+  //       }
+  //     )?.data?.responses?.[0]?.message?.order?.id;
 
-      //  const orderId = result?.data?.responses?.[0]?.message?.order?.id;
-      if (orderId) {
-        const payload = {
-          user_id: authUser?.user_id,
-          benefit_id: id,
-          benefit_provider_id: context?.bpp_id,
-          benefit_provider_uri: context?.bap_uri,
-          external_application_id: orderId,
-          application_name: item?.descriptor?.name,
-          status: "submitted",
-          application_data: authUser,
-        };
-        await createApplication(payload);
-        setWebFormProp({});
-        onClose();
-        setConfirmationConsent({ orderId, name: item?.descriptor?.name });
-      } else {
-        setError("Error while creating application. Please try again later");
-      }
-    } catch (e: unknown) {
-      setError(`Error: ${(e as Error).message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     //  const orderId = result?.data?.responses?.[0]?.message?.order?.id;
+  //     if (orderId) {
+  //       const payload = {
+  //         user_id: authUser?.user_id,
+  //         benefit_id: id,
+  //         benefit_provider_id: context?.bpp_id,
+  //         benefit_provider_uri: context?.bap_uri,
+  //         external_application_id: orderId,
+  //         application_name: item?.descriptor?.name,
+  //         status: "submitted",
+  //         application_data: authUser,
+  //       };
+  //       await createApplication(payload);
+  //       setWebFormProp({});
+  //       onClose();
+  //       setConfirmationConsent({ orderId, name: item?.descriptor?.name });
+  //     } else {
+  //       setError("Error while creating application. Please try again later");
+  //     }
+  //   } catch (e: unknown) {
+  //     setError(`Error: ${(e as Error).message}`);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleBack = () => {
     navigate(-1);
@@ -170,7 +180,7 @@ const BenefitsDetails: React.FC = () => {
             ?.message?.order?.items?.[0] || {};
         setContext(
           (result as { data: { responses: Array<any> } }).data?.responses?.[0]
-            ?.context as Context
+            ?.context as FinancialSupportRequest
         );
 
         const docs =
@@ -185,16 +195,10 @@ const BenefitsDetails: React.FC = () => {
         if (mounted) {
           setItem({ ...resultItem, document: docs });
 
-          const formData: AuthUser = {
-            ...(user?.data || {}),
-            class: user?.data?.class || "",
-            marks_previous_class: user?.data?.previousYearMarks || "",
-            phoneNumber: user?.data?.phoneNumber || "",
-          };
-          setAuthUser(formData);
+          setAuthUser(user?.data || {});
 
           const appResult = await getApplication({
-            user_id: formData.user_id,
+            user_id: user?.data?.user_id,
             benefit_id: id,
           });
 
@@ -220,7 +224,16 @@ const BenefitsDetails: React.FC = () => {
   }, [id]);
 
   if (loading) {
-    return <Layout loading={true} />;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <Spinner size="xl" />
+      </Box>
+    );
   }
 
   if (error) {
@@ -239,12 +252,13 @@ const BenefitsDetails: React.FC = () => {
       </Modal>
     );
   }
-
   if (webFormProp?.url && webFormProp?.formData) {
     return (
       <WebViewFormSubmitWithRedirect
         {...webFormProp}
-        setPageContent={submitConfirm}
+        context={context}
+        item={item}
+        // setPageContent={submitConfirm}
       />
     );
   }
@@ -288,7 +302,7 @@ const BenefitsDetails: React.FC = () => {
                 ].includes(tag.descriptor?.code)
               )
               .map((tag, index) => (
-                <ListItem key={tag?.descriptor?.code}>
+                <ListItem key={"detail" + index}>
                   {tag.descriptor?.short_desc}
                 </ListItem>
               ))}
