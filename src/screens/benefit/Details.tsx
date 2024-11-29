@@ -97,30 +97,30 @@ const BenefitsDetails: React.FC = () => {
   const handleConfirmation = async () => {
     setLoading(true);
 
-    try {
-      const result = await applyApplication({ id, context });
-      const url = (result as { data: { responses: Array<any> } }).data
-        ?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
-      const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
-
-      // Only set WebFormProps if the url exists
-      if (url) {
-        setWebFormProp({
-          url,
-          formData,
-        });
-      } else {
-        setError("URL not found in response");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError(`Failed to apply application: ${error.message}`);
-      } else {
-        setError("An unknown error occurred");
-      }
-    } finally {
-      setLoading(false);
+    // try {
+    const result = await applyApplication({ id, context });
+    const url = (result as { data: { responses: Array<any> } }).data
+      ?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
+    const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
+    setLoading(false);
+    // Only set WebFormProps if the url exists
+    if (url) {
+      setWebFormProp({
+        url,
+        formData,
+      });
+    } else {
+      setError("URL not found in response");
     }
+    // } catch (error: unknown) {
+    //   if (error instanceof Error) {
+    //     setError(`Failed to apply application: ${error.message}`);
+    //   } else {
+    //     setError("An unknown error occurred");
+    //   }
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const handleBack = () => {
