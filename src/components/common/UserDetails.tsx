@@ -1,19 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Text, HStack, VStack } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { formatDate } from "../../utils/jsHelper/helper";
 
 // Define common styles for Text and Input components
 const labelStyles = {
   fontSize: "12px",
-  fontWeight: "500",
+  fontWeight: "600",
   mb: 1,
   color: "#06164B",
+  lineHeight: "16px",
 };
 
 const valueStyles = {
-  fontSize: "12px",
-  fontWeight: "500",
+  fontSize: "14px",
+  fontWeight: "400",
   color: "#1F1B13",
+  lineHeight: "14px",
 };
 
 interface UserData {
@@ -74,6 +77,8 @@ const Field: React.FC<FieldProps> = ({ label, value, defaultValue = "__" }) => (
 const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
   const { t } = useTranslation();
 
+  const formattedDate = formatDate(userData?.dob);
+
   return (
     <Box
       borderRadius="5px"
@@ -83,7 +88,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
       borderWidth={1}
       p={6}
     >
-      <VStack spacing={6} align="stretch" mb={6}>
+      {/* <VStack spacing={6} align="stretch" mb={6}>
         <Field
           label={t("USER_DETAILS_FATHER_NAME")}
           value={userData?.fatherName}
@@ -93,38 +98,38 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
           value={userData?.motherName}
         />
         <Field label={t("USER_DETAILS_LAST_NAME")} value={userData?.lastName} />
-      </VStack>
+      </VStack> */}
 
       <VStack spacing={6} align="stretch">
         <HStack spacing={4}>
-          <Field label={t("USER_DETAILS_DOB")} value={userData?.dob} />{" "}
-          <Field
-            label={t("USER_DETAILS_DISABILITY")}
-            value={userData?.disabilityStatus}
-          />
+          <Field label={t("USER_DETAILS_DOB")} value={formattedDate} />{" "}
         </HStack>
         <HStack spacing={4}>
           <Field label={t("USER_DETAILS_GENDER")} value={userData?.gender} />
           <Field label={t("USER_DETAILS_CASTE")} value={userData?.caste} />
         </HStack>
         <HStack spacing={4}>
-          <Field label={t("USER_DETAILS_CLASS")} value={userData?.class} />
           <Field
-            label={t("USER_DETAILS_PREVIOUS_YEAR_MARKS")}
-            value={userData?.previousYearMarks}
+            label={t("USER_DETAILS_DISABILITY")}
+            value={userData?.disabilityStatus}
           />
+          <Field label={t("USER_DETAILS_CLASS")} value={userData?.class} />
         </HStack>
 
         <HStack spacing={4}>
           <Field
             label={t("USER_DETAILS_ANNUAL_INCOME")}
-            value={userData?.annualIncome}
+            value={userData?.annualIncome && `INR ${userData?.annualIncome}`}
           />
           <Field
             label={t("USER_DETAILS_DAY_SCHOLAR_HOSTLER")}
             value={userData?.studentType}
           />
         </HStack>
+        <Field
+          label={t("USER_DETAILS_PREVIOUS_YEAR_MARKS")}
+          value={userData?.previousYearMarks}
+        />
       </VStack>
     </Box>
   );

@@ -245,7 +245,7 @@ export const transformUserDataToFormData = (userData) => {
     },
   };
 };
-export const transformData = (userData: any) => {
+export const transformData = (userData) => {
   return {
     firstName: userData.firstName ?? "",
     middleName: userData.fatherName ?? "",
@@ -253,32 +253,25 @@ export const transformData = (userData: any) => {
     gender: userData.gender ?? "",
     class: userData.class ? `${userData.class}` : "",
     annualIncome: userData.annualIncome ?? "",
-    caste: userData.caste ?? "",
+    caste: userData.caste.toLowerCase() ?? "",
     disabled: userData.disability ? "yes" : "no",
     state: userData.current_school_address?.split(",")[1]?.trim() ?? "",
-    studentType: userData.studentType.toString() ?? "",
+    studentType: userData.studentType === "Day" ? "dayScholar" : '"hostler"',
     docs: userData?.docs ?? [],
+    bankAccountHolderName: userData.bankAccountHolderName ?? "",
+    bankName: userData.bankName ?? "",
+    bankAccountNumber: userData.bankAccountNumber ?? "",
+    bankIfscCode: userData.bankIfscCode ?? "",
+    previousClassMarks: userData.previousYearMarks ?? "",
+    mobile: userData.phoneNumber ?? "",
   };
-  // const transformedData: Record<string, string> = {};
-  // Object.entries(userData).forEach(([key, userKey]) => {
-  //   const value = userData[key];
-  //   if (value !== undefined && value !== null) {
-  //     if (key === "gender" || key === "caste") {
-  //       // Ensure gender and caste are in lowercase
-  //       transformedData[key] = value.toString().toLowerCase();
-  //     } else if (key === "disabled") {
-  //       // Convert boolean disability to "yes" or "no"
-  //       transformedData[key] = value ? "yes" : "no";
-  //     } else if (key === "state") {
-  //       // Extract state from school address if available
-  //       transformedData[key] = value?.split(",")[1]?.trim() || "";
-  //     } else {
-  //       transformedData[key] = value.toString();
-  //     }
-  //   } else {
-  //     transformedData[key] = "";
-  //   }
-  // });
+};
 
-  // return transformedData;
+export const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+
+  return `${day}/${month}/${year}`;
 };

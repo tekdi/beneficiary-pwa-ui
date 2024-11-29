@@ -59,7 +59,7 @@ const UserProfile: React.FC = () => {
       <HStack m={5} mt={0} p={0} h={82}>
         <Avatar
           variant="solid"
-          name={`${userData?.firstName || ""} ${userData?.lastName || ""}`}
+          name={`${userData?.firstName || ""}  ${userData?.lastName || ""}`}
           mr={2}
         />
         <VStack mt={8}>
@@ -70,7 +70,8 @@ const UserProfile: React.FC = () => {
             color="#433E3F"
             textAlign={"start"}
           >
-            {userData?.firstName || ""} {userData?.lastName || ""}
+            {userData?.firstName || ""} {userData?.fatherName || ""}{" "}
+            {userData?.lastName || ""}
           </Text>
           <Text
             fontSize="11px"
@@ -79,7 +80,9 @@ const UserProfile: React.FC = () => {
             color="#433E3F"
             alignSelf={"flex-start"}
           >
-            +91 {userData?.phoneNumber || "Phone No"}
+            {userData?.phoneNumber
+              ? ` +91 ${userData?.phoneNumber}`
+              : "Phone Number"}
           </Text>
         </VStack>
       </HStack>
