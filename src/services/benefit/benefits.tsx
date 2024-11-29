@@ -104,22 +104,22 @@ export const applyApplication = async ({
       },
     },
   };
-  try {
-    const tokenData = await getToken();
-    if (!tokenData || !tokenData.token) {
-      throw new Error("Token not found");
-    }
-    const token = localStorage.getItem("authToken");
-    const response = await axios.post(`${apiBaseUrl}/init`, loginData, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response || {};
-  } catch (error) {
-    handleError(error);
+  // try {
+  const tokenData = await getToken();
+  if (!tokenData || !tokenData.token) {
+    throw new Error("Token not found");
   }
+  const token = localStorage.getItem("authToken");
+  const response = await axios.post(`${apiBaseUrl}/init`, loginData, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response || {};
+  // } catch (error) {
+  //   handleError(error);
+  // }
 };
 interface ConfirmApplicationParams {
   submission_id: string | undefined;
