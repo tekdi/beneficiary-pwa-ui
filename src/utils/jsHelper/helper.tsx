@@ -245,3 +245,40 @@ export const transformUserDataToFormData = (userData) => {
     },
   };
 };
+export const transformData = (userData: any) => {
+  return {
+    firstName: userData.firstName ?? "",
+    middleName: userData.fatherName ?? "",
+    lastName: userData.lastName ?? "",
+    gender: userData.gender ?? "",
+    class: userData.class ? `${userData.class}` : "",
+    annualIncome: userData.annualIncome ?? "",
+    caste: userData.caste ?? "",
+    disabled: userData.disability ? "yes" : "no",
+    state: userData.current_school_address?.split(",")[1]?.trim() ?? "",
+    studentType: userData.studentType.toString() ?? "",
+    docs: userData?.docs ?? [],
+  };
+  // const transformedData: Record<string, string> = {};
+  // Object.entries(userData).forEach(([key, userKey]) => {
+  //   const value = userData[key];
+  //   if (value !== undefined && value !== null) {
+  //     if (key === "gender" || key === "caste") {
+  //       // Ensure gender and caste are in lowercase
+  //       transformedData[key] = value.toString().toLowerCase();
+  //     } else if (key === "disabled") {
+  //       // Convert boolean disability to "yes" or "no"
+  //       transformedData[key] = value ? "yes" : "no";
+  //     } else if (key === "state") {
+  //       // Extract state from school address if available
+  //       transformedData[key] = value?.split(",")[1]?.trim() || "";
+  //     } else {
+  //       transformedData[key] = value.toString();
+  //     }
+  //   } else {
+  //     transformedData[key] = "";
+  //   }
+  // });
+
+  // return transformedData;
+};
