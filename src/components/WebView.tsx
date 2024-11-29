@@ -98,8 +98,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
       if (event.origin !== import.meta.env.VITE_PROVIDER_URL) {
         return;
       }
-      if (event.data.type === "FORM_SUBMIT") {
-      }
+
       const receivedData = event.data.data;
       if (receivedData) {
         submitConfirm(receivedData);
