@@ -221,6 +221,7 @@ const BenefitsDetails: React.FC = () => {
       />
     );
   }
+
   return (
     <Layout _heading={{ heading: item?.descriptor?.name || "", handleBack }}>
       <Box className="card-scroll invisible_scroll">
@@ -236,16 +237,10 @@ const BenefitsDetails: React.FC = () => {
           <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_HEADING_DETAILS")}
           </Heading>
-          <Text mt={4}>{item?.descriptor?.long_desc}</Text>
 
-          <Heading size="md" mt={6} color="#484848" fontWeight={500}>
-            {t("BENEFIT_DETAILS_OBJECTIVE_DETAILS")}
-          </Heading>
-          <UnorderedList mt={4}>
-            {item?.descriptor && (
-              <ListItem>{item?.descriptor?.long_desc}</ListItem>
-            )}
-          </UnorderedList>
+          {item?.descriptor?.long_desc !== "" && (
+            <Text mt={4}>{item?.descriptor?.long_desc}</Text>
+          )}
 
           <Heading size="md" mt={6} color="#484848" fontWeight={500}>
             {t("BENEFIT_DETAILS_KEYPOINT_DETAILS")}

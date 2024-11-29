@@ -50,7 +50,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({ inputs, setFilter }) => {
     onClose();
   };
   return (
-    <Box>
+    <Box ml={"20vw"}>
       <IconButton
         aria-label="Filter"
         icon={<MdOutlineFilterAlt />}
