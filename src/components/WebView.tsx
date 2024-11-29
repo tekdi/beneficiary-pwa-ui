@@ -185,7 +185,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
           <iframe
             ref={iframeRef}
             src={url}
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "90vh" }}
             title="Form UI"
           ></iframe>
         )}
