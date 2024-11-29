@@ -67,7 +67,7 @@ interface FieldProps {
   defaultValue?: string;
 }
 
-const Field: React.FC<FieldProps> = ({ label, value, defaultValue = "__" }) => (
+const Field: React.FC<FieldProps> = ({ label, value, defaultValue = "-" }) => (
   <Box flex={1}>
     <Text {...labelStyles}>{label}</Text>
     <Text {...valueStyles}>{value ?? defaultValue}</Text>

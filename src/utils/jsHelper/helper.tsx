@@ -268,6 +268,7 @@ export const transformData = (userData) => {
 };
 
 export const formatDate = (dateString) => {
+  if (dateString === null) return "-";
   const date = new Date(dateString);
   const day = String(date.getUTCDate()).padStart(2, "0");
   const month = String(date.getUTCMonth() + 1).padStart(2, "0");
