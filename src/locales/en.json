@@ -57,7 +57,7 @@
   "BENEFIT_DETAILS_PROCEED_TO_APPLY": "Proceed To Apply",
   "SUBMIT_DIALOGUE_HEADING_TEXT": "Application Submitted",
   "SUBMIT_DIALOGUE_SUBHEADING_TEXT": "Confirmation",
-  "SUBMIT_DIALOGUE_CONTENT_TEXT": "Your application to the",
+  "SUBMIT_DIALOGUE_CONTENT_TEXT": "Your application to the ",
   "SUBMIT_DIALOGUE_SUBMITTED_TEXT": "Benefit has been submitted",
   "SUBMIT_DIALOGUE_APPLICATION_ID_TEXT": " Application ID",
   "SUBMIT_DIALOGUE_BUTTON": "Okay",
@@ -77,6 +77,6 @@
   "USER_PROFILE_UPLOAD_MISSING_DOCUMENTS": "Upload Missing Documents",
   "USER_PROFILE_ERROR_FETCHING_DATA": "Error fetching user data or documents",
   "UPLOAD_DOCUMENT_EWALLET": "Upload Missing Document",
-  "DIALOGUE_T&C":"Terms and Conditions",
-  "DIALOGUE_CLICK_TO_READ_AND_PROCEED":"Click to read and proceed"
+  "DIALOGUE_T&C": "Terms and Conditions",
+  "DIALOGUE_CLICK_TO_READ_AND_PROCEED": "Click to read and proceed"
 }

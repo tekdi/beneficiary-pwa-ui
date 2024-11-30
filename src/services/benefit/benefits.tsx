@@ -121,6 +121,8 @@ export const applyApplication = async ({
 interface ConfirmApplicationParams {
   submission_id: string | undefined;
   item_id: string | undefined;
+  benefit_id: string | undefined;
+
   context: {
     bpp_id?: string;
     bap_uri?: string;
@@ -129,6 +131,7 @@ interface ConfirmApplicationParams {
 export const confirmApplication = async ({
   submission_id,
   item_id,
+  benefit_id,
   context,
 }: ConfirmApplicationParams) => {
   const data = {
@@ -152,7 +155,7 @@ export const confirmApplication = async ({
         },
         items: [
           {
-            id: item_id,
+            id: benefit_id,
             descriptor: {
               name: "Pre-matric Scholarship-SCc",
               long_desc:

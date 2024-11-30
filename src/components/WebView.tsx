@@ -95,6 +95,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      window.postMessage({ type: "FORM_SUBMIT", data: formData }, "*");
       if (event.origin !== import.meta.env.VITE_PROVIDER_URL) {
         return;
       }
@@ -131,9 +132,8 @@ const WebViewFormSubmitWithRedirect: React.FC<
   const sendDataToIframe = async () => {
     const prefillData = transformData(formData);
 
-    iframeRef.current.contentWindow.postMessage({ id, prefillData }, "*");
+    iframeRef.current.contentWindow.postMessage(prefillData, "*");
   };
-
   const submitConfirm = async (payload) => {
     const confirmPayload = {
       submission_id: payload?.submit.submission_id,
@@ -141,6 +141,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
       benefit_id: id,
       context: context,
     };
+
     const result = await confirmApplication(confirmPayload);
     setIsLoading(true);
     const orderId = (
