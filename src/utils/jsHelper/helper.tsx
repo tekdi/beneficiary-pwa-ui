@@ -247,23 +247,23 @@ export const transformUserDataToFormData = (userData) => {
 };
 export const transformData = (userData) => {
   return {
-    firstName: userData.firstName ?? "",
-    middleName: userData.fatherName ?? "",
-    lastName: userData.lastName ?? "",
-    gender: userData.gender ?? "",
-    class: userData.class ? `${userData.class}` : "",
-    annualIncome: userData.annualIncome ?? "",
-    caste: userData.caste.toLowerCase() ?? "",
-    disabled: userData.disability ? "yes" : "no",
-    state: userData.current_school_address?.split(",")[1]?.trim() ?? "",
-    studentType: userData.studentType === "Day" ? "dayScholar" : '"hostler"',
+    firstName: userData?.firstName ?? "",
+    middleName: userData?.fatherName ?? "",
+    lastName: userData?.lastName ?? "",
+    gender: userData?.gender ?? "",
+    class: userData?.class ? `${userData.class}` : "",
+    annualIncome: userData?.annualIncome ?? "",
+    caste: userData?.caste?.toLowerCase() ?? "",
+    disabled: userData?.disability ? "yes" : "no",
+    state: userData?.current_school_address?.split(",")[1]?.trim() ?? "",
+    studentType: userData?.studentType === "Day" ? "dayScholar" : '"hostler"',
     docs: userData?.docs ?? [],
-    bankAccountHolderName: userData.bankAccountHolderName ?? "",
-    bankName: userData.bankName ?? "",
-    bankAccountNumber: userData.bankAccountNumber ?? "",
+    bankAccountHolderName: userData?.bankAccountHolderName ?? "",
+    bankName: userData?.bankName ?? "",
+    bankAccountNumber: userData?.bankAccountNumber ?? "",
     bankIfscCode: userData.bankIfscCode ?? "",
-    previousClassMarks: userData.previousYearMarks ?? "",
-    mobile: userData.phoneNumber ?? "",
+    previousClassMarks: userData?.previousYearMarks ?? "",
+    mobile: userData?.phoneNumber ?? "",
   };
 };
 
