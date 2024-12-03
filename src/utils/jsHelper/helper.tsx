@@ -333,11 +333,11 @@ export function checkEligibilityCriteria({
   condition: string;
   conditionValues: string | number | string[] | number[];
 }): boolean {
-  const val = typeof value === "string" ? value : value.toString();
+  const val = typeof value === "string" ? value : value?.toString();
   const conditionVals: string[] =
     typeof conditionValues === "string"
       ? [conditionValues]
-      : (conditionValues as (string | number)[]).map((cv) => cv.toString());
+      : (conditionValues as (string | number)[]).map((cv) => cv?.toString());
 
   switch (condition.trim()) {
     case "equals":

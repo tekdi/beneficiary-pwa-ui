@@ -199,6 +199,7 @@ const BenefitsDetails: React.FC = () => {
             setError("An unexpected error occurred");
           }
         }
+        setLoading(false);
       }
     };
     init();
