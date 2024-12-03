@@ -333,70 +333,46 @@ export function checkEligibilityCriteria({
   condition: string;
   conditionValues: string | number | string[] | number[];
 }): boolean {
+  const val = typeof value === "string" ? value : value.toString();
+  const conditionVals =
+    typeof conditionValues === "string"
+      ? [conditionValues]
+      : conditionValues.map((cv) => cv.toString());
+
   switch (condition.trim()) {
     case "equals":
-      return value == conditionValues;
+      return conditionVals.includes(val);
     case "lessThan":
     case "less than":
       return (
-        (typeof value === "number" || typeof value === "string") &&
-        (typeof conditionValues === "number" ||
-          typeof conditionValues === "string") &&
-        parseInt(conditionValues, 10) > parseInt(value, 10)
+        conditionVals.length > 0 &&
+        parseInt(conditionVals[0], 10) > parseInt(val, 10)
       );
     case "lessThanOrEquals":
     case "less than or equals":
     case "less than equals":
       return (
-        (typeof value === "number" || typeof value === "string") &&
-        (typeof conditionValues === "number" ||
-          typeof conditionValues === "string") &&
-        parseInt(conditionValues, 10) >= parseInt(value, 10)
+        conditionVals.length > 0 &&
+        parseInt(conditionVals[0], 10) >= parseInt(val, 10)
       );
     case "greaterThan":
     case "greater than":
       return (
-        (typeof value === "number" || typeof value === "string") &&
-        (typeof conditionValues === "number" ||
-          typeof conditionValues === "string") &&
-        parseInt(conditionValues, 10) < parseInt(value, 10)
+        conditionVals.length > 0 &&
+        parseInt(conditionVals[0], 10) < parseInt(val, 10)
       );
     case "greaterThanOrEquals":
     case "greater than or equals":
     case "greater than equals":
       return (
-        (typeof value === "number" || typeof value === "string") &&
-        (typeof conditionValues === "number" ||
-          typeof conditionValues === "string") &&
-        parseInt(conditionValues, 10) <= parseInt(value, 10)
+        conditionVals.length > 0 &&
+        parseInt(conditionVals[0], 10) <= parseInt(val, 10)
       );
     case "in":
-      if (typeof value === "string") {
-        return (
-          Array.isArray(conditionValues) &&
-          conditionValues.map((cv) => cv.toString()).includes(value.toString())
-        );
-      } else if (typeof value === "number") {
-        return (
-          Array.isArray(conditionValues) &&
-          conditionValues.map((cv) => Number(cv)).includes(value)
-        );
-      }
-      return false;
+      return conditionVals.includes(val);
     case "notIn":
     case "not in":
-      if (typeof value === "string") {
-        return (
-          Array.isArray(conditionValues) &&
-          !conditionValues.map((cv) => cv.toString()).includes(value.toString())
-        );
-      } else if (typeof value === "number") {
-        return (
-          Array.isArray(conditionValues) &&
-          !conditionValues.map((cv) => Number(cv)).includes(value)
-        );
-      }
-      return false;
+      return !conditionVals.includes(val);
     default:
       return false;
   }
