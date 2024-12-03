@@ -301,7 +301,8 @@ const BenefitsDetails: React.FC = () => {
     }
   };
   const handleRedirect = () => {
-    setSubmitDialouge(false);
+    // setSubmitDialouge(false);
+    navigate("/applicationStatus");
   };
   return (
     <Layout
