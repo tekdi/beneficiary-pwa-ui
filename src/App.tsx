@@ -17,7 +17,6 @@ function App() {
   >([]);
   const token = localStorage.getItem("authToken");
   // const { keycloak } = useKeycloak();
-  console.log("token", token);
 
   useEffect(() => {
     if (token) {

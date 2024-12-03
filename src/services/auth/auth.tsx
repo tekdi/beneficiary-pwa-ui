@@ -244,11 +244,32 @@ export const verifyOTP = async (payload: MobileData) => {
 };
 export const registerUser = async (userData: UserData) => {
   try {
-    const response = await axios.post(`${apiBaseUrl}/auth/register`, userData);
+    const response = await axios.post(
+      `${apiBaseUrl}/auth/register_with_password`,
+      userData
+    );
     console.log(response);
     return response?.data;
   } catch (error) {
     console.log(error);
     return error;
+  }
+};
+export const registerWithPassword = async (userData) => {
+  try {
+    const response = await axios.post(
+      `${apiBaseUrl}/auth/register_with_password`,
+      userData
+    );
+    console.log(response.data);
+
+    return response.data; // Handle the response data
+  } catch (error) {
+    console.log(error);
+    console.error(
+      "Error during registration:",
+      error.response?.data?.message?.[0] || ""
+    );
+    throw error.response?.data?.message?.[0];
   }
 };
