@@ -19,7 +19,7 @@ import "../../assets/styles/App.css";
 import { useNavigate, useParams } from "react-router-dom";
 import CommonButton from "../../components/common/button/Button";
 import Layout from "../../components/common/layout/Layout";
-import { getUser } from "../../services/auth/auth";
+import { getUser, sendConsent } from "../../services/auth/auth";
 import {
   applyApplication,
   confirmApplication,
@@ -28,11 +28,11 @@ import {
   getOne,
 } from "../../services/benefit/benefits";
 import { MdCurrencyRupee } from "react-icons/md";
-import ConfirmationDialog from "../../components/ConfirmationDialog";
 import WebViewFormSubmitWithRedirect from "../../components/WebView";
-import SubmitDialog from "../../components/SubmitDialog";
 import { useTranslation } from "react-i18next";
 import Loader from "../../components/common/Loader";
+import { termsAndConditions } from "../../assets/termsAndCondition";
+import CommonDialogue from "../../components/common/Dialogue";
 
 // Define types for benefit item and user
 interface BenefitItem {
@@ -90,8 +90,10 @@ const BenefitsDetails: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
   const [webFormProp, setWebFormProp] = useState<WebFormProps>({});
-  const [confirmationConsent, setConfirmationConsent] =
-    useState<unknown>(false);
+  const [confirmationConsent, setConfirmationConsent] = useState<
+    boolean | object
+  >(false);
+  const [submitDialouge, setSubmitDialouge] = useState<boolean | object>(false);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
@@ -214,7 +216,7 @@ const BenefitsDetails: React.FC = () => {
         };
 
         await createApplication(payloadCreateApp);
-        setConfirmationConsent({ orderId, name: item?.descriptor?.name });
+        setSubmitDialouge({ orderId, name: item?.descriptor?.name });
         setWebFormProp({});
       } else {
         setError("Error while creating application. Please try again later");
@@ -259,7 +261,20 @@ const BenefitsDetails: React.FC = () => {
       />
     );
   }
+  const closeDialog = async () => {
+    try {
+      await sendConsent(authUser?.user_id, `${id}`, `Application for ${id}`);
 
+      setConfirmationConsent(false);
+      navigate("/applicationStatus");
+    } catch {
+      console.log("Error sending consent");
+    }
+  };
+  const handleRedirect = () => {
+    alert("hello");
+    setSubmitDialouge(false);
+  };
   return (
     <Layout
       _heading={{ heading: item?.descriptor?.name || "", handleBack }}
@@ -333,8 +348,18 @@ const BenefitsDetails: React.FC = () => {
           )}
         </Box>
       </Box>
-
-      <ConfirmationDialog
+      <CommonDialogue
+        isOpen={confirmationConsent}
+        onClose={closeDialog}
+        termsAndConditions={termsAndConditions}
+        handleDialog={handleConfirmation}
+      />
+      <CommonDialogue
+        isOpen={submitDialouge}
+        onClose={handleRedirect}
+        handleDialog={handleRedirect}
+      />
+      {/* <ConfirmationDialog
         dialogVisible={isOpen}
         closeDialog={onClose}
         handleConfirmation={handleConfirmation}
@@ -346,7 +371,7 @@ const BenefitsDetails: React.FC = () => {
           confirmationConsent as { name?: string; orderId?: string }
         }
         closeSubmit={setConfirmationConsent}
-      />
+      /> */}
     </Layout>
   );
 };
