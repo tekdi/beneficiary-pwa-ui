@@ -33,6 +33,7 @@ import WebViewFormSubmitWithRedirect from "../../components/WebView";
 import SubmitDialog from "../../components/SubmitDialog";
 import { useTranslation } from "react-i18next";
 import Loader from "../../components/common/Loader";
+import { checkEligibilityCriteria } from "../../utils/jsHelper/helper";
 
 // Define types for benefit item and user
 interface BenefitItem {
@@ -95,34 +96,32 @@ const BenefitsDetails: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
+  const [isEligible, setIsEligible] = useState<any[]>();
 
   const handleConfirmation = async () => {
-    setLoading(true);
-
-    // try {
-    const result = await applyApplication({ id, context });
-    const url = (result as { data: { responses: Array<any> } }).data
-      ?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
-    const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
-    setLoading(false);
-    // Only set WebFormProps if the url exists
-    if (url) {
-      setWebFormProp({
-        url,
-        formData,
-      });
+    if (isEligible?.length > 0) {
+      setError(
+        `You cannot proceed further because the criteria are not matching, such as ${isEligible.join(
+          ", "
+        )}.`
+      );
     } else {
-      setError("URL not found in response");
+      setLoading(true);
+      const result = await applyApplication({ id, context });
+      const url = (result as { data: { responses: Array<any> } }).data
+        ?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
+      const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
+      setLoading(false);
+      // Only set WebFormProps if the url exists
+      if (url) {
+        setWebFormProp({
+          url,
+          formData,
+        });
+      } else {
+        setError("URL not found in response");
+      }
     }
-    // } catch (error: unknown) {
-    //   if (error instanceof Error) {
-    //     setError(`Failed to apply application: ${error.message}`);
-    //   } else {
-    //     setError("An unknown error occurred");
-    //   }
-    // } finally {
-    //   setLoading(false);
-    // }
   };
 
   const handleBack = () => {
@@ -156,9 +155,27 @@ const BenefitsDetails: React.FC = () => {
           const token = localStorage.getItem("authToken");
           if (token) {
             const user = await getUser();
-
+            const eligibilityArr = [];
+            resultItem?.tags.forEach((e: any) => {
+              if (e?.descriptor?.code === "@eligibility") {
+                e.list.forEach((item: any) => {
+                  const code = item?.descriptor?.code;
+                  const valueObj = JSON.parse(item.value || "{}");
+                  const payload = {
+                    ...valueObj,
+                    value: user?.data?.[code],
+                  };
+                  const result = checkEligibilityCriteria(payload);
+                  if (!result) {
+                    eligibilityArr.push(code);
+                  }
+                });
+              }
+            });
+            setIsEligible(
+              eligibilityArr.length > 0 ? eligibilityArr : undefined
+            );
             setAuthUser(user?.data || {});
-
             const appResult = await getApplication({
               user_id: user?.data?.user_id,
               benefit_id: id,
@@ -288,14 +305,7 @@ const BenefitsDetails: React.FC = () => {
           </Heading>
           <UnorderedList mt={4}>
             {item?.tags
-              ?.filter((tag) =>
-                [
-                  "educational-eligibility",
-                  "personal-eligibility",
-                  "economical-eligibility",
-                  "geographical-eligibility",
-                ].includes(tag.descriptor?.code)
-              )
+              ?.filter((tag) => ["@eligibility"].includes(tag.descriptor?.code))
               .map((tag, index) => (
                 <ListItem key={"detail" + index}>
                   {tag.descriptor?.short_desc}

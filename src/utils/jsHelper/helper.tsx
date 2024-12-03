@@ -323,3 +323,55 @@ export function getSubmmitedDoc(userData, document) {
   }
   return result;
 }
+
+export function checkEligibilityCriteria({
+  value,
+  condition,
+  conditionValues,
+}: {
+  value: string | number;
+  condition: string;
+  conditionValues: string | number | string[] | number[];
+}): boolean {
+  switch (condition.trim()) {
+    case "equals":
+      return value === conditionValues;
+    case "lessThan":
+    case "less than":
+      return (
+        typeof value === "number" &&
+        typeof conditionValues === "number" &&
+        value < conditionValues
+      );
+    case "lessThanOrEquals":
+    case "less than or equals":
+    case "less than equals":
+      return (
+        typeof value === "number" &&
+        typeof conditionValues === "number" &&
+        value <= conditionValues
+      );
+    case "greaterThan":
+    case "greater than":
+      return (
+        typeof value === "number" &&
+        typeof conditionValues === "number" &&
+        value > conditionValues
+      );
+    case "greaterThanOrEquals":
+    case "greater than or equals":
+    case "greater than equals":
+      return (
+        typeof value === "number" &&
+        typeof conditionValues === "number" &&
+        value >= conditionValues
+      );
+    case "in":
+      return Array.isArray(conditionValues) && conditionValues.includes(value);
+    case "notIn":
+    case "not in":
+      return Array.isArray(conditionValues) && !conditionValues.includes(value);
+    default:
+      return false;
+  }
+}
