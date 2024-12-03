@@ -255,7 +255,7 @@ export const transformData = (userData) => {
     annualIncome: userData?.annualIncome ?? "",
     caste: userData?.caste?.toLowerCase() ?? "",
     disabled: userData?.disability ? "yes" : "no",
-    state: userData?.current_school_address?.split(",")?.[1]?.trim() ?? "",
+    state: userData?.state ?? "",
     studentType: userData?.studentType === "Day" ? "dayScholar" : "hostler",
     docs: userData?.docs ?? [],
     bankAccountHolderName: userData?.bankAccountHolderName ?? "",
