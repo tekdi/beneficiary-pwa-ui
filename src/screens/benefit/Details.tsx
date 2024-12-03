@@ -156,22 +156,26 @@ const BenefitsDetails: React.FC = () => {
           if (token) {
             const user = await getUser();
             const eligibilityArr = [];
-            resultItem?.tags.forEach((e: any) => {
-              if (e?.descriptor?.code === "@eligibility") {
-                e.list.forEach((item: any) => {
-                  const code = item?.descriptor?.code;
-                  const valueObj = JSON.parse(item.value || "{}");
-                  const payload = {
-                    ...valueObj,
-                    value: user?.data?.[code],
-                  };
-                  const result = checkEligibilityCriteria(payload);
-                  if (!result) {
-                    eligibilityArr.push(code);
+            if (Array.isArray(resultItem?.tags)) {
+              resultItem?.tags?.forEach((e: any) => {
+                if (e?.descriptor?.code === "@eligibility") {
+                  if (Array.isArray(e.list)) {
+                    e.list.forEach((item: any) => {
+                      const code = item?.descriptor?.code;
+                      const valueObj = JSON.parse(item.value || "{}");
+                      const payload = {
+                        ...valueObj,
+                        value: user?.data?.[code],
+                      };
+                      const result = checkEligibilityCriteria(payload);
+                      if (!result) {
+                        eligibilityArr.push(code);
+                      }
+                    });
                   }
-                });
-              }
-            });
+                }
+              });
+            }
             setIsEligible(
               eligibilityArr.length > 0 ? eligibilityArr : undefined
             );
