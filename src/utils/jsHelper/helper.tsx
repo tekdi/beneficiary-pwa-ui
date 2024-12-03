@@ -324,26 +324,50 @@ export function getSubmmitedDoc(userData, document) {
   return result;
 }
 
+/**
+ * Checks if the given value satisfies the given condition with respect to the given condition values.
+ * The condition can be any of the following:
+ * - "equals": checks if value equals any of the condition values
+ * - "lessThan": checks if value is less than the first condition value
+ * - "lessThanOrEquals": checks if value is less than or equals the first condition value
+ * - "greaterThan": checks if value is greater than the first condition value
+ * - "greaterThanOrEquals": checks if value is greater than or equals the first condition value
+ * - "in": checks if value is in the condition values
+ * - "notIn": checks if value is not in the condition values
+ *
+ * @param {string|number} value The value to check
+ * @param {string} condition The condition to evaluate
+ * @param {string|number|string[]|number[]} conditionValues The values to check against
+ * @returns {boolean} true if the value satisfies the condition, false otherwise
+ */
 export function checkEligibilityCriteria({
   value,
   condition,
   conditionValues,
 }: {
-  value: string | number;
+  value: string | number | null | undefined;
   condition: string;
-  conditionValues: string | number | string[] | number[];
+  conditionValues: string | number | (string | number)[];
 }): boolean {
+  if (value == null) return false;
+  // Convert value to string if it's a number
   const val = typeof value === "string" ? value : value?.toString();
+  if (!val) return false;
+
+  // Convert conditionValues to an array of strings
   const conditionVals: string[] =
     typeof conditionValues === "string"
       ? [conditionValues]
       : (conditionValues as (string | number)[]).map((cv) => cv?.toString());
 
+  // Evaluate the condition
   switch (condition.trim()) {
     case "equals":
+      // Check if value equals any of the condition values
       return conditionVals.includes(val);
     case "lessThan":
     case "less than":
+      // Check if value is less than the first condition value
       return (
         conditionVals.length > 0 &&
         parseInt(conditionVals[0], 10) > parseInt(val, 10)
@@ -351,12 +375,14 @@ export function checkEligibilityCriteria({
     case "lessThanOrEquals":
     case "less than or equals":
     case "less than equals":
+      // Check if value is less than or equals the first condition value
       return (
         conditionVals.length > 0 &&
         parseInt(conditionVals[0], 10) >= parseInt(val, 10)
       );
     case "greaterThan":
     case "greater than":
+      // Check if value is greater than the first condition value
       return (
         conditionVals.length > 0 &&
         parseInt(conditionVals[0], 10) < parseInt(val, 10)
@@ -364,16 +390,20 @@ export function checkEligibilityCriteria({
     case "greaterThanOrEquals":
     case "greater than or equals":
     case "greater than equals":
+      // Check if value is greater than or equals the first condition value
       return (
         conditionVals.length > 0 &&
         parseInt(conditionVals[0], 10) <= parseInt(val, 10)
       );
     case "in":
+      // Check if value is in the condition values
       return conditionVals.includes(val);
     case "notIn":
     case "not in":
+      // Check if value is not in the condition values
       return !conditionVals.includes(val);
     default:
+      // Return false for unrecognized conditions
       return false;
   }
 }

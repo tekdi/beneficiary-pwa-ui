@@ -164,13 +164,20 @@ const BenefitsDetails: React.FC = () => {
                   if (Array.isArray(e.list)) {
                     e.list.forEach((item: any) => {
                       const code = item?.descriptor?.code;
-                      const valueObj = JSON.parse(item.value || "{}");
-                      const payload = {
-                        ...valueObj,
-                        value: user?.data?.[code],
-                      };
-                      const result = checkEligibilityCriteria(payload);
-                      if (!result) {
+                      try {
+                        const valueObj = JSON.parse(item.value || "{}");
+                        const payload = {
+                          ...valueObj,
+                          value: user?.data?.[code],
+                        };
+                        const result = checkEligibilityCriteria(payload);
+                        if (!result) {
+                          eligibilityArr.push(code);
+                        }
+                      } catch (error) {
+                        console.error(
+                          `Failed to parse eligibility criteria: ${error}`
+                        );
                         eligibilityArr.push(code);
                       }
                     });
