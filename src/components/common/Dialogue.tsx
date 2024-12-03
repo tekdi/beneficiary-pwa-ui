@@ -42,6 +42,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
     setIsAccordionOpen(expandedIndex.length > 0);
   };
   const { t } = useTranslation();
+
   return (
     <Modal isOpen={Boolean(isOpen)} onClose={onClose}>
       <ModalOverlay />
