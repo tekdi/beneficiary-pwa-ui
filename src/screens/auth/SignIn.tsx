@@ -40,20 +40,25 @@ const SignIn: React.FC = () => {
       const response = await loginUser({ username, password });
       if (response) {
         toast({
-          title: t("SIGNIN_LOGGEDIN_SUCCESSFULLY"),
+          title: t("SIGNIN_SUCCESSFULL"),
           status: "success",
           duration: 3000,
           isClosable: true,
         });
+
         localStorage.setItem("authToken", response.data.access_token);
+        localStorage.setItem("refreshToken", response.data.refresh_token);
         navigate(0);
       }
     } catch (error) {
+      console.log("error", error);
+
       toast({
-        title: t("SIGNIN_INVALID_USERNAME_PASSWORD_MESSAGE"),
+        title: t("SIGNIN_FAILED"),
         status: "error",
-        duration: 1000,
+        duration: 10000,
         isClosable: true,
+        description: t("SIGNIN_INVALID_USERNAME_PASSWORD_MESSAGE"),
       });
     } finally {
       setLoading(false);
@@ -63,12 +68,11 @@ const SignIn: React.FC = () => {
   const handleBack = () => {
     navigate("/");
   };
-
   return (
     <Layout
       isMenu={false}
       _heading={{
-        heading: "Sign In",
+        heading: t("LOGIN_LOGIN_BUTTON"),
         handleBack,
       }}
       isBottombar={false}
@@ -96,7 +100,7 @@ const SignIn: React.FC = () => {
           <CommonButton
             isDisabled={!isFormValid || loading}
             onClick={() => handleLogin()}
-            label="Sign In"
+            label={t("LOGIN_LOGIN_BUTTON")}
           />
         </VStack>
 
@@ -108,7 +112,7 @@ const SignIn: React.FC = () => {
                 to="/signup"
                 className="text-color text-decoration-underline"
               >
-                {t("SIGNUP_SIGN_UP")}
+                {t("LOGIN_REGISTER_BUTTON")}
               </Link>
             </Box>
           </Text>

@@ -107,16 +107,16 @@ const SignUpWithPassword: React.FC = () => {
       toast({
         title: t("SIGNUP_INVALID_MOBILE_NUMBER"),
         status: "error",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
       return;
     }
     if (userDetails.password !== confirmPassword) {
       toast({
-        title: t("SIGNUP_PASSWORDS_DO_NOT_MATCH"),
+        title: t("SIGNUP_PASSWORD_NOT_MATCHING"),
         status: "error",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
       return;
@@ -124,24 +124,23 @@ const SignUpWithPassword: React.FC = () => {
     try {
       setLoading(true);
       const response = await registerWithPassword(userDetails);
-      console.log("response", response);
 
       if (response) {
         toast({
-          title: "Sign Up Successfully",
+          title: t("SIGNUP_SUCCESSFULL"),
           status: "success",
           description: `Your Username is ${response?.data?.userName}`,
-          duration: 15000,
+          duration: 10000,
           isClosable: true,
         });
         navigate("/signin");
       }
     } catch (error) {
       toast({
-        title: "Sign Up Failed",
-        description: error,
+        title: t("SIGNUP_FAILED"),
+        description: error?.data?.error,
         status: "error",
-        duration: 3000,
+        duration: 15000,
         isClosable: true,
       });
     } finally {
@@ -204,11 +203,11 @@ const SignUpWithPassword: React.FC = () => {
               errorMessage={mobileError}
             />
             <FloatingPasswordInput
-              label={t("SIGNUP_PASSWORD")}
+              label={t("SIGNUP_CREATE_PASSWORD")}
               value={userDetails.password}
               onChange={(e) => handleInputChange(e, "password")}
               isInvalid={!userDetails.password.trim()}
-              errorMessage={t("SIGNUP_PASSWORD_REQUIRED")}
+              errorMessage={t("SIGNUP_CREATE_PASSWORD_IS_REQUIRED")}
             />
 
             <FloatingPasswordInput
@@ -216,7 +215,7 @@ const SignUpWithPassword: React.FC = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               isInvalid={confirmPassword.trim() === ""}
-              errorMessage={t("SIGNUP_CONFIRM_PASSWORD_REQUIRED")}
+              errorMessage={t("SIGNUP_CONFIRM_PASSWORD_IS_REQUIRED")}
             />
             {UserName.length > 0 && (
               <Text textAlign="center" fontSize="14px" mt={4}>
@@ -228,7 +227,7 @@ const SignUpWithPassword: React.FC = () => {
             )}
             <CommonButton
               mt={4}
-              label={"Register"}
+              label={t("LOGIN_REGISTER_BUTTON")}
               onClick={handleSignUp}
               //
             />

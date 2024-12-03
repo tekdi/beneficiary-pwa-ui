@@ -1,6 +1,6 @@
-name: UAT - PWA Build and Deploy to S3
-
-on: [push]
+name: Deploy to UAT
+on:
+  workflow_dispatch:
 jobs:
   UAT-Deployment:
     runs-on: ubuntu-latest

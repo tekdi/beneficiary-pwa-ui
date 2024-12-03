@@ -12,24 +12,40 @@ import {
   Alert,
   AlertIcon,
   Image,
+  useToast,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import CustomSelect from "../input/Select";
 // import { useKeycloak } from "@react-keycloak/web";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { logoutUser } from "../../../services/auth/auth";
 
 const options: { value: string; label: string }[] = [];
 const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
   const [success] = useState<string>("");
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const toast = useToast();
   // const { keycloak } = useKeycloak();
   const handleLogout = async () => {
-    localStorage.removeItem("authToken");
-    navigate("/");
-    navigate(0);
     // keycloak.logout({ redirectUri: window.location.origin });
+    try {
+      const response = await logoutUser();
+      if (response) {
+        navigate("/");
+        navigate(0);
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Logout failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        description: "Try Again",
+      });
+    }
   };
 
   return (

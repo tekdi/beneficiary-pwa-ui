@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Box, VStack } from "@chakra-ui/react";
+import { Box, useToast, VStack } from "@chakra-ui/react";
 import {
   getUser,
   getDocumentsList,
   sendConsent,
   getUserConsents,
+  logoutUser,
 } from "../services/auth/auth";
 import { useNavigate } from "react-router-dom";
 import CommonButton from "../components/common/button/Button";
@@ -26,6 +27,7 @@ const Home: React.FC = () => {
   const { userData, documents, updateUserData } = useContext(AuthContext)!;
   const purpose = "sign_up_tnc";
   const purpose_text = "sign_up_tnc";
+  const toast = useToast();
   const handleRedirect = () => {
     navigate("/explorebenefits");
   };
@@ -39,10 +41,24 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleConsent = () => {
+  const handleConsent = async () => {
     setConsentSaved(!consentSaved);
-    keycloak.logout();
-    localStorage.removeItem("authToken");
+    try {
+      const response = await logoutUser();
+      if (response) {
+        navigate("/");
+        navigate(0);
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Logout failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        description: "Try Again",
+      });
+    }
   };
 
   const checkConsent = (consent) => {

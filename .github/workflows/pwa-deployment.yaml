@@ -1,6 +1,8 @@
-name: DEV - PWA Build and Deploy to S3
-
-on: [push]
+name: Deploy to DEV
+on:
+  push:
+    branches:
+      - main
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
