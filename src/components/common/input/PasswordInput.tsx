@@ -12,7 +12,7 @@ import {
 import React, { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
-interface FloatingSelectProps {
+interface FloatingPasswordInputProps {
   label?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -21,20 +21,21 @@ interface FloatingSelectProps {
   name?: string;
 }
 
-const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
-  label,
-  value,
+const FloatingPasswordInput: React.FC<FloatingPasswordInputProps> = ({
+  label = "Password",
+  value = "",
   onChange,
   isInvalid = false,
   errorMessage,
   name,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [show, setShow] = useState(false); // State for showing/hiding password
+  const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState(false);
-  const handleClick = () => setShow(!show); // Toggle show/hide
 
-  // Common styles for the label
+  const handleClick = () => setShowPassword(!showPassword);
+
+  // Dynamic label styles
   const labelStyles: BoxProps = {
     position: "absolute",
     left: "12px",
@@ -43,10 +44,10 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
     zIndex: 100,
     transition: "all 0.2s ease-out",
     pointerEvents: "none",
-    top: isFocused ? "-10px" : "32%",
-    color: isFocused ? "gray.500" : "gray.500",
-    fontSize: isFocused ? "17px" : "16px",
-    transform: isFocused ? "scale(0.85)" : "translateY(-50%)",
+    top: isFocused || value ? "-10px" : "32%", // Adjust position based on focus or value
+    color: "gray.500",
+    fontSize: isFocused || value ? "0.85rem" : "1rem",
+    transform: isFocused || value ? "scale(0.85)" : "translateY(-50%)",
   };
 
   return (
@@ -56,26 +57,24 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
       mt={2}
       isInvalid={isInvalid && touched}
     >
-      <Box as="label" htmlFor="password" {...labelStyles}>
+      <Box as="label" htmlFor={name} {...labelStyles}>
         {label}
       </Box>
       <InputGroup size="md">
         <Input
-          id="password"
+          id={name}
           name={name}
+          type={showPassword ? "text" : "password"} // Toggle between text and password
+          placeholder={isFocused ? "" : label}
           autoComplete="new-password"
           spellCheck="false"
           autoCorrect="off"
-          placeholder={isFocused ? "" : label}
-          type={show ? "text" : "password"} // Toggle between text and password
-          onFocus={() => {
-            setIsFocused(true);
-            setTouched(true);
-          }}
+          value={value}
+          onFocus={() => setIsFocused(true)}
           onBlur={() => {
             setIsFocused(value !== "");
+            setTouched(true); // Mark as touched on blur
           }}
-          value={value}
           onChange={onChange}
           size="md"
           height="60px"
@@ -92,16 +91,14 @@ const FloatingPasswordInput: React.FC<FloatingSelectProps> = ({
           transform="translateY(-50%)"
         >
           <Button h="1.75rem" size="sm" onClick={handleClick}>
-            {show ? <Icon as={ViewOffIcon} /> : <Icon as={ViewIcon} />}
+            {showPassword ? <Icon as={ViewIcon} /> : <Icon as={ViewOffIcon} />}
           </Button>
         </InputRightElement>
       </InputGroup>
       {isInvalid && touched && (
-        <Box my={2}>
-          <FormErrorMessage>
-            {errorMessage || "This field is required."}
-          </FormErrorMessage>
-        </Box>
+        <FormErrorMessage mt={2}>
+          {errorMessage || "This field is required."}
+        </FormErrorMessage>
       )}
     </FormControl>
   );

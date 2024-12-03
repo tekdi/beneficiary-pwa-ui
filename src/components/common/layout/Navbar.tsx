@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import CustomSelect from "../input/Select";
-import { useKeycloak } from "@react-keycloak/web";
+// import { useKeycloak } from "@react-keycloak/web";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -24,10 +24,12 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
   const [success] = useState<string>("");
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { keycloak } = useKeycloak();
+  // const { keycloak } = useKeycloak();
   const handleLogout = async () => {
     localStorage.removeItem("authToken");
-    keycloak.logout({ redirectUri: window.location.origin });
+    navigate("/");
+    navigate(0);
+    // keycloak.logout({ redirectUri: window.location.origin });
   };
 
   return (

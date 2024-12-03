@@ -326,7 +326,7 @@ const BenefitsDetails: React.FC = () => {
               mt={6}
               onClick={() => {
                 localStorage.setItem("redirectUrl", window.location.href);
-                navigate("/login");
+                navigate("/signin");
               }}
               label={t("BENEFIT_DETAILS_LOGIN_TO_APPLY")}
             />

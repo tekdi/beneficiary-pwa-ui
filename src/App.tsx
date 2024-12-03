@@ -1,20 +1,3 @@
-// import { ChakraProvider } from "@chakra-ui/react";
-// import theme from "./theme";
-// import { AuthProvider } from "./utils/context/checkToken";
-// import AppRouter from "./routes/AppRouter";
-
-// function App() {
-//   return (
-//     <ChakraProvider theme={theme}>
-//       <AuthProvider>
-//         <AppRouter />
-//       </AuthProvider>
-//     </ChakraProvider>
-//   );
-// }
-
-// export default App;
-
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme";
 import authRoutes from "./routes/AuthRoutes";
@@ -22,7 +5,7 @@ import guestRoutes from "./routes/GuestRoutes";
 import { Suspense, useEffect, useState } from "react";
 import Loader from "./components/common/Loader";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useKeycloak } from "@react-keycloak/web";
+// import { useKeycloak } from "@react-keycloak/web";
 import { AuthProvider } from "./utils/context/checkToken";
 import "./assets/styles/App.css";
 import Layout from "./components/common/layout/Layout";
@@ -32,17 +15,12 @@ function App() {
   const [routes, setRoutes] = useState<
     { path: string; component: React.ElementType }[]
   >([]);
-  const [token, setToken] = useState(localStorage.getItem("authToken"));
-  const { keycloak } = useKeycloak();
+  const token = localStorage.getItem("authToken");
+  // const { keycloak } = useKeycloak();
+  console.log("token", token);
 
   useEffect(() => {
-    if (!token && keycloak?.token) {
-      localStorage.setItem("authToken", keycloak.token);
-      setToken(keycloak.token);
-    } else {
-      setToken(localStorage.getItem("authToken"));
-    }
-    if (token || keycloak?.token) {
+    if (token) {
       setRoutes(authRoutes);
       const redirectUrl = localStorage.getItem("redirectUrl");
       if (redirectUrl) {
@@ -53,7 +31,7 @@ function App() {
       setRoutes(guestRoutes);
     }
     setLoading(false);
-  }, [keycloak?.token]);
+  }, [token]);
 
   if (loading) {
     return (

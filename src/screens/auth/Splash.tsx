@@ -7,7 +7,7 @@ import {
   Stack,
   Box,
 } from "@chakra-ui/react";
-import { useKeycloak } from "@react-keycloak/web";
+// import { useKeycloak } from "@react-keycloak/web";
 import React, { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ import { changeLanguage } from "i18next";
 const Splash: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { keycloak } = useKeycloak();
+  // const { keycloak } = useKeycloak();
   const [formData, setFormData] = useState({ name: "en" });
   const options = [{ label: t("LOGIN_ENGLISH"), value: "en" }];
 
@@ -38,17 +38,17 @@ const Splash: React.FC = () => {
     navigate("/SignUp");
   };
 
-  const handleLogin = async () => {
-    try {
-      await keycloak.login();
-    } catch (error) {
-      console.error(
-        "Login failed:",
-        error instanceof Error ? error.message : "Unknown error"
-      );
-    }
-  };
-  // useEffect(() => {});
+  // const handleLogin = async () => {
+  //   try {
+  //     await keycloak.login();
+  //   } catch (error) {
+  //     console.error(
+  //       "Login failed:",
+  //       error instanceof Error ? error.message : "Unknown error"
+  //     );
+  //   }
+  // };
+
   return (
     <Box
       display="flex"
@@ -99,7 +99,9 @@ const Splash: React.FC = () => {
             mt={8}
           />
           <CommonButton
-            onClick={handleLogin}
+            onClick={() => {
+              navigate("/Signin");
+            }}
             label={t("LOGIN_LOGIN_BUTTON")}
             mt={8}
             variant="outline"

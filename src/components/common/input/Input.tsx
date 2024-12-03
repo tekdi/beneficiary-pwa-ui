@@ -18,7 +18,7 @@ interface FloatingInputProps {
 
 const FloatingInput: React.FC<FloatingInputProps> = ({
   label,
-  value,
+  value = "",
   onChange,
   isInvalid = false,
   errorMessage,
@@ -27,7 +27,6 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [touched, setTouched] = useState(false);
 
-  // Label styles with BoxProps type
   const labelStyles: BoxProps = {
     position: "absolute",
     left: "12px",
@@ -36,36 +35,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
     zIndex: 100,
     transition: "all 0.2s ease-out",
     pointerEvents: "none",
-    top: isFocused ? "-10px" : "40%", // Dynamic top value based on focus
+    top: isFocused || value ? "-10px" : "40%", // Adjust based on focus or value
     color: "gray.500",
-    fontSize: isFocused ? "0.85rem" : "1rem",
-    transform: isFocused ? "scale(0.85)" : "translateY(-50%)",
-  };
-
-  const focusedLabelStyles = isFocused
-    ? {
-        top: "-10px",
-        color: "gray.500",
-        fontSize: "17px",
-        transform: "scale(0.85)",
-      }
-    : {
-        top: "34%",
-        color: "gray.500",
-        fontSize: "16px",
-        transform: "translateY(-50%)",
-      };
-
-  const inputStyles = {
-    placeholder: isFocused ? "" : label,
-    size: "md",
-    height: "60px",
-    pl: "12px",
-    borderColor: "var(--input-color)",
-    borderWidth: "2px",
-    _focus: {
-      borderColor: "gray.500",
-    },
+    fontSize: isFocused || value ? "0.85rem" : "1rem",
+    transform: isFocused || value ? "scale(0.85)" : "translateY(-50%)",
   };
 
   return (
@@ -73,34 +46,35 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
       height="90px"
       position="relative"
       mt={2}
-      isInvalid={isInvalid && touched}
+      isInvalid={isInvalid && touched} // Show error only if touched
     >
-      <Box as="label" htmlFor="name" {...labelStyles} {...focusedLabelStyles}>
+      <Box as="label" htmlFor={name} {...labelStyles}>
         {label}
       </Box>
       <Input
-        {...inputStyles}
-        id="name"
+        id={name}
         name={name}
-        onFocus={() => {
-          setIsFocused(true);
-          setTouched(true);
-        }}
-        onBlur={() => {
-          setIsFocused(value !== "");
-        }}
         value={value}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => {
+          setIsFocused(false);
+          setTouched(true); // Mark as touched on blur
+        }}
         onChange={(e) => {
-          onChange(e);
-          if (e.target.value.trim() === "") {
-            setTouched(true);
-          }
+          onChange?.(e);
+        }}
+        placeholder={isFocused ? "" : label}
+        size="md"
+        height="60px"
+        pl="12px"
+        borderColor="var(--input-color)"
+        borderWidth="2px"
+        _focus={{
+          borderColor: "gray.500",
         }}
       />
       {isInvalid && touched && (
-        <Box my={2}>
-          <FormErrorMessage>{errorMessage}</FormErrorMessage>
-        </Box>
+        <FormErrorMessage mt={2}>{errorMessage}</FormErrorMessage>
       )}
     </FormControl>
   );
