@@ -272,7 +272,6 @@ const BenefitsDetails: React.FC = () => {
     }
   };
   const handleRedirect = () => {
-    alert("hello");
     setSubmitDialouge(false);
   };
   return (
