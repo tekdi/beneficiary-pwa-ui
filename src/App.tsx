@@ -44,6 +44,11 @@ function App() {
     }
     if (token || keycloak?.token) {
       setRoutes(authRoutes);
+      const redirectUrl = localStorage.getItem("redirectUrl");
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+        localStorage.removeItem("redirectUrl");
+      }
     } else {
       setRoutes(guestRoutes);
     }

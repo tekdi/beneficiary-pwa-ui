@@ -53,21 +53,24 @@ const ExploreBenefits: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const user = await getUser();
+        const token = localStorage.getItem("authToken");
+        if (token) {
+          const user = await getUser();
 
-        const filters: Filter = {
-          "caste-eligibility": user?.data?.caste,
-          annualIncome: user?.data?.annualIncome,
-        };
+          const filters: Filter = {
+            "caste-eligibility": user?.data?.caste,
+            annualIncome: user?.data?.annualIncome,
+          };
 
-        const newFilter: Filter = {};
-        Object.keys(filters).forEach((key) => {
-          if (filters[key] && filters[key] !== "") {
-            newFilter[key] = filters[key]?.toLowerCase() || filters[key];
-          }
-        });
+          const newFilter: Filter = {};
+          Object.keys(filters).forEach((key) => {
+            if (filters[key] && filters[key] !== "") {
+              newFilter[key] = filters[key]?.toLowerCase() || filters[key];
+            }
+          });
 
-        setFilter(newFilter);
+          setFilter(newFilter);
+        }
         setInitState("no");
       } catch (e) {
         setError(`Failed to initialize user data: ${(e as Error).message}`);
@@ -128,6 +131,7 @@ const ExploreBenefits: React.FC = () => {
         ],
       }}
       isSearchbar={true}
+      isMenu={Boolean(localStorage.getItem("authToken"))}
     >
       {error && (
         <Modal isOpen={!!error} onClose={() => setError(null)}>

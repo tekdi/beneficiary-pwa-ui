@@ -8,7 +8,6 @@ import {
   useDisclosure,
   HStack,
   Icon,
-  Spinner,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -134,8 +133,6 @@ const BenefitsDetails: React.FC = () => {
     let mounted = true;
     const init = async () => {
       try {
-        const user = await getUser();
-
         const result = await getOne({ id });
         const resultItem =
           (result as { data: { responses: Array<any> } }).data?.responses?.[0]
@@ -153,19 +150,23 @@ const BenefitsDetails: React.FC = () => {
             )
             ?.list?.filter((e: { value: unknown }) => e.value)
             .map((e: { value: unknown }) => e.value) || [];
-
         if (mounted) {
           setItem({ ...resultItem, document: docs });
 
-          setAuthUser(user?.data || {});
+          const token = localStorage.getItem("authToken");
+          if (token) {
+            const user = await getUser();
 
-          const appResult = await getApplication({
-            user_id: user?.data?.user_id,
-            benefit_id: id,
-          });
+            setAuthUser(user?.data || {});
 
-          if (appResult?.data?.applications?.length > 0) {
-            setIsApplied(true);
+            const appResult = await getApplication({
+              user_id: user?.data?.user_id,
+              benefit_id: id,
+            });
+
+            if (appResult?.data?.applications?.length > 0) {
+              setIsApplied(true);
+            }
           }
           setLoading(false);
         }
@@ -260,7 +261,10 @@ const BenefitsDetails: React.FC = () => {
   }
 
   return (
-    <Layout _heading={{ heading: item?.descriptor?.name || "", handleBack }}>
+    <Layout
+      _heading={{ heading: item?.descriptor?.name || "", handleBack }}
+      isMenu={Boolean(localStorage.getItem("authToken"))}
+    >
       <Box className="card-scroll invisible_scroll">
         <Box maxW="2xl" m={4}>
           <Heading size="md" color="#484848" fontWeight={500}>
@@ -306,16 +310,27 @@ const BenefitsDetails: React.FC = () => {
               <ListItem key={document}>{document}</ListItem>
             ))}
           </UnorderedList>
-          <CommonButton
-            mt={6}
-            onClick={handleConfirmation}
-            label={
-              isApplied
-                ? t("BENEFIT_DETAILS_APPLICATION_SUBMITTED")
-                : t("BENEFIT_DETAILS_PROCEED_TO_APPLY")
-            }
-            isDisabled={isApplied}
-          />
+          {localStorage.getItem("authToken") ? (
+            <CommonButton
+              mt={6}
+              onClick={handleConfirmation}
+              label={
+                isApplied
+                  ? t("BENEFIT_DETAILS_APPLICATION_SUBMITTED")
+                  : t("BENEFIT_DETAILS_PROCEED_TO_APPLY")
+              }
+              isDisabled={isApplied}
+            />
+          ) : (
+            <CommonButton
+              mt={6}
+              onClick={() => {
+                localStorage.setItem("redirectUrl", window.location.href);
+                navigate("/login");
+              }}
+              label={t("BENEFIT_DETAILS_LOGIN_TO_APPLY")}
+            />
+          )}
         </Box>
       </Box>
 
