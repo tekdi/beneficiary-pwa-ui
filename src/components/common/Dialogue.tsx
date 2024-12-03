@@ -56,7 +56,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
             </>
           ) : (
             <>
-              <Box className="heading">Application Submmited</Box>
+              <Box className="heading">Application Submited</Box>
               <Box color="gray.600" fontWeight="300" fontSize="18px">
                 Confirmation
               </Box>
@@ -109,14 +109,14 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
               <Text fontSize="md" color="gray.700">
                 {t("SUBMIT_DIALOGUE_CONTENT_TEXT")}
                 <Text as="span" color="blue.600" fontWeight="medium">
-                  {(isOpen as any)?.name || ""}
+                  {(isOpen as { name?: string })?.name || ""}
                 </Text>{" "}
                 {t("SUBMIT_DIALOGUE_SUBMITTED_TEXT")}!
               </Text>
               <Text fontSize="sm" color="gray.500" mt={3}>
                 {t("SUBMIT_DIALOGUE_APPLICATION_ID_TEXT")}:
                 <Text as="span" fontWeight="medium">
-                  {(isOpen as any)?.orderId || ""}
+                  {(isOpen as { orderId?: string })?.orderId || ""}
                 </Text>
               </Text>
             </>

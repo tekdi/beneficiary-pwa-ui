@@ -351,14 +351,19 @@ export function checkEligibilityCriteria({
 }): boolean {
   if (value == null) return false;
   // Convert value to string if it's a number
-  const val = typeof value === "string" ? value : value?.toString();
+  const val =
+    typeof value === "string"
+      ? value.toLowerCase()
+      : (value?.toString() || "").toLowerCase();
   if (!val) return false;
 
   // Convert conditionValues to an array of strings
   const conditionVals: string[] =
     typeof conditionValues === "string"
-      ? [conditionValues]
-      : (conditionValues as (string | number)[]).map((cv) => cv?.toString());
+      ? [conditionValues.toLowerCase()]
+      : (conditionValues as (string | number)[]).map((cv) =>
+          cv?.toString().toLowerCase()
+        );
 
   // Evaluate the condition
   switch (condition.trim()) {
