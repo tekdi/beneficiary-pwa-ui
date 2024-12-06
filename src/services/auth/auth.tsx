@@ -12,7 +12,9 @@ interface MobileData {
   otp: number;
   token: string;
 }
-
+function handleError(error: any) {
+  throw error.response ? error.response.data : new Error("Network Error");
+}
 export const loginUser = async (loginData: object) => {
   try {
     const response = await axios.post(`${apiBaseUrl}/auth/login`, loginData, {
@@ -22,14 +24,8 @@ export const loginUser = async (loginData: object) => {
     });
 
     return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      // Handle the error with specific type if it's an Axios error
-      return Promise.reject(error.response.data);
-    } else {
-      // For other types of errors (like network errors)
-      return Promise.reject(new Error("Network Error"));
-    }
+  } catch (error) {
+    handleError(error);
   }
 };
 
@@ -78,12 +74,8 @@ export const getUser = async () => {
     );
 
     return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      return Promise.reject(error.response.data);
-    } else {
-      return Promise.reject(new Error("Network Error"));
-    }
+  } catch (error) {
+    handleError(error);
   }
 };
 export const getUserConsents = async () => {
@@ -98,8 +90,7 @@ export const getUserConsents = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching consents:", error);
-    throw new Error("Error fetching consents");
+    handleError(error);
   }
 };
 export const sendConsent = async (
@@ -125,14 +116,8 @@ export const sendConsent = async (
       headers,
     });
     return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      // Handle the error with specific type if it's an Axios error
-      return Promise.reject(error.response.data);
-    } else {
-      // For other types of errors (like network errors)
-      return Promise.reject(new Error("Network Error"));
-    }
+  } catch (error) {
+    handleError(error);
   }
 };
 export const getDocumentsList = async () => {
@@ -147,14 +132,8 @@ export const getDocumentsList = async () => {
 
     // Return the documents list data
     return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      // Handle the error with specific type if it's an Axios error
-      return Promise.reject(error.response.data);
-    } else {
-      // For other types of errors (like network errors)
-      return Promise.reject(new Error("Network Error"));
-    }
+  } catch (error) {
+    handleError(error);
   }
 };
 export const getApplicationList = async (
@@ -190,14 +169,8 @@ export const getApplicationList = async (
     );
 
     return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error) && error.response) {
-      // Handle the error with specific type if it's an Axios error
-      return Promise.reject(error.response.data);
-    } else {
-      // For other types of errors (like network errors)
-      return Promise.reject(new Error("Network Error"));
-    }
+  } catch (error) {
+    handleError(error);
   }
 };
 
@@ -219,8 +192,7 @@ export const getApplicationDetails = async (applicationId: string | number) => {
       console.error("Token not found");
     }
   } catch (error) {
-    console.error("Failed to fetch application details:", error);
-    throw error;
+    handleError(error);
   }
 };
 export const sendOTP = async (mobileNumber: string) => {
@@ -240,7 +212,7 @@ export const verifyOTP = async (payload: MobileData) => {
     console.log(response);
     return response?.data;
   } catch (error) {
-    console.log(error);
+    handleError(error);
   }
 };
 export const registerUser = async (userData: UserData) => {
