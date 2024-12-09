@@ -31,7 +31,7 @@ import WebViewFormSubmitWithRedirect from "../../components/WebView";
 import { useTranslation } from "react-i18next";
 import Loader from "../../components/common/Loader";
 import { checkEligibilityCriteria } from "../../utils/jsHelper/helper";
-import { termsAndConditions } from "../../assets/termsAndCondition";
+import termsAndConditions from "../../assets/termsAndConditions.json";
 import CommonDialogue from "../../components/common/Dialogue";
 
 // Define types for benefit item and user

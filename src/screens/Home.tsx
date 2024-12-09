@@ -17,7 +17,7 @@ import { useKeycloak } from "@react-keycloak/web";
 import "../assets/styles/App.css";
 import UploadDocumentEwallet from "../components/common/UploadDocumentEwallet";
 import CommonDialogue from "../components/common/Dialogue";
-import { termsAndConditions } from "../assets/termsAndCondition";
+import termsAndConditions from "../assets/termsAndConditions.json";
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
