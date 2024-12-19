@@ -105,7 +105,7 @@ const UserProfile: React.FC = () => {
 					shadow="md"
 					borderWidth="1px"
 					borderRadius="md"
-					className="card-scroll invisible_scroll"
+					className="card-scroll invisible-scroll"
 				>
 					<VStack spacing={4} align="stretch">
 						<DocumentList

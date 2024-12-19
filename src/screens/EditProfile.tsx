@@ -217,7 +217,7 @@ const EditProfile = () => {
 
 	return (
 		<Layout _heading={{ heading: 'Edit Profile', handleBack }}>
-			<Box p={5} className="card-scroll invisible_scroll">
+			<Box p={5} className="card-scroll invisible-scroll">
 				{formData && (
 					<Form
 						schema={schema}

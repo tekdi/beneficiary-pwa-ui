@@ -348,7 +348,7 @@ const BenefitsDetails: React.FC = () => {
 			_heading={{ heading: item?.descriptor?.name || '', handleBack }}
 			isMenu={Boolean(localStorage.getItem('authToken'))}
 		>
-			<Box className="card-scroll invisible_scroll">
+			<Box className="card-scroll invisible-scroll">
 				<Box maxW="2xl" m={4}>
 					<Heading size="md" color="#484848" fontWeight={500}>
 						{t('BENEFIT_DETAILS_HEADING_TITLE')}

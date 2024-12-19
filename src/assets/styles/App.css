@@ -10,17 +10,17 @@
 
 .custom-btn {
   padding: 24px 63px !important;
-  background-color: #3c5fdd !important;
   color: #fff !important;
+  background-color: #3c5fdd !important;
   border-radius: 100px !important;
 }
 
 .outline-custom-btn {
   padding: 24px 63px !important;
-  background-color: #fff !important;
-  border-radius: 100px !important;
-  border: 1px solid #3c5fdd !important;
   color: #3c5fdd !important;
+  background-color: #fff !important;
+  border: 1px solid #3c5fdd !important;
+  border-radius: 100px !important;
 }
 
 .text-color {
@@ -39,11 +39,11 @@
 
 .custom-outline-btn {
   padding: 24px 63px !important;
+  color: #3c5fdd !important;
   font-weight: bold;
   background-color: #fff !important;
-  border-radius: 100px !important;
   border: 1px solid #3c5fdd;
-  color: #3c5fdd !important;
+  border-radius: 100px !important;
 }
 
 .border-bottom {
@@ -53,17 +53,16 @@
 .main-bg {
   min-height: 100vh;
   background-image: url("../assets/images/backgroung.png");
-  background-position: center;
   background-repeat: no-repeat;
+  background-position: center;
   background-size: cover;
 }
 
 .category-box {
-  border: 1px solid blue;
-  width: auto;
-  color: blue;
-  border-radius: 5px;
   padding: 2px 20px;
+  color: blue;
+  border: 1px solid blue;
+  border-radius: 5px;
 }
 
 .text-blue {
@@ -71,14 +70,14 @@
 }
 
 .badge-box {
-  background: #0b7b69;
-  color: #fff;
-  border-radius: 0px 10px 0px 5px;
-  width: auto;
   float: right;
-  padding: 3px 28px;
+  width: auto;
   margin: -21px;
+  padding: 3px 28px;
+  color: #fff;
   text-align: center;
+  background: #0b7b69;
+  border-radius: 0 10px 0 5px;
 }
 
 .card-scroll {
@@ -86,37 +85,37 @@
 }
 
 .login-form {
-  border-radius: 27px 24px 0px 0px;
-  margin-top: -6% !important;
   z-index: 999;
+  margin-top: -6% !important;
   background: #fff;
+  border-radius: 27px 24px 0 0;
 }
 
-.invisible_scroll::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+.invisible-scroll::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
   border-radius: 6px;
+  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+}
+
+.invisible-scroll::-webkit-scrollbar {
+  width: 0;
   background-color: #f5f5f5;
 }
 
-.invisible_scroll::-webkit-scrollbar {
-  width: 0px;
-  background-color: #f5f5f5;
-}
-
-.invisible_scroll::-webkit-scrollbar-thumb {
-  border-radius: 6px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+.invisible-scroll::-webkit-scrollbar-thumb {
   background-color: #d9d7d7;
+  border-radius: 6px;
+  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
 }
 
 button:disabled {
+  color: #1A1B21 !important;
   background-color: #c6c2d2 !important;
   cursor: not-allowed;
-  color: #1A1B21 !important;
 }
 
-.chakra-accordion__item button {
+.chakra-accordion-item button {
   color: var(--theme-color);
-  border: none !important;
   background: none;
+  border: none !important;
 }

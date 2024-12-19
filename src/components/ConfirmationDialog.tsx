@@ -89,7 +89,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
 						<ModalBody
 							py={4}
-							className="card-scroll invisible_scroll"
+							className="card-scroll invisible-scroll"
 						>
 							<Text fontSize="md" mb={4} color="gray.600">
 								{consentText}
