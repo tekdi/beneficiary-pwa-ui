@@ -22,7 +22,9 @@ const CustomDisableInput: React.FC<CustomSelectProps> = ({
 			<FormLabel htmlFor="email">{label}</FormLabel>
 			<InputGroup>
 				<Input id="email" placeholder={placeholder} disabled />
-				<InputRightElement children={<CheckIcon color="green.500" />} />
+				<InputRightElement>
+					<CheckIcon color="green.500" />
+				</InputRightElement>
 			</InputGroup>
 		</FormControl>
 	);

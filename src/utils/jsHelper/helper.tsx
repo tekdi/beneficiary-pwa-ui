@@ -401,54 +401,54 @@ export function checkEligibilityCriteria({
 		typeof conditionValues === 'string'
 			? [conditionValues.toLowerCase()]
 			: (conditionValues as (string | number)[]).map((cv) =>
-				cv?.toString().toLowerCase()
-			);
+					cv?.toString().toLowerCase()
+				);
 
 	// Evaluate the condition
 	switch (condition.trim()) {
 		case 'equals':
-		// Check if value equals any of the condition values
-		return conditionVals.includes(val);
+			// Check if value equals any of the condition values
+			return conditionVals.includes(val);
 		case 'lessThan':
 		case 'less than':
-		// Check if value is less than the first condition value
-		return (
-			conditionVals.length > 0 &&
+			// Check if value is less than the first condition value
+			return (
+				conditionVals.length > 0 &&
 				parseInt(conditionVals[0], 10) > parseInt(val, 10)
-		);
+			);
 		case 'lessThanOrEquals':
 		case 'less than or equals':
 		case 'less than equals':
-		// Check if value is less than or equals the first condition value
-		return (
-			conditionVals.length > 0 &&
+			// Check if value is less than or equals the first condition value
+			return (
+				conditionVals.length > 0 &&
 				parseInt(conditionVals[0], 10) >= parseInt(val, 10)
-		);
+			);
 		case 'greaterThan':
 		case 'greater than':
-		// Check if value is greater than the first condition value
-		return (
-			conditionVals.length > 0 &&
+			// Check if value is greater than the first condition value
+			return (
+				conditionVals.length > 0 &&
 				parseInt(conditionVals[0], 10) < parseInt(val, 10)
-		);
+			);
 		case 'greaterThanOrEquals':
 		case 'greater than or equals':
 		case 'greater than equals':
-		// Check if value is greater than or equals the first condition value
-		return (
-			conditionVals.length > 0 &&
+			// Check if value is greater than or equals the first condition value
+			return (
+				conditionVals.length > 0 &&
 				parseInt(conditionVals[0], 10) <= parseInt(val, 10)
-		);
+			);
 		case 'in':
-		// Check if value is in the condition values
-		return conditionVals.includes(val);
+			// Check if value is in the condition values
+			return conditionVals.includes(val);
 		case 'notIn':
 		case 'not in':
-		// Check if value is not in the condition values
-		return !conditionVals.includes(val);
-	default:
-		// Return false for unrecognized conditions
-		return false;
+			// Check if value is not in the condition values
+			return !conditionVals.includes(val);
+		default:
+			// Return false for unrecognized conditions
+			return false;
 	}
 }
 export function getIncomeRangeValue(annualIncome: string): string | undefined {

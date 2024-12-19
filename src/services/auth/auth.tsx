@@ -12,58 +12,58 @@ interface MobileData {
 	otp: number;
 	token: string;
 }
-function handleClientError(error: any): never {
+function handleClientError(error): never {
 	const errorMessage =
 		error.response.data?.message ||
 		error.response.data?.error ||
 		`Client Error: ${error.message}`;
 
 	switch (error.response.status) {
-	case 400:
-		throw new Error(`Bad Request: ${errorMessage}`, { cause: error });
-	case 401:
-		throw new Error(`Unauthorized: ${errorMessage}`, { cause: error });
-	case 403:
-		throw new Error(`Forbidden: ${errorMessage}`, { cause: error });
-	case 404:
-		throw new Error(`Not Found: ${errorMessage}`, { cause: error });
-	default:
-		throw new Error(
-			`Client Error (${error.response.status}): ${errorMessage}`,
-			{
-				cause: error,
-			}
-		);
+		case 400:
+			throw new Error(`Bad Request: ${errorMessage}`, { cause: error });
+		case 401:
+			throw new Error(`Unauthorized: ${errorMessage}`, { cause: error });
+		case 403:
+			throw new Error(`Forbidden: ${errorMessage}`, { cause: error });
+		case 404:
+			throw new Error(`Not Found: ${errorMessage}`, { cause: error });
+		default:
+			throw new Error(
+				`Client Error (${error.response.status}): ${errorMessage}`,
+				{
+					cause: error,
+				}
+			);
 	}
 }
 
-function handleServerError(error: any): never {
+function handleServerError(error): never {
 	const errorMessage =
 		error.response.data?.message ||
 		`Server Error: ${error.response.statusText}`;
 
 	switch (error.response.status) {
-	case 500:
-		throw new Error(`Internal Server Error: ${errorMessage}`, {
-			cause: error,
-		});
-	case 502:
-		throw new Error(`Bad Gateway: ${errorMessage}`, { cause: error });
-	case 503:
+		case 500:
+			throw new Error(`Internal Server Error: ${errorMessage}`, {
+				cause: error,
+			});
+		case 502:
+			throw new Error(`Bad Gateway: ${errorMessage}`, { cause: error });
+		case 503:
 			throw new Error(`Service Unavailable: ${errorMessage}`, {
 				cause: error,
 			});
-	case 504:
+		case 504:
 			throw new Error(`Gateway Timeout: ${errorMessage}`, {
 				cause: error,
 			});
-	default:
-		throw new Error(
-			`Server Error (${error.response.status}): ${errorMessage}`,
-			{
-				cause: error,
-			}
-		);
+		default:
+			throw new Error(
+				`Server Error (${error.response.status}): ${errorMessage}`,
+				{
+					cause: error,
+				}
+			);
 	}
 }
 
@@ -229,16 +229,16 @@ export const getApplicationList = async (
 		const requestBody =
 			searchText !== ''
 				? {
-					filters: {
-						user_id: user_id, // Reference the user_id variable directly
-					},
-					search: searchText,
-				}
+						filters: {
+							user_id: user_id, // Correct: 3 tabs
+						},
+						search: searchText,
+					}
 				: {
-					filters: {
-						user_id: user_id, // Reference the user_id variable directly
-					},
-				};
+						filters: {
+							user_id: user_id, // Correct: 3 tabs
+						},
+					};
 
 		// Send the dynamically created requestBody in the axios post request
 		const token = localStorage.getItem('authToken');

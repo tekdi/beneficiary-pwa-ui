@@ -1,3 +1,4 @@
+import React from 'react';
 import { Center, Spinner, Text, VStack } from '@chakra-ui/react';
 
 const Loader = () => {

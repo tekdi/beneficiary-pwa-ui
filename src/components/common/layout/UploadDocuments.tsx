@@ -8,7 +8,7 @@ import {
 	ListItem,
 	Text,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 
 function UploadDocuments() {

@@ -51,7 +51,8 @@ export default [
 					useTabs: true,
 				},
 			],
-			indent: ['error', 'tab'],
+			///SwitchCase is added to handle switch case indentation
+			indent: ['error', 'tab', { SwitchCase: 1 }],
 		},
 	},
 	{

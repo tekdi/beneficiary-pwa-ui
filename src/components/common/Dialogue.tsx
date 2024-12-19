@@ -16,7 +16,7 @@ import {
 	Code,
 } from '@chakra-ui/react';
 import CommonButton from './button/Button';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Term {
