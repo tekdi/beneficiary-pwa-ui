@@ -77,7 +77,7 @@ const SignIn: React.FC = () => {
 		<Layout
 			isMenu={false}
 			_heading={{
-				heading: t('LOGIN_LOGIN_BUTTON'),
+				heading: t('LOGIN_BUTTON'),
 				handleBack,
 			}}
 			isBottombar={false}
@@ -86,14 +86,14 @@ const SignIn: React.FC = () => {
 				<VStack align="stretch">
 					<FormControl>
 						<FloatingInput
-							label="Enter User Name"
+							label={t('SIGNIN_ENTER_USERNAME')}
 							value={username}
 							onChange={(e) => setUsername(e.target.value)}
 							isInvalid={username.trim() === ''}
 							errorMessage={t('SIGNIN_USER_NAME_IS_REQUIRED')}
 						/>
 						<FloatingPasswordInput
-							label="Enter Password"
+							label={t('SIGNIN_ENTER_PASSWORD')}
 							value={password}
 							onChange={(
 								e: React.ChangeEvent<HTMLInputElement>
@@ -105,7 +105,7 @@ const SignIn: React.FC = () => {
 					<CommonButton
 						isDisabled={!isFormValid || loading}
 						onClick={() => handleLogin()}
-						label={t('LOGIN_LOGIN_BUTTON')}
+						label={t('LOGIN_BUTTON')}
 					/>
 				</VStack>
 

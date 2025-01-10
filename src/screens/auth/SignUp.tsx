@@ -269,7 +269,7 @@ const Signup: React.FC = () => {
 									textDecoration: 'underline',
 								}}
 							>
-								{t('LOGIN_LOGIN_BUTTON')}
+								{t('LOGIN_BUTTON')}
 							</RouterLink>
 						</Box>
 					</Text>

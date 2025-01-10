@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import {
 	Box,
 	Button,
@@ -19,13 +19,25 @@ import CustomSelect from '../input/Select';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { logoutUser } from '../../../services/auth/auth';
+import { useAuth } from '../../../utils/context/checkToken';
+import { changeLanguage } from 'i18next';
 
-const options: { value: string; label: string }[] = [];
+const options = [
+	{ label: 'EN', value: 'en' },
+	{ label: 'HI', value: 'hi' },
+	{ label: 'MR', value: 'mr' },
+];
 const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
 	const [success] = useState<string>('');
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+	const { language, selectLanguage } = useAuth();
 	const toast = useToast();
+	const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+		const { value } = e.target;
+		selectLanguage(e.target.value);
+		changeLanguage(value);
+	};
 	const handleLogout = async () => {
 		try {
 			const response = await logoutUser();
@@ -100,7 +112,11 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
 					)}
 				</Box>
 
-				<CustomSelect options={options} placeholder="EN" />
+				<CustomSelect
+					options={options}
+					value={language.name}
+					onChange={handleChange}
+				/>
 			</Flex>
 		</Stack>
 	);

@@ -7,7 +7,7 @@ import {
 	Stack,
 	Box,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/styles/App.css';
@@ -16,19 +16,21 @@ import FloatingSelect from '../../components/common/input/FloatingSelect';
 
 import frameImage from '../../assets/images/frame.png';
 import { changeLanguage } from 'i18next';
-
+import { useAuth } from '../../utils/context/checkToken';
 const Splash: React.FC = () => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-	const [formData, setFormData] = useState({ name: 'en' });
-	const options = [{ label: t('LOGIN_ENGLISH'), value: 'en' }];
+
+	const { language, selectLanguage } = useAuth();
+	const options = [
+		{ label: t('LOGIN_ENGLISH'), value: 'en' },
+		{ label: t('LOGIN_HINDI'), value: 'hi' },
+		{ label: t('LOGIN_MARATHI'), value: 'mr' },
+	];
 
 	const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-		const { name, value } = e.target;
-		setFormData((prevData) => ({
-			...prevData,
-			[name]: value,
-		}));
+		const { value } = e.target;
+		selectLanguage(e.target.value);
 		changeLanguage(value);
 	};
 
@@ -74,7 +76,7 @@ const Splash: React.FC = () => {
 							<FloatingSelect
 								label={t('LOGIN_SELECT_LANGUAGE')}
 								name="name"
-								value={formData.name}
+								value={language.name}
 								onChange={handleChange}
 								options={options}
 							/>
@@ -92,7 +94,7 @@ const Splash: React.FC = () => {
 						onClick={() => {
 							navigate('/Signin');
 						}}
-						label={t('LOGIN_LOGIN_BUTTON')}
+						label={t('LOGIN_BUTTON')}
 						mt={8}
 						variant="outline"
 					/>

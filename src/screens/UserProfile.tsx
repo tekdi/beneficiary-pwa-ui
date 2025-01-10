@@ -12,11 +12,13 @@ import UserDetails from '../components/common/UserDetails';
 
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonButton from '../components/common/button/Button';
+import { useTranslation } from 'react-i18next';
 
 const UserProfile: React.FC = () => {
 	const [showIframe, setShowIframe] = useState(true);
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const handleBack = () => {
 		navigate(-2);
 	};
@@ -40,7 +42,7 @@ const UserProfile: React.FC = () => {
 	return (
 		<Layout
 			_heading={{
-				heading: 'My Profile',
+				heading: t('USER_PROFILE_HEADING'),
 				handleBack: () => {
 					handleBack();
 				},
@@ -72,7 +74,7 @@ const UserProfile: React.FC = () => {
 					>
 						{userData?.phoneNumber
 							? ` +91 ${userData?.phoneNumber}`
-							: 'Phone Number'}
+							: t('USER_PROFILE_PHONE_NUMBER')}
 					</Text>
 				</VStack>
 			</HStack>
@@ -95,7 +97,7 @@ const UserProfile: React.FC = () => {
 						color="#433E3F"
 						mr={2} // Adds spacing between Text and IconButton
 					>
-						Basic Details
+						{t('USER_PROFILE_BASIC_DETAILS')}
 					</Text>
 				</Flex>
 

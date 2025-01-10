@@ -14,24 +14,28 @@ interface CustomSelectProps {
 	width?: string;
 	height?: string;
 	border?: string;
-
+	value?: string;
 	placeholderStyle?: React.CSSProperties; // Optional style for the placeholder
+	onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void; // Optional onChange function
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
 	options,
 	placeholder = 'Select an option',
-	width = '60px',
+	width = '62px',
 	height = '35px',
 	border = '1px solid var(--input-color)',
 	placeholderStyle,
+	value,
+	onChange,
 }) => {
 	return (
 		<Select
-			placeholder={placeholder}
 			width={width}
 			height={height}
 			border={border}
+			value={value}
+			onChange={onChange} // Add onChange here
 			sx={{
 				'&::placeholder': {
 					color: placeholderStyle?.color || 'gray.500', // Default placeholder color

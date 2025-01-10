@@ -127,7 +127,7 @@ const SignUpWithPassword: React.FC = () => {
 
 			if (response) {
 				toast({
-					title: t('SIGNUP_SUCCESSFULL'),
+					title: t('SIGNUP_SUCCESSFUL'),
 					status: 'success',
 					description: `Your Username is ${response?.data?.userName}`,
 					duration: 10000,
@@ -254,7 +254,7 @@ const SignUpWithPassword: React.FC = () => {
 									textDecoration: 'underline',
 								}}
 							>
-								{t('LOGIN_LOGIN_BUTTON')}
+								{t('LOGIN_BUTTON')}
 							</RouterLink>
 						</Box>
 					</Text>

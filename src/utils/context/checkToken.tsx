@@ -18,6 +18,8 @@ interface AuthContextType {
 	updateApplicationId: (id: string) => void;
 	applicationId: string | null;
 	removeContextData: () => void;
+	language: { name: string };
+	selectLanguage: (lang: string) => void;
 }
 
 // Define UserData type
@@ -63,7 +65,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [applicationId, setApplicationId] = useState<string | null>(null);
 	const [userData, setUserData] = useState<UserData | null>(null);
 	const [documents, setDocuments] = useState<string[]>([]);
-
+	const [language, setLanguage] = useState<{ name: string }>({ name: 'en' });
 	const checkToken = async () => {
 		try {
 			const token = await getToken();
@@ -88,7 +90,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		setDocuments([]);
 		setUserData(null);
 	};
-
+	const selectLanguage = (lang: string) => {
+		setLanguage({ name: lang });
+	};
 	useEffect(() => {
 		checkToken();
 	}, []);
@@ -104,8 +108,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			updateApplicationId,
 			applicationId,
 			removeContextData,
+			language,
+			selectLanguage,
 		}),
-		[isLoggedIn, userData, documents, applicationId] // Dependencies
+		[isLoggedIn, userData, documents, applicationId, language] // Dependencies
 	);
 
 	return (
