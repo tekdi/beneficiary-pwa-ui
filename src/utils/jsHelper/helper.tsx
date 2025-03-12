@@ -301,7 +301,7 @@ export const transformData = (userData) => {
 		bankName: userData?.bankName ?? '',
 		bankAccountNumber: userData?.bankAccountNumber ?? '',
 		bankIfscCode: userData?.bankIfscCode ?? '',
-		previousClassMarks: userData?.previousYearMarks ?? '',
+		previousYearMarks: userData?.previousYearMarks ?? '',
 		mobile: userData?.phoneNumber ?? '',
 	};
 };
