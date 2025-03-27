@@ -141,9 +141,13 @@ const Preview: React.FC = () => {
 									<Text {...labelStyles}>
 										{firstItem.label}
 									</Text>
-									<Text {...valueStyles}>
-										{firstItem.value}
-									</Text>
+									{firstItem && firstItem.value === '' ? (
+										<Text {...valueStyles}>-</Text>
+									) : (
+										<Text {...valueStyles}>
+											{firstItem.value}
+										</Text>
+									)}
 								</Box>
 
 								{secondItem && (
@@ -151,9 +155,14 @@ const Preview: React.FC = () => {
 										<Text {...labelStyles}>
 											{secondItem.label}
 										</Text>
-										<Text {...valueStyles}>
-											{secondItem.value}
-										</Text>
+										{secondItem.label === 'Student Type' ||
+										secondItem.value === '' ? (
+											<Text {...valueStyles}>-</Text>
+										) : (
+											<Text {...valueStyles}>
+												{secondItem.value}
+											</Text>
+										)}
 									</Box>
 								)}
 							</HStack>
