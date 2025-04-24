@@ -474,3 +474,21 @@ export function getIncomeRangeValue(annualIncome: string): string | undefined {
 
 	return '';
 }
+export function getExpiryDate(
+	userData: { doc_subtype: string; doc_data: string }[],
+	doc: string
+) {
+	const match = userData.find((item) => item.doc_subtype === doc);
+	if (!match) return { success: false };
+
+	const parsedData = JSON.parse(match.doc_data);
+	const expDate = parsedData.expirationDate
+		? formatDate(parsedData.expirationDate)
+		: parsedData.expirationDate;
+
+	const expiry = new Date(parsedData?.expirationDate);
+	const now = new Date();
+	const isExpired = expiry.getTime() < now.getTime();
+
+	return expDate ? { success: true, expDate, isExpired } : { success: false };
+}

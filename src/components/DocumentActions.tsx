@@ -13,7 +13,7 @@ interface DocumentActionsProps {
 		doc_id: string;
 		doc_data: string;
 		doc_name: string;
-	};
+	}[];
 }
 const DocumentActions: React.FC<DocumentActionsProps> = ({
 	status,

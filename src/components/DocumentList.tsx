@@ -6,6 +6,7 @@ import Loader from './common/Loader';
 import { findDocumentStatus } from '../utils/jsHelper/helper';
 
 import DocumentActions from './DocumentActions';
+import DocumentExpiry from './DocumentExpiry';
 interface StatusIconProps {
 	status: boolean;
 	size?: number;
@@ -29,11 +30,11 @@ interface UserDocument {
 	doc_datatype: string;
 	doc_verified: boolean;
 	uploaded_at: string;
-	is_uploaded: boolean;
+	is_uploaded: boolean[];
 }
 interface DocumentListProps {
 	documents: Document[] | string[];
-	userData: UserDocument;
+	userData: UserDocument[];
 }
 const StatusIcon: React.FC<StatusIconProps> = ({
 	status,
@@ -57,6 +58,7 @@ const StatusIcon: React.FC<StatusIconProps> = ({
 
 const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
 	const theme = useTheme();
+	console.log('documents', documents);
 
 	return documents && documents.length > 0 ? (
 		<VStack
@@ -73,7 +75,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
 					paddingY={3}
 					alignItems="center"
 					spacing={3}
-					height={61}
+					height={70}
 					width="100%"
 					pl={2}
 				>
@@ -88,14 +90,19 @@ const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
 						justifyContent="space-between"
 						width={'100%'}
 					>
-						<Text
-							fontSize="16px"
-							fontWeight="400"
-							color={theme.colors.text}
-							width={'80%'}
-						>
-							{document.name}
-						</Text>
+						<Box width={'70%'}>
+							<Text
+								fontSize="16px"
+								fontWeight="400"
+								color={theme.colors.text}
+							>
+								{document.name}
+							</Text>
+							<DocumentExpiry
+								status={document.documentSubType}
+								userData={userData}
+							/>
+						</Box>
 
 						<DocumentActions
 							status={document.documentSubType}
