@@ -58,7 +58,6 @@ const StatusIcon: React.FC<StatusIconProps> = ({
 
 const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
 	const theme = useTheme();
-	console.log('documents', documents);
 
 	return documents && documents.length > 0 ? (
 		<VStack

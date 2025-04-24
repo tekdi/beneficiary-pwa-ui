@@ -18,11 +18,18 @@ const DocumentExpiry: React.FC<DocumentExpiryProps> = ({
 	const [isExpired, setIsExpired] = useState(false);
 	const [expiryDate, setExpiryDate] = useState('');
 	useEffect(() => {
-		const DocSta = getExpiryDate(userData, status);
-
-		setIsExpired(DocSta.isExpired);
-		setExpiryDate(DocSta.expDate);
-		setDocumentStatus(DocSta.success);
+		try {
+			const { success, expDate, isExpired } = getExpiryDate(
+				userData,
+				status
+			);
+			setIsExpired(isExpired || false);
+			setExpiryDate(expDate || '');
+			setDocumentStatus(success || false);
+		} catch (error) {
+			console.error('Error getting expiry date:', error);
+			setDocumentStatus(false);
+		}
 	}, [status, userData]);
 
 	return documentStatus ? (
