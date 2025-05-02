@@ -26,6 +26,7 @@ import { getDocumentsList, getUser } from '../services/auth/auth';
 import { uploadUserDocuments } from '../services/user/User';
 import { findDocumentStatus } from '../utils/jsHelper/helper';
 import { AuthContext } from '../utils/context/checkToken';
+import { documentTypes } from '../config/documentTypes';
 
 interface Document {
   name: string;
@@ -134,11 +135,24 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId, userData = []
         throw new Error('Invalid document data structure');
       }
 
+      // Find the document type configuration
+      const docConfig = documentTypes.find(doc => doc.value === selectedDocument.name);
+      if (!docConfig) {
+        toast({
+          title: "Error",
+          description: "Invalid document type",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        throw new Error('Invalid document type');
+      }
+
       // Prepare the document payload
       const documentPayload = [{
         doc_name: selectedDocument.name,
-        doc_type: selectedDocument.documentSubType.toLowerCase(),
-        doc_subtype: selectedDocument.documentSubType,
+        doc_type: docConfig.doc_type,
+        doc_subtype: docConfig.doc_subtype,
         doc_data: jsonData,
         uploaded_at: new Date().toISOString(),
         imported_from: "e-wallet",
