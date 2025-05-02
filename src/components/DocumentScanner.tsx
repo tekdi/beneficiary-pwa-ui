@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Box,
   VStack,
@@ -22,26 +22,44 @@ import {
 import { CheckCircleIcon, AttachmentIcon } from '@chakra-ui/icons';
 import Layout from './common/layout/Layout';
 import ScanVC from './ScanVC';
-import { getDocumentsList } from '../services/auth/auth';
+import { getDocumentsList, getUser } from '../services/auth/auth';
 import { uploadUserDocuments } from '../services/user/User';
+import { findDocumentStatus } from '../utils/jsHelper/helper';
+import { AuthContext } from '../utils/context/checkToken';
 
 interface Document {
   name: string;
   documentSubType: string;
-  isUploaded?: boolean;
+}
+
+interface UserDocument {
+  doc_id: string;
+  user_id: string;
+  doc_type: string;
+  doc_subtype: string;
+  doc_name: string;
+  imported_from: string;
+  doc_path: string;
+  doc_data: string;
+  doc_datatype: string;
+  doc_verified: boolean;
+  uploaded_at: string;
+  is_uploaded: boolean;
 }
 
 interface DocumentScannerProps {
   userId: string;
+  userData: UserDocument[];
 }
 
-const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId }) => {
+const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId, userData = [] }) => {
   const theme = useTheme();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { updateUserData } = useContext(AuthContext)!;
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -50,7 +68,6 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId }) => {
         const formattedDocuments = response.data.map((doc: any) => ({
           name: doc.name,
           documentSubType: doc.documentSubType,
-          isUploaded: false
         }));
         setDocuments(formattedDocuments);
       } catch (error) {
@@ -77,11 +94,45 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId }) => {
       // Append .vc to the URL if not already present
       let vcUrl = result.endsWith('.vc') ? result : `${result}.vc`;
       console.log('vcUrl', vcUrl);
-      vcUrl = 'https://verifydemo.dhiway.com/m/8d1b9076-0879-4f1b-b972-9131d3b81c5a.vc'
+      //   vcUrl = 'https://verifydemo.dhiway.com/m/8d1b9076-0879-4f1b-b972-9131d3b81c5a.vc'
 
       // Fetch JSON data from the .vc endpoint
       const response = await fetch(vcUrl);
-      const jsonData = await response.json();
+      if (!response.ok) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch document data",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        throw new Error('Failed to fetch document data');
+      }
+
+      let jsonData;
+      try {
+        jsonData = await response.json();
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Invalid document data format",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        throw new Error('Invalid document data format');
+      }
+
+      if (!jsonData || typeof jsonData !== 'object') {
+        toast({
+          title: "Error",
+          description: "Invalid document data structure",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        throw new Error('Invalid document data structure');
+      }
 
       // Prepare the document payload
       const documentPayload = [{
@@ -97,6 +148,11 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId }) => {
       // Upload the document
       await uploadUserDocuments(documentPayload);
 
+      // Refresh user data to update the UI
+      const userResult = await getUser();
+      const docsResult = await getDocumentsList();
+      updateUserData(userResult.data, docsResult.data);
+
       toast({
         title: "Success",
         description: "Document uploaded successfully",
@@ -105,20 +161,11 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId }) => {
         isClosable: true,
       });
 
-      // Update the document's uploaded status
-      setDocuments(prevDocs =>
-        prevDocs.map(doc =>
-          doc.documentSubType === selectedDocument.documentSubType
-            ? { ...doc, isUploaded: true }
-            : doc
-        )
-      );
-
     } catch (error) {
       console.error('Error uploading document:', error);
       toast({
         title: "Error",
-        description: "Failed to upload document",
+        description: error instanceof Error ? error.message : "Failed to upload document",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -158,33 +205,36 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId }) => {
       <Box shadow="md" borderWidth="1px" borderRadius="md" p={4}>
         <VStack spacing={4} align="stretch">
           <List spacing={3}>
-            {documents.map((doc, index) => (
-              <ListItem
-                key={`doc-${doc.documentSubType}-${index}`}
-                p={3}
-                borderWidth="1px"
-                borderRadius="md"
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Text>{doc.name}</Text>
-                <HStack key={`actions-${doc.documentSubType}-${index}`}>
-                  {doc.isUploaded && (
-                    <Icon key={`icon-${doc.documentSubType}-${index}`} as={CheckCircleIcon} color="green.500" />
-                  )}
-                  <Button
-                    key={`button-${doc.documentSubType}-${index}`}
-                    size="sm"
-                    colorScheme="blue"
-                    onClick={() => openUploadModal(doc)}
-                    leftIcon={<AttachmentIcon />}
-                  >
-                    {doc.isUploaded ? 'Re-upload' : 'Upload'}
-                  </Button>
-                </HStack>
-              </ListItem>
-            ))}
+            {documents.map((doc, index) => {
+              const documentStatus = findDocumentStatus(userData || [], doc.documentSubType);
+              return (
+                <ListItem
+                  key={`doc-${doc.documentSubType}-${index}`}
+                  p={3}
+                  borderWidth="1px"
+                  borderRadius="md"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Text>{doc.name}</Text>
+                  <HStack key={`actions-${doc.documentSubType}-${index}`}>
+                    {documentStatus.matchFound && (
+                      <Icon key={`icon-${doc.documentSubType}-${index}`} as={CheckCircleIcon} color="green.500" />
+                    )}
+                    <Button
+                      key={`button-${doc.documentSubType}-${index}`}
+                      size="sm"
+                      colorScheme="blue"
+                      onClick={() => openUploadModal(doc)}
+                      leftIcon={<AttachmentIcon />}
+                    >
+                      {documentStatus.matchFound ? 'Re-upload' : 'Upload'}
+                    </Button>
+                  </HStack>
+                </ListItem>
+              );
+            })}
           </List>
         </VStack>
       </Box>

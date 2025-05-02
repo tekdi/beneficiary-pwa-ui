@@ -32,7 +32,7 @@ const routes = [
 		path: '/document-scanner',
 		component: () => {
 			const { userData } = useContext(AuthContext)!;
-			return <DocumentScanner userId={userData?.user_id} />;
+			return <DocumentScanner userId={userData?.user_id} userData={userData?.docs} />;
 		},
 	},
 	{
