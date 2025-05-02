@@ -31,6 +31,9 @@ const Home: React.FC = () => {
 	const handleRedirect = () => {
 		navigate('/explorebenefits');
 	};
+	const handleScanRedirect = () => {
+		navigate('/document-scanner');
+	};
 	const init = async () => {
 		try {
 			const result = await getUser();
@@ -111,6 +114,10 @@ const Home: React.FC = () => {
 					<DocumentList
 						documents={documents}
 						userData={userData?.docs}
+					/>
+					<CommonButton
+						onClick={handleScanRedirect}
+						label={t('Scan Documents')}
 					/>
 					<CommonButton
 						onClick={handleRedirect}

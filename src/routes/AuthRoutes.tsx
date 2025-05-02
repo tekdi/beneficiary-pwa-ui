@@ -1,4 +1,6 @@
-import { lazy } from 'react';
+import { lazy, useContext } from 'react';
+import ScanVC from '../components/ScanVC';
+import { AuthContext } from '../utils/context/checkToken';
 
 const ExploreBenefits = lazy(() => import('../screens/benefit/Benefits'));
 const BenefitsDetails = lazy(() => import('../screens/benefit/Details'));
@@ -11,6 +13,7 @@ const UploadDocuments = lazy(
 );
 const Home = lazy(() => import('../screens/Home'));
 const UserProfile = lazy(() => import('../screens/UserProfile'));
+const DocumentScanner = lazy(() => import('../components/DocumentScanner'));
 
 const routes = [
 	{
@@ -20,6 +23,17 @@ const routes = [
 	{
 		path: '/explorebenefits',
 		component: ExploreBenefits,
+	},
+	{
+		path: '/vcscans',
+		component: ScanVC,
+	},
+	{
+		path: '/document-scanner',
+		component: () => {
+			const { userData } = useContext(AuthContext)!;
+			return <DocumentScanner userId={userData?.user_id} userData={userData?.docs} />;
+		},
 	},
 	{
 		path: '/benefits/:id',
