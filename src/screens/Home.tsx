@@ -32,6 +32,12 @@ const Home: React.FC = () => {
 	const toast = useToast();
 	const [fetchingAadhar, setFetchingAadhar] = useState(false);
 
+	const handleRedirect = () => {
+		navigate('/explorebenefits');
+	};
+	const handleScanRedirect = () => {
+		navigate('/document-scanner');
+	};
 	const init = async () => {
 		try {
 			const result = await getUser();
@@ -165,47 +171,6 @@ const Home: React.FC = () => {
 		}
 	};
 
-	// const handleAadharFetch = async () => {
-	// 	try {
-	// 		const response = await getDigiLockerRequest(); // returns { url: ... }
-	// 		const digilockerURL = response.url;
-
-	// 		const popup = window.open(
-	// 			digilockerURL,
-	// 			'DigiLockerPopup',
-	// 			'width=800,height=600,resizable=yes,scrollbars=yes'
-	// 		);
-
-	// 		if (!popup) {
-	// 			console.error('Popup blocked');
-	// 			return;
-	// 		}
-
-	// 		const handleMessage = (event: MessageEvent) => {
-	// 			// Check if the message is coming from the correct origin
-	// 			if (event.origin !== 'https://studiodemo.dhiway.com') {
-	// 				console.error(
-	// 					'Received message from untrusted origin:',
-	// 					event.origin
-	// 				);
-	// 				return;
-	// 			}
-
-	// 			// Ensure that the message data contains the final URL
-	// 			if (event.data) {
-	// 				console.log('✅ Final popup URL:', event.data.finalUrl);
-	// 			} else {
-	// 				console.error('Invalid message data received:', event.data);
-	// 			}
-	// 		};
-
-	// 		// Attach the event listener
-	// 		window.addEventListener('message', handleMessage);
-	// 	} catch (err) {
-	// 		console.error('Error during DigiLocker fetch:', err);
-	// 	}
-	// };
-
 	return (
 		<Layout
 			_heading={{
@@ -221,7 +186,11 @@ const Home: React.FC = () => {
 						userData={userData?.docs}
 					/>
 					<CommonButton
-						onClick={() => navigate('/explorebenefits')}
+						onClick={handleScanRedirect}
+						label={t('Scan Documents')}
+					/>
+					<CommonButton
+						onClick={handleRedirect}
 						label={t('PROFILE_EXPLORE_BENEFITS')}
 					/>
 					{!showIframe ? (
@@ -235,7 +204,7 @@ const Home: React.FC = () => {
 					<CommonButton
 						onClick={handleAadharFetch}
 						label={'Fetch Aadhar'}
-						loading={fetchingAadhar} // Pass `loading={true}` to show the spinner and loading text
+						loading={fetchingAadhar}
 						loadingLabel={'Fetching Aadhar'}
 					/>
 				</VStack>
