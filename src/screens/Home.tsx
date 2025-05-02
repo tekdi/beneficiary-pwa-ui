@@ -18,19 +18,20 @@ import '../assets/styles/App.css';
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonDialogue from '../components/common/Dialogue';
 import termsAndConditions from '../assets/termsAndConditions.json';
+import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar';
+
 const Home: React.FC = () => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-	const [showIframe, setShowIframe] = useState(true);
+	const [showIframe, setShowIframe] = useState(false);
 	const [consentSaved, setConsentSaved] = useState(false);
 	const { keycloak } = useKeycloak();
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
 	const purpose = 'sign_up_tnc';
 	const purpose_text = 'sign_up_tnc';
 	const toast = useToast();
-	const handleRedirect = () => {
-		navigate('/explorebenefits');
-	};
+	const [fetchingAadhar, setFetchingAadhar] = useState(false);
+
 	const init = async () => {
 		try {
 			const result = await getUser();
@@ -61,7 +62,7 @@ const Home: React.FC = () => {
 		}
 	};
 
-	const checkConsent = (consent) => {
+	const checkConsent = (consent: any[]) => {
 		const isPurposeMatched = consent.some(
 			(item) => item.purpose === purpose
 		);
@@ -70,20 +71,19 @@ const Home: React.FC = () => {
 			setConsentSaved(true);
 		}
 	};
-	const getConset = async () => {
+
+	const getConsent = async () => {
 		try {
 			const response = await getUserConsents();
-			console.log('response1', response.data.data);
-
 			checkConsent(response?.data.data);
 		} catch (error) {
 			console.log('Failed to load consents', error);
 		}
 	};
+
 	const saveConsent = async () => {
 		try {
 			await sendConsent(userData?.user_id, purpose, purpose_text);
-
 			setConsentSaved(false);
 		} catch {
 			console.log('Error sending consent');
@@ -95,9 +95,117 @@ const Home: React.FC = () => {
 			init();
 		}
 	}, [userData, documents]);
+
 	useEffect(() => {
-		getConset();
+		getConsent();
 	}, []);
+
+	const handleAadharFetch = async () => {
+		try {
+			const digilockerURL = await getDigiLockerRequest();
+
+			const popup = window.open(
+				digilockerURL.url,
+				'DigiLockerPopup',
+				'width=800,height=600,resizable,scrollbars'
+			);
+
+			if (!popup) {
+				console.error(
+					'Failed to open popup. Please allow popups for this website.'
+				);
+				return;
+			}
+
+			const handleMessage = async (event) => {
+				if (event.origin !== import.meta.env.VITE_DHIWAY_REDIRECT_URL)
+					return;
+
+				const { type, finalUrl } = event.data;
+
+				if (type === 'DIGILOCKER_DONE') {
+					const url = new URL(finalUrl);
+
+					const uriCode = url.searchParams.get('code');
+
+					if (popup && !popup.closed) {
+						popup.close();
+					}
+
+					cleanupListener();
+					clearInterval(interval);
+
+					setFetchingAadhar(true);
+					try {
+						await getAadhar(uriCode, userData.user_id);
+						// handle result if needed
+					} catch (error) {
+						console.error('Failed to fetch Aadhaar:', error);
+					} finally {
+						setFetchingAadhar(false); // Ensure it's reset
+						init();
+					}
+				}
+			};
+
+			window.addEventListener('message', handleMessage);
+
+			const cleanupListener = () => {
+				window.removeEventListener('message', handleMessage);
+			};
+
+			const interval = setInterval(() => {
+				if (popup.closed) {
+					clearInterval(interval);
+					cleanupListener();
+				}
+			}, 500);
+		} catch (err) {
+			console.error('Error fetching DigiLocker URL:', err);
+		}
+	};
+
+	// const handleAadharFetch = async () => {
+	// 	try {
+	// 		const response = await getDigiLockerRequest(); // returns { url: ... }
+	// 		const digilockerURL = response.url;
+
+	// 		const popup = window.open(
+	// 			digilockerURL,
+	// 			'DigiLockerPopup',
+	// 			'width=800,height=600,resizable=yes,scrollbars=yes'
+	// 		);
+
+	// 		if (!popup) {
+	// 			console.error('Popup blocked');
+	// 			return;
+	// 		}
+
+	// 		const handleMessage = (event: MessageEvent) => {
+	// 			// Check if the message is coming from the correct origin
+	// 			if (event.origin !== 'https://studiodemo.dhiway.com') {
+	// 				console.error(
+	// 					'Received message from untrusted origin:',
+	// 					event.origin
+	// 				);
+	// 				return;
+	// 			}
+
+	// 			// Ensure that the message data contains the final URL
+	// 			if (event.data) {
+	// 				console.log('✅ Final popup URL:', event.data.finalUrl);
+	// 			} else {
+	// 				console.error('Invalid message data received:', event.data);
+	// 			}
+	// 		};
+
+	// 		// Attach the event listener
+	// 		window.addEventListener('message', handleMessage);
+	// 	} catch (err) {
+	// 		console.error('Error during DigiLocker fetch:', err);
+	// 	}
+	// };
+
 	return (
 		<Layout
 			_heading={{
@@ -113,16 +221,26 @@ const Home: React.FC = () => {
 						userData={userData?.docs}
 					/>
 					<CommonButton
-						onClick={handleRedirect}
+						onClick={() => navigate('/explorebenefits')}
 						label={t('PROFILE_EXPLORE_BENEFITS')}
 					/>
-					{showIframe ? (
+					{!showIframe ? (
 						<UploadDocumentEwallet userId={userData?.user_id} />
 					) : (
-						<CommonButton onClick={() => setShowIframe(true)} />
+						<CommonButton
+							onClick={() => setShowIframe(false)}
+							label="Hide DigiLocker"
+						/>
 					)}
+					<CommonButton
+						onClick={handleAadharFetch}
+						label={'Fetch Aadhar'}
+						loading={fetchingAadhar} // Pass `loading={true}` to show the spinner and loading text
+						loadingLabel={'Fetching Aadhar'}
+					/>
 				</VStack>
 			</Box>
+
 			{consentSaved && (
 				<CommonDialogue
 					isOpen={consentSaved}
