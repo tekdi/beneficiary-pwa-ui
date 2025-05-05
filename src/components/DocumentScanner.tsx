@@ -26,7 +26,7 @@ import { getDocumentsList, getUser } from '../services/auth/auth';
 import { uploadUserDocuments } from '../services/user/User';
 import { findDocumentStatus } from '../utils/jsHelper/helper';
 import { AuthContext } from '../utils/context/checkToken';
-import { documentTypes } from '../config/documentTypes';
+import documentTypes from '../config/documentTypes.json';
 
 interface Document {
   name: string;
