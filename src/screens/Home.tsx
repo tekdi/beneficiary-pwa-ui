@@ -123,11 +123,11 @@ const Home: React.FC = () => {
 						onClick={handleRedirect}
 						label={t('PROFILE_EXPLORE_BENEFITS')}
 					/>
-					{showIframe ? (
+					{/* {showIframe ? (
 						<UploadDocumentEwallet userId={userData?.user_id} />
 					) : (
 						<CommonButton onClick={() => setShowIframe(true)} />
-					)}
+					)} */}
 				</VStack>
 			</Box>
 			{consentSaved && (
