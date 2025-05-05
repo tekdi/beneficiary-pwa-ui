@@ -76,7 +76,7 @@ export const getAadhar = async (code: string, userId: string) => {
 			response.data.data,
 			{
 				doc_name: 'Aadhaar Card',
-				doc_type: 'identityProof',
+				doc_type: 'idProof',
 				doc_subtype: 'aadhaar',
 			},
 			userId
