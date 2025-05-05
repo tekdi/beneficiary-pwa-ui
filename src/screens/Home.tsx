@@ -187,7 +187,13 @@ const Home: React.FC = () => {
 					/>
 					<CommonButton
 						onClick={handleScanRedirect}
-						label={t('Scan Documents')}
+						label={t('Scan & Add Documents')}
+					/>
+					<CommonButton
+						onClick={handleAadharFetch}
+						label={'Fetch Aadhaar From DigiLocker'}
+						loading={fetchingAadhar}
+						loadingLabel={'Fetching Aadhaar'}
 					/>
 					<CommonButton
 						onClick={handleRedirect}
@@ -201,12 +207,6 @@ const Home: React.FC = () => {
 							label="Hide DigiLocker"
 						/>
 					)}
-					<CommonButton
-						onClick={handleAadharFetch}
-						label={'Fetch Aadhar'}
-						loading={fetchingAadhar}
-						loadingLabel={'Fetching Aadhar'}
-					/>
 				</VStack>
 			</Box>
 
