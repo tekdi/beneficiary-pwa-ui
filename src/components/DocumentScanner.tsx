@@ -63,10 +63,27 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId, userData = []
   const { updateUserData } = useContext(AuthContext)!;
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userResult = await getUser();
+        const docsResult = await getDocumentsList();
+        updateUserData(userResult.data, docsResult.data);
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const response = await getDocumentsList();
-        const formattedDocuments = response.data.map((doc: any) => ({
+        console.log('Documents List:', response.data);
+        const formattedDocuments = response.data
+        .filter((doc: any) => doc.documentSubType !== 'aadhaar')
+        .map((doc: any) => ({
           name: doc.name,
           documentSubType: doc.documentSubType,
         }));
