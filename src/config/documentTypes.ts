@@ -24,7 +24,7 @@ export const documentTypes = [
     doc_subtype: "incomeCertificate" 
   },
   { 
-    value: "Enrollment Certificate (with hosteller/day scholar information)", 
+    value: "Enrollment Certificate", 
     label: "Enrollment Certificate (with hosteller/day scholar information)", 
     doc_type: "associationProof", 
     doc_subtype: "enrollmentCertificate" 
@@ -50,7 +50,25 @@ export const documentTypes = [
   { 
     value: "Birth Certificate", 
     label: "Birth Certificate", 
-    doc_type: "birthProof", 
+    doc_type: "birthProof",
     doc_subtype: "birthCertificate" 
   },
+  { 
+    value: "Declaration Certificate", 
+    label: "Self Declaration Form", 
+    doc_type: "selfDeclarationProof",
+    doc_subtype: "selfDeclarationForm" 
+  },
+  { 
+    value: "Fee Receipt", 
+    label: "Fee Receipt", 
+    doc_type: "feeProof",
+    doc_subtype: "feeReceipt" 
+  },
+  { 
+    value: "Bank Account", 
+    label: "Bank Account Details", 
+    doc_type: "bankAccountProof",
+    doc_subtype: "bankAccountDetails" 
+  }
 ]; 

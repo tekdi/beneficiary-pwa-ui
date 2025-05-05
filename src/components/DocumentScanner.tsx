@@ -92,60 +92,47 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId, userData = []
     if (!selectedDocument) return;
 
     try {
-      // Append .vc to the URL if not already present
-      let vcUrl = result.endsWith('.vc') ? result : `${result}.vc`;
-      console.log('vcUrl', vcUrl);
-      //   vcUrl = 'https://verifydemo.dhiway.com/m/8d1b9076-0879-4f1b-b972-9131d3b81c5a.vc'
+      console.log('Scanned QR code URL:', result);
 
-      // Fetch JSON data from the .vc endpoint
-      const response = await fetch(vcUrl);
+      // Extract UUID from the scanned QR code URL
+      const idMatch = result.match(/([0-9a-fA-F\-]{36})/);
+      if (!idMatch || !idMatch[1]) {
+        throw new Error("Invalid QR code: ID not found");
+      }
+      const extractedId = idMatch[1];
+      console.log('Extracted ID:', extractedId);
+
+      // Prepare final VC URL using environment base and extracted ID
+      const vcBaseUrl = import.meta.env.VITE_VC_BASE_URL;
+      const vcUrl = `${vcBaseUrl}${extractedId}.vc`;
+      console.log('Constructed VC URL:', vcUrl);
+
+      // Fetch JSON data from the constructed VC URL
+      const response = await fetch(vcUrl, {
+        method: 'GET',
+        mode: 'cors'
+      });
+
       if (!response.ok) {
-        toast({
-          title: "Error",
-          description: "Failed to fetch document data",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        throw new Error('Failed to fetch document data');
+        throw new Error("Failed to fetch document data");
       }
-
-      let jsonData;
-      try {
-        jsonData = await response.json();
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Invalid document data format",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        throw new Error('Invalid document data format');
-      }
-
+  
+      const jsonData = await response.json();
+      console.log('jsonData', jsonData);
+  
       if (!jsonData || typeof jsonData !== 'object') {
-        toast({
-          title: "Error",
-          description: "Invalid document data structure",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        throw new Error('Invalid document data structure');
+        throw new Error("Invalid document data structure");
       }
-
-      // Find the document type configuration
+  
+      const credentialTitle = jsonData?.credentialSchema?.title || '';
+  
       const docConfig = documentTypes.find(doc => doc.value === selectedDocument.name);
       if (!docConfig) {
-        toast({
-          title: "Error",
-          description: "Invalid document type",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        throw new Error('Invalid document type');
+        throw new Error("Invalid document type selected");
+      }
+  
+      if (!credentialTitle.includes(docConfig.value)) {
+        throw new Error(`Scanned document is not of type: ${docConfig.value}`);
       }
 
       // Prepare the document payload
@@ -179,9 +166,9 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({ userId, userData = []
       console.error('Error uploading document:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to upload document",
+        description: error instanceof Error ? error.message : "Unexpected error occurred",
         status: "error",
-        duration: 3000,
+        duration: 60000, // 10 seconds
         isClosable: true,
       });
     }
