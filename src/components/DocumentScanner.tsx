@@ -26,11 +26,11 @@ import { getDocumentsList, getUser } from '../services/auth/auth';
 import { uploadUserDocuments } from '../services/user/User';
 import { findDocumentStatus } from '../utils/jsHelper/helper';
 import { AuthContext } from '../utils/context/checkToken';
-import documentTypes from '../config/documentTypes.json';
-
 interface Document {
 	name: string;
+	label: string;
 	documentSubType: string;
+	docType: string;
 }
 
 interface UserDocument {
@@ -90,7 +90,9 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 					.filter((doc: any) => doc.documentSubType !== 'aadhaar')
 					.map((doc: any) => ({
 						name: doc.name,
+						label: doc.label,
 						documentSubType: doc.documentSubType,
+						docType: doc.docType,
 					}));
 				setDocuments(formattedDocuments);
 			} catch (error) {
@@ -148,16 +150,16 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 
 			const credentialTitle = jsonData?.credentialSchema?.title || '';
 
-			const docConfig = documentTypes.find(
-				(doc) => doc.value === selectedDocument.name
+			const docConfig = documents.find(
+				(doc) => doc.name === selectedDocument.name
 			);
 			if (!docConfig) {
 				throw new Error('Invalid document type selected');
 			}
 
-			if (!credentialTitle.includes(docConfig.value)) {
+			if (!credentialTitle.includes(docConfig.name)) {
 				throw new Error(
-					`Scanned document is not of type: ${docConfig.value}`
+					`Scanned document is not of type: ${docConfig.name}`
 				);
 			}
 
@@ -165,11 +167,11 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			const documentPayload = [
 				{
 					doc_name: selectedDocument.name,
-					doc_type: docConfig.doc_type,
-					doc_subtype: docConfig.doc_subtype,
+					doc_type: docConfig.docType,
+					doc_subtype: docConfig.documentSubType,
 					doc_data: jsonData,
 					uploaded_at: new Date().toISOString(),
-					imported_from: 'e-wallet',
+					imported_from: 'QR Code',
 					doc_datatype: 'Application/JSON',
 				},
 			];
@@ -256,7 +258,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 									justifyContent="space-between"
 									alignItems="center"
 								>
-									<Text>{doc.name}</Text>
+									<Text>{doc.label}</Text>
 									<HStack
 										key={`actions-${doc.documentSubType}-${index}`}
 									>

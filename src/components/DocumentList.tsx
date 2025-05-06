@@ -94,7 +94,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
 							color={theme.colors.text}
 							width={'80%'}
 						>
-							{document.name}
+							{document.label}
 						</Text>
 
 						<DocumentActions
