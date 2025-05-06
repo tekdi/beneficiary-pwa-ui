@@ -22,7 +22,7 @@ jobs:
           fi
           echo '${{ secrets.ENV }}' > .env
           ls -ltra
-          npm install
+          npm install --legacy-peer-deps
           npm run build
           ls -ltra
       - name: Show PWD
