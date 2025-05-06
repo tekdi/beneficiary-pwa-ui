@@ -72,11 +72,17 @@
   "USER_DETAILS_FATHER_NAME": "Father’s Name",
   "USER_DETAILS_MOTHER_NAME": "Mother’s Name",
   "USER_PROFILE_PHONE_NUMBER": "Phone Number",
+  "USER_DETAILS_FIRST_NAME": "First Name",
+  "USER_DETAILS_MIDDLE_NAME": "Middle Name",
   "USER_DETAILS_LAST_NAME": "Last Name",
   "USER_DETAILS_DOB": "DoB (DD/MM/YYYY)",
   "USER_DETAILS_GENDER": "Gender",
+  "USER_DETAILS_AADHAAR": "Aadhaar Number",
   "USER_DETAILS_CASTE": "Caste",
   "USER_DETAILS_DISABILITY": "Disability",
+  "USER_DETAILS_UDID": "UDID",
+  "USER_DETAILS_DISABILITY_Type": "Disability Type",
+  "USER_DETAILS_DISABILITY_RANGE": "Disability Range",
   "USER_DETAILS_PREVIOUS_YEAR_MARKS": "Previous Year Marks",
   "USER_DETAILS_STATE": "State",
   "USER_DETAILS_CLASS": "Class",
@@ -88,5 +94,9 @@
   "USER_PROFILE_ERROR_FETCHING_DATA": "Error fetching user data or documents",
   "UPLOAD_DOCUMENT_EWALLET": "Upload Missing Document",
   "DIALOGUE_T&C": "Terms and Conditions",
-  "DIALOGUE_CLICK_TO_READ_AND_PROCEED": "Click to read and proceed"
+  "DIALOGUE_CLICK_TO_READ_AND_PROCEED": "Click to read and proceed",
+  "SCAN_UPLOAD_DOCUMENT": "Scan & Upload Documents",
+  "FETCH_AADHAAR_FROM_DIGILOCKER": "Fetch Aadhaar From DigiLocker",
+  "FETCHING_AADHAAR": "Fetching Aadhaar",
+  "HIDE_DIGILOCKER": "Hide DigiLocker"
 }
