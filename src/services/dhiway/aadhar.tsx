@@ -32,7 +32,7 @@ export const generatePayload = (
 		doc_type: string;
 		doc_subtype: string;
 	}>,
-	userId: string
+	userId?: string
 ) => {
 	const {
 		doc_name = 'Aadhaar Card',

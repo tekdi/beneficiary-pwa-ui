@@ -2,7 +2,7 @@ name: Deploy to DEV
 on:
   push:
     branches:
-      - main
+      - depwd-pilot
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -22,7 +22,7 @@ jobs:
           fi
           echo '${{ secrets.ENV }}' > .env
           ls -ltra
-          npm install
+          npm install --legacy-peer-deps
           npm run build
           ls -ltra
       - name: Show PWD

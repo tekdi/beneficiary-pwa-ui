@@ -36,8 +36,8 @@
       "doc_subtype": "marksheet"
   },
   {
-      "value": "Disability Certificate",
-      "label": "Disability Certificate",
+      "value": "UDID Certificate",
+      "label": "UDID Certificate",
       "doc_type": "disabilityProof",
       "doc_subtype": "disabilityCertificate"
   },
