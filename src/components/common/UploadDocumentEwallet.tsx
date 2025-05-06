@@ -65,12 +65,12 @@ const UploadDocumentEwallet = ({ userId }) => {
 
 	return (
 		<div>
-			<CommonButton
+			{/* <CommonButton
 				onClick={sendMessageToIframe}
 				label={t('UPLOAD_DOCUMENT_EWALLET')}
 				mt={2}
 				variant="outline"
-			/>
+			/> */}
 
 			<iframe
 				ref={iframeRef}

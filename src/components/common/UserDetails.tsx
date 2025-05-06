@@ -27,7 +27,6 @@ interface UserData {
 	motherName?: string;
 	dob?: string | null;
 	gender?: string;
-
 	// Contact Information
 	email?: string;
 	phoneNumber?: string;
@@ -42,6 +41,9 @@ interface UserData {
 	// Demographic Information
 	caste?: string;
 	disabilityStatus?: string | null;
+	udid?: string | null;
+	disabilityType?: string | null;
+	disabilityRange?: string | null;
 	annualIncome?: string;
 	studentType?: string;
 
@@ -103,8 +105,22 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 			<VStack spacing={6} align="stretch">
 				<HStack spacing={4}>
 					<Field
-						label={t('USER_DETAILS_DOB')}
-						value={formattedDate}
+						label={t('USER_DETAILS_FIRST_NAME')}
+						value={userData?.firstName}
+					/>{' '}
+					<Field
+						label={t('USER_DETAILS_MIDDLE_NAME')}
+						value={userData?.middleName}
+					/>{' '}
+				</HStack>
+				<HStack spacing={4}>
+					<Field
+						label={t('USER_DETAILS_LAST_NAME')}
+						value={userData?.lastName}
+					/>{' '}
+					<Field
+						label={t('USER_DETAILS_FATHER_NAME')}
+						value={userData?.fatherName}
 					/>{' '}
 				</HStack>
 				<HStack spacing={4}>
@@ -113,21 +129,30 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 						value={userData?.gender}
 					/>
 					<Field
-						label={t('USER_DETAILS_CASTE')}
-						value={userData?.caste}
+						label={t('USER_DETAILS_DOB')}
+						value={formattedDate}
+					/>{' '}
+				</HStack>
+				<HStack spacing={4}>
+					<Field
+						label={t('USER_DETAILS_AADHAAR')}
+						value={userData?.aadhaar}
+					/>
+					<Field
+						label={t('USER_DETAILS_STATE')}
+						value={userData?.state}
 					/>
 				</HStack>
 				<HStack spacing={4}>
 					<Field
-						label={t('USER_DETAILS_DISABILITY')}
-						value={userData?.disabilityStatus}
-					/>
-					<Field
 						label={t('USER_DETAILS_CLASS')}
 						value={userData?.class}
 					/>
+					<Field
+						label={t('USER_DETAILS_PREVIOUS_YEAR_MARKS')}
+						value={userData?.previousYearMarks}
+					/>
 				</HStack>
-
 				<HStack spacing={4}>
 					<Field
 						label={t('USER_DETAILS_ANNUAL_INCOME')}
@@ -136,19 +161,25 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 							`INR ${userData?.annualIncome}`
 						}
 					/>
+				</HStack>
+				<HStack spacing={4}>
 					<Field
-						label={t('USER_DETAILS_DAY_SCHOLAR_HOSTLER')}
-						value={userData?.studentType}
+						label={t('USER_DETAILS_DISABILITY')}
+						value={userData?.disabilityStatus}
+					/>
+					<Field
+						label={t('USER_DETAILS_UDID')}
+						value={userData?.udid}
 					/>
 				</HStack>
 				<HStack spacing={4}>
 					<Field
-						label={t('USER_DETAILS_PREVIOUS_YEAR_MARKS')}
-						value={userData?.previousYearMarks}
+						label={t('USER_DETAILS_DISABILITY_Type')}
+						value={userData?.disabilityType}
 					/>
 					<Field
-						label={t('USER_DETAILS_STATE')}
-						value={userData?.state}
+						label={t('USER_DETAILS_DISABILITY_RANGE')}
+						value={userData?.disabilityRange}
 					/>
 				</HStack>
 			</VStack>
