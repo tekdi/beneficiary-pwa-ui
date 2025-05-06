@@ -207,12 +207,6 @@ const Home: React.FC = () => {
 							label={t('HIDE_DIGILOCKER')}
 						/>
 					)}
-					<CommonButton
-						onClick={handleAadharFetch}
-						label={'Fetch Aadhar'}
-						loading={fetchingAadhar}
-						loadingLabel={'Fetching Aadhar'}
-					/>
 				</VStack>
 			</Box>
 
