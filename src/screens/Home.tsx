@@ -189,12 +189,12 @@ const Home: React.FC = () => {
 						onClick={handleScanRedirect}
 						label={t('SCAN_UPLOAD_DOCUMENT')}
 					/>
-					<CommonButton
+					{/* <CommonButton
 						onClick={handleAadharFetch}
 						label={t('FETCH_AADHAAR_FROM_DIGILOCKER')}
 						loading={fetchingAadhar}
 						loadingLabel={t('FETCHING_AADHAAR')}
-					/>
+					/> */}
 					<CommonButton
 						onClick={handleRedirect}
 						label={t('PROFILE_EXPLORE_BENEFITS')}
