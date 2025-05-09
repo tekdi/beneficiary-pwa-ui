@@ -289,12 +289,12 @@ export const transformData = (userData) => {
 		firstName: userData?.firstName ?? '',
 		middleName: userData?.fatherName ?? '',
 		lastName: userData?.lastName ?? '',
-		gender: userData?.gender ?? '',
+		gender: userData?.gender === 'Male' ? 'male' : 'female',
 		class: userData?.class ? `${userData.class}` : '',
 		annualIncome: userData?.annualIncome ?? '',
-		caste: userData?.caste?.toLowerCase() ?? '',
-		disabled: userData?.disability ? 'yes' : 'no',
-		state: userData?.state ?? '',
+		// caste: userData?.caste?.toLowerCase() ?? '',
+		// disabled: userData?.disability ? 'yes' : 'no',
+		// state: userData?.state ?? '',
 		studentType: userData?.studentType === 'Day' ? 'dayScholar' : 'hostler',
 		docs: userData?.docs ?? [],
 		bankAccountHolderName: userData?.bankAccountHolderName ?? '',
@@ -302,7 +302,14 @@ export const transformData = (userData) => {
 		bankAccountNumber: userData?.bankAccountNumber ?? '',
 		bankIfscCode: userData?.bankIfscCode ?? '',
 		previousYearMarks: userData?.previousYearMarks ?? '',
-		mobile: userData?.phoneNumber ?? '',
+		phoneNumber: userData?.phoneNumber ?? '',
+		aadhaar: userData?.aadhaar ?? '',
+		udid: userData?.udid ?? '',
+		dob: userData?.dob ?? '',
+		disabilityRange: userData?.disabilityRange ?? '',
+		disabilityType: userData?.disabilityType ?? ' ',
+		branchCode: userData?.branchCode ?? ' ',
+		bankAddress: userData?.bankAddress ?? ' ',
 	};
 };
 
@@ -388,6 +395,10 @@ export function checkEligibilityCriteria({
 	condition: string;
 	conditionValues: string | number | (string | number)[];
 }): boolean {
+	console.log('value', value);
+	console.log('condition', condition);
+	console.log('conditionValues', conditionValues);
+
 	if (value == null) return false;
 	// Convert value to string if it's a number
 	const val =

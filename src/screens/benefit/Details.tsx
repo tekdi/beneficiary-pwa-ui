@@ -201,11 +201,11 @@ const BenefitsDetails: React.FC = () => {
 
 		eligibilityTag.list.forEach((item: any) => {
 			const code = item?.descriptor?.code;
-
+			const eligibilityObj = JSON.parse(item.value);
 			try {
-				const valueObj = JSON.parse(item.value || '{}');
 				const payload = {
-					...valueObj,
+					condition: eligibilityObj?.criteria?.condition,
+					conditionValues: eligibilityObj?.criteria?.conditionValues,
 					value: user?.data?.[code],
 				};
 
@@ -340,6 +340,7 @@ const BenefitsDetails: React.FC = () => {
 				context={context}
 				item={item}
 				submitConfirm={submitConfirm}
+				id={id}
 			/>
 		);
 	}
