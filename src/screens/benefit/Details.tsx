@@ -46,8 +46,18 @@ interface BenefitItem {
 	};
 	document?: string[];
 	tags?: Array<{
-		descriptor?: { code?: string; short_desc: string };
-		list?: Array<{ value?: string }>;
+		descriptor?: {
+			code?: string;
+			short_desc: string;
+		};
+		list?: Array<{
+			value: string;
+			descriptor?: {
+				code?: string;
+				name?: string;
+				short_desc?: string;
+			};
+		}>;
 	}>;
 }
 interface FinancialSupportRequest {
