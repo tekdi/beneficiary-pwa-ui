@@ -134,7 +134,7 @@ const BenefitsDetails: React.FC = () => {
 	const extractResultItem = (result) => {
 		return (
 			(result as { data: { responses: Array<any> } }).data?.responses?.[0]
-				?.message?.order?.items?.[0] || {}
+				?.message?.catalog?.providers?.[0]?.items?.[0] || {}
 		);
 	};
 
@@ -145,8 +145,15 @@ const BenefitsDetails: React.FC = () => {
 					(e: { descriptor: { code: string } }) =>
 						e?.descriptor?.code === 'required-docs'
 				)
-				?.list?.filter((e: { value: unknown }) => e.value)
-				.map((e: { value: unknown }) => e.value) || []
+				?.list?.map((doc) => {
+					const { allowedProofs } = JSON.parse(doc.value);
+					return allowedProofs.map(
+						(proof) =>
+							proof
+								.replace(/([A-Z])/g, ' $1') // insert space before capital letters
+								.replace(/^./, (str) => str.toUpperCase()) // capitalize first letter
+					);
+				}) || []
 		);
 	};
 
@@ -172,36 +179,36 @@ const BenefitsDetails: React.FC = () => {
 	};
 
 	const checkEligibility = (resultItem, user) => {
-		const eligibilityArr = [];
+		const eligibilityArr: string[] = [];
 
-		if (Array.isArray(resultItem?.tags)) {
-			resultItem?.tags?.forEach((e: any) => {
-				if (e?.descriptor?.code === '@eligibility') {
-					if (Array.isArray(e.list)) {
-						e.list.forEach((item: any) => {
-							const code = item?.descriptor?.code;
-							try {
-								const valueObj = JSON.parse(item.value || '{}');
-								const payload = {
-									...valueObj,
-									value: user?.data?.[code],
-								};
-								const result =
-									checkEligibilityCriteria(payload);
-								if (!result) {
-									eligibilityArr.push(code);
-								}
-							} catch (error) {
-								console.error(
-									`Failed to parse eligibility criteria: ${error}`
-								);
-								eligibilityArr.push(code);
-							}
-						});
-					}
-				}
-			});
+		const eligibilityTag = resultItem?.tags?.find(
+			(tag: any) => tag?.descriptor?.code === 'eligibility'
+		);
+
+		if (!eligibilityTag?.list || !Array.isArray(eligibilityTag.list)) {
+			return eligibilityArr;
 		}
+
+		eligibilityTag.list.forEach((item: any) => {
+			const code = item?.descriptor?.code;
+
+			try {
+				const valueObj = JSON.parse(item.value || '{}');
+				const payload = {
+					...valueObj,
+					value: user?.data?.[code],
+				};
+
+				const result = checkEligibilityCriteria(payload);
+
+				if (!result) {
+					eligibilityArr.push(code);
+				}
+			} catch (error) {
+				console.error(`Failed to parse eligibility criteria:`, error);
+				eligibilityArr.push(code);
+			}
+		});
 
 		return eligibilityArr;
 	};
@@ -374,15 +381,29 @@ const BenefitsDetails: React.FC = () => {
 					</Heading>
 					<UnorderedList mt={4}>
 						{item?.tags
-							?.filter((tag) =>
-								['@eligibility'].includes(tag.descriptor?.code)
-							)
-							.map((tag, index) => (
-								<ListItem key={'detail' + index}>
-									{tag.descriptor?.short_desc}
-								</ListItem>
-							))}
+							?.filter(
+								(tag) => tag.descriptor?.code === 'eligibility'
+							) // Filter to find the 'eligibility' object
+							.map((tag, index) =>
+								tag.list?.map(
+									(
+										eligibilityItem,
+										innerIndex // Access list inside descriptor and map through it
+									) => (
+										<ListItem
+											key={`eligibility-${index}-${innerIndex}`}
+										>
+											{
+												eligibilityItem?.descriptor
+													?.short_desc
+											}{' '}
+											{/* Render the short_desc from each item in the list */}
+										</ListItem>
+									)
+								)
+							)}
 					</UnorderedList>
+
 					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
 						{t('BENEFIT_DETAILS_MANDATORY_DOCUMENTS')}
 					</Heading>
