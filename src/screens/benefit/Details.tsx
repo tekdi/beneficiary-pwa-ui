@@ -340,7 +340,6 @@ const BenefitsDetails: React.FC = () => {
 				context={context}
 				item={item}
 				submitConfirm={submitConfirm}
-				id={id}
 			/>
 		);
 	}

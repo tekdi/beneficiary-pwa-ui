@@ -19,7 +19,7 @@ interface BenefitCardProps {
 		item_id: number;
 		title: string;
 		provider_name: string;
-
+		description: string;
 		item: {
 			price?: { value?: number; currency?: string };
 			tags: Array<{ list?: string[] }>;
@@ -75,9 +75,10 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
 	const dateStr = item?.item?.time?.range?.end;
 	const formattedDate = dateStr ? formatDateString(dateStr) : '';
 	const eligibility = extractValuesByDescriptors(item?.item?.tags, [
-		'caste',
-		'gender',
-		'state',
+		'disabilityType',
+		'disabilityRange',
+		'class',
+		'annualIncome',
 	]);
 
 	return (
@@ -116,7 +117,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
 						</Text>{' '}
 					</HStack>
 				)}
-				<Flex alignItems="center" mt={2}>
+				{/* <Flex alignItems="center" mt={2}>
 					{eligibility?.length > 0 ? (
 						eligibility.map((category, index) => (
 							<Box
@@ -135,8 +136,8 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
 					) : (
 						<Box mr={2}>No eligibility criteria specified</Box>
 					)}
-				</Flex>
-				<Text mt={4}>{item?.descriptor?.short_desc}</Text>
+				</Flex> */}
+				<Text mt={4}>{item?.description}</Text>
 			</CardBody>
 			<Flex
 				align="center"
