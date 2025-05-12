@@ -149,22 +149,35 @@ const BenefitsDetails: React.FC = () => {
 	};
 
 	const extractRequiredDocs = (resultItem) => {
-		return (
-			resultItem?.tags
-				?.find(
-					(e: { descriptor: { code: string } }) =>
-						e?.descriptor?.code === 'required-docs'
-				)
-				?.list?.map((doc) => {
-					const { allowedProofs } = JSON.parse(doc.value);
-					return allowedProofs.map(
+		const requiredDocsTag = resultItem?.tags?.find(
+			(e: { descriptor: { code: string } }) =>
+				e?.descriptor?.code === 'required-docs'
+		);
+		if (!requiredDocsTag?.list) return [];
+
+		const docs: string[] = [];
+		for (const doc of requiredDocsTag.list) {
+			try {
+				const parsed = JSON.parse(doc.value);
+				const allowedProofs = parsed.allowedProofs || [];
+				const isRequired = parsed.isRequired;
+				const label = allowedProofs
+					.map(
 						(proof) =>
 							proof
-								.replace(/([A-Z])/g, ' $1') // insert space before capital letters
-								.replace(/^./, (str) => str.toUpperCase()) // capitalize first letter
-					);
-				}) || []
-		);
+								.replace(/([A-Z])/g, ' $1')
+								.replace(/^./, (str) => str.toUpperCase())
+					)
+					.join(' / ');
+				docs.push(
+					`${label} (${isRequired ? 'Mandatory' : 'Non-mandatory'})`
+				);
+			} catch (e) {
+				// fallback to raw value if parsing fails
+				docs.push('Invalid document data');
+			}
+		}
+		return docs;
 	};
 
 	const extractContext = (result) => {
@@ -367,17 +380,6 @@ const BenefitsDetails: React.FC = () => {
 		>
 			<Box className="card-scroll invisible-scroll">
 				<Box maxW="2xl" m={4}>
-					<Heading size="md" color="#484848" fontWeight={500}>
-						{t('BENEFIT_DETAILS_HEADING_TITLE')}
-					</Heading>
-					<HStack mt={2}>
-						<Icon
-							as={MdCurrencyRupee}
-							boxSize={5}
-							color="#484848"
-						/>
-						<Text>{item?.price?.value}</Text>
-					</HStack>
 					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
 						{t('BENEFIT_DETAILS_HEADING_DETAILS')}
 					</Heading>
@@ -387,7 +389,56 @@ const BenefitsDetails: React.FC = () => {
 					)}
 
 					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
-						{t('BENEFIT_DETAILS_KEYPOINT_DETAILS')}
+						{t('BENEFIT_DETAILS_BENEFIT_DETAILS')}
+					</Heading>
+					<UnorderedList mt={4}>
+						{item?.tags
+							?.filter(
+								(tag) => tag.descriptor?.code === 'benefits'
+							) // Filter to find the 'eligibility' object
+							.map((tag, index) =>
+								tag.list?.map(
+									(
+										benefitItem,
+										innerIndex // Access list inside descriptor and map through it
+									) => (
+										<ListItem
+											key={`benefit-${index}-${innerIndex}`}
+										>
+											{(() => {
+												let parsedValue;
+												try {
+													parsedValue = JSON.parse(benefitItem.value);
+												} catch {
+													parsedValue = {};
+												}
+												return (
+													<>
+														<strong>{parsedValue.title}</strong>
+														{parsedValue.description ? `: ${parsedValue.description}` : ''}
+													</>
+												);
+											})()}
+										</ListItem>
+									)
+								)
+							)}
+					</UnorderedList>
+
+					{/* <Heading size="md" color="#484848" fontWeight={500}>
+						{t('BENEFIT_DETAILS_HEADING_TITLE')}
+					</Heading>
+					<HStack mt={2}>
+						<Icon
+							as={MdCurrencyRupee}
+							boxSize={5}
+							color="#484848"
+						/>
+						<Text>{item?.price?.value}</Text>
+					</HStack> */}
+
+					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
+						{t('BENEFIT_DETAILS_ELIGIBILITY_DETAILS')}
 					</Heading>
 					<UnorderedList mt={4}>
 						{item?.tags
@@ -417,11 +468,14 @@ const BenefitsDetails: React.FC = () => {
 					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
 						{t('BENEFIT_DETAILS_MANDATORY_DOCUMENTS')}
 					</Heading>
+
+					
 					<UnorderedList mt={4}>
 						{item?.document?.map((document) => (
 							<ListItem key={document}>{document}</ListItem>
 						))}
 					</UnorderedList>
+					
 					{localStorage.getItem('authToken') ? (
 						<CommonButton
 							mt={6}
