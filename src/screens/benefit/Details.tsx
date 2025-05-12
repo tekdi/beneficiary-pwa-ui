@@ -466,7 +466,7 @@ const BenefitsDetails: React.FC = () => {
 					</UnorderedList>
 
 					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
-						{t('BENEFIT_DETAILS_MANDATORY_DOCUMENTS')}
+						{t('BENEFIT_DETAILS_DOCUMENTS_REQUIRED')}
 					</Heading>
 
 					
