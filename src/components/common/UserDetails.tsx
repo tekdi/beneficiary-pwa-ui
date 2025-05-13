@@ -46,6 +46,9 @@ interface UserData {
 	disabilityRange?: string | null;
 	annualIncome?: string;
 	studentType?: string;
+	nspOtr?: string;
+	tutionAdminFeePaid?: string;
+	miscFeePaid?: string;
 
 	// System Information
 	user_id?: string;
@@ -161,6 +164,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 							`INR ${userData?.annualIncome}`
 						}
 					/>
+					<Field
+						label={t('USER_DETAILS_NSP_OTR')}
+						value={userData?.nspOtr}
+					/>
 				</HStack>
 				<HStack spacing={4}>
 					<Field
@@ -175,11 +182,27 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 				<HStack spacing={4}>
 					<Field
 						label={t('USER_DETAILS_DISABILITY_Type')}
-						value={userData?.disabilityType}
+						value={userData?.disabilityType
+							?.split('_')
+							.map(
+								(word) =>
+									word.charAt(0).toUpperCase() + word.slice(1)
+							)
+							.join(' ')}
 					/>
 					<Field
 						label={t('USER_DETAILS_DISABILITY_RANGE')}
 						value={userData?.disabilityRange}
+					/>
+				</HStack>
+				<HStack spacing={4}>
+					<Field
+						label={t('USER_DETAILS_TUTION_ADMIN_FEE_PAID')}
+						value={userData?.tutionAdminFeePaid}
+					/>
+					<Field
+						label={t('USER_DETAILS_MISC_FEE_PAID')}
+						value={userData?.miscFeePaid}
 					/>
 				</HStack>
 			</VStack>
