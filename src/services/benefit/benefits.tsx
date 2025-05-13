@@ -185,9 +185,10 @@ export const confirmApplication = async ({
 			},
 		},
 	};
+
 	try {
 		const token = localStorage.getItem('authToken');
-		const response = await axios.post(`${bap_uri}client/confirm`, data, {
+		const response = await axios.post(`${apiBaseUrl}/confirm`, data, {
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
