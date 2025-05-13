@@ -74,7 +74,7 @@ const ExploreBenefits: React.FC = () => {
 						}
 					});
 
-					setFilter(newFilter);
+					// setFilter(newFilter);
 				}
 				setInitState('no');
 			} catch (e) {
