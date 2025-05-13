@@ -99,5 +99,8 @@
   "SCAN_UPLOAD_DOCUMENT": "Scan & Upload Documents",
   "FETCH_AADHAAR_FROM_DIGILOCKER": "Fetch Aadhaar From DigiLocker",
   "FETCHING_AADHAAR": "Fetching Aadhaar",
-  "HIDE_DIGILOCKER": "Hide DigiLocker"
+  "HIDE_DIGILOCKER": "Hide DigiLocker",
+  "USER_DETAILS_NSP_OTR": "NSP OTR",
+  "USER_DETAILS_TUTION_ADMIN_FEE_PAID": "Tuition/Admin Fee Paid",
+  "USER_DETAILS_MISC_FEE_PAID": "Miscellaneous Fee Paid"
 }
