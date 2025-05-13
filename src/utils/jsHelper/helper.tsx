@@ -310,6 +310,10 @@ export const transformData = (userData) => {
 		disabilityType: userData?.disabilityType ?? ' ',
 		branchCode: userData?.branchCode ?? ' ',
 		bankAddress: userData?.bankAddress ?? ' ',
+		nspOtr: userData?.nspOtr ?? ' ',
+		tuitionAndAdminFeePaid: userData?.tuitionAndAdminFeePaid ?? ' ',
+		miscFeePaid: userData?.miscFeePaid ?? ' ',
+		currentSchoolName: userData?.currentSchoolName ?? ' ',
 	};
 };
 
