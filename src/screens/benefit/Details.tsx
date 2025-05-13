@@ -265,11 +265,10 @@ const BenefitsDetails: React.FC = () => {
 
 	const submitConfirm = async (payload) => {
 		const confirmPayload = {
-			submission_id: payload?.submit.submission_id,
-			item_id: payload?.submit.application_id,
-			benefit_id: id,
-			context: context,
+			item_id: payload?.submit.application.id,
+			rawContext: context,
 		};
+
 		setLoading(true);
 		try {
 			const result = await confirmApplication(confirmPayload);
