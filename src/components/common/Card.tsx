@@ -32,11 +32,8 @@ interface BenefitCardProps {
 }
 
 const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
-	console.log('item', item);
-
 	const extractValuesByDescriptors = (data, descriptorCodes) => {
 		const values = [];
-		console.log('data', data);
 
 		data.forEach((item) => {
 			if (item.list && Array.isArray(item.list)) {
