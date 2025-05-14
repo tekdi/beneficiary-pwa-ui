@@ -47,7 +47,7 @@ interface UserData {
 	annualIncome?: string;
 	studentType?: string;
 	nspOtr?: string;
-	tutionAdminFeePaid?: string;
+	tuitionAndAdminFeePaid?: string;
 	miscFeePaid?: string;
 
 	// System Information
@@ -198,7 +198,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 				<HStack spacing={4}>
 					<Field
 						label={t('USER_DETAILS_TUTION_ADMIN_FEE_PAID')}
-						value={userData?.tutionAdminFeePaid}
+						value={userData?.tuitionAndAdminFeePaid}
 					/>
 					<Field
 						label={t('USER_DETAILS_MISC_FEE_PAID')}
