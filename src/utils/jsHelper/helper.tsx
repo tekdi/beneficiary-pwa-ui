@@ -305,7 +305,7 @@ export const transformData = (userData) => {
 		phoneNumber: userData?.phoneNumber ?? '',
 		aadhaar: userData?.aadhaar ?? '',
 		udid: userData?.udid ?? '',
-		dob: userData?.dob ?? '',
+		dob: formatDate(userData?.dob) ?? '',
 		disabilityRange: userData?.disabilityRange ?? '',
 		disabilityType: userData?.disabilityType ?? ' ',
 		branchCode: userData?.branchCode ?? ' ',
@@ -367,7 +367,11 @@ export function getSubmmitedDoc(userData, document) {
 	const result = [];
 	const codes = document.map((item) => item.documentSubType);
 	for (const key in userData) {
-		if (codes.includes(key)) {
+		if (
+			codes.includes(key) &&
+			typeof userData[key] === 'string' &&
+			userData[key].startsWith('base64')
+		) {
 			result.push(key);
 		}
 	}
