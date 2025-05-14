@@ -13,7 +13,7 @@ import Layout from '../components/common/layout/Layout';
 import { AuthContext } from '../utils/context/checkToken';
 import { useTranslation } from 'react-i18next';
 import DocumentList from '../components/DocumentList';
-// import { useKeycloak } from '@react-keycloak/web';
+import { useKeycloak } from '@react-keycloak/web';
 import '../assets/styles/App.css';
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonDialogue from '../components/common/Dialogue';
@@ -25,7 +25,7 @@ const Home: React.FC = () => {
 	const { t } = useTranslation();
 	const [showIframe, setShowIframe] = useState(false);
 	const [consentSaved, setConsentSaved] = useState(false);
-	// const { keycloak } = useKeycloak();
+	const { keycloak } = useKeycloak();
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
 	const purpose = 'sign_up_tnc';
 	const purpose_text = 'sign_up_tnc';
@@ -176,7 +176,7 @@ const Home: React.FC = () => {
 			_heading={{
 				beneficiary: true,
 				heading: `${userData?.firstName || ''} ${userData?.lastName || ''}`,
-				// label: keycloak.tokenParsed?.preferred_username,
+				label: keycloak.tokenParsed?.preferred_username,
 			}}
 		>
 			<Box shadow="md" borderWidth="1px" borderRadius="md" p={2}>
