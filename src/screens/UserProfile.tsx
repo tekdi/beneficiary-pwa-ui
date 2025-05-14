@@ -81,7 +81,7 @@ const UserProfile: React.FC = () => {
 
 			<Box shadow="md" borderWidth="1px" borderRadius="md" p={2}>
 				<ProgressBar
-					totalDocuments={10}
+					totalDocuments={documents?.length}
 					presentDocuments={userData?.docs?.length}
 				/>
 				<Flex
