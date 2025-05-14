@@ -303,7 +303,7 @@ export const transformData = (userData) => {
 		bankIfscCode: userData?.bankIfscCode ?? '',
 		previousYearMarks: userData?.previousYearMarks ?? '',
 		phoneNumber: userData?.phoneNumber ?? '',
-		aadhaar: userData?.aadhaar ?? '',
+		aadhaar: userData?.aadhaar.toString() ?? '',
 		udid: userData?.udid ?? '',
 		dob: formatDate(userData?.dob) ?? '',
 		disabilityRange: userData?.disabilityRange ?? '',
@@ -311,8 +311,9 @@ export const transformData = (userData) => {
 		branchCode: userData?.branchCode ?? ' ',
 		bankAddress: userData?.bankAddress ?? ' ',
 		nspOtr: userData?.nspOtr ?? ' ',
-		tuitionAndAdminFeePaid: userData?.tuitionAndAdminFeePaid ?? ' ',
-		miscFeePaid: userData?.miscFeePaid ?? ' ',
+		tuitionAndAdminFeePaid:
+			userData?.tuitionAndAdminFeePaid?.toString() ?? ' ',
+		miscFeePaid: userData?.miscFeePaid.toString() ?? ' ',
 		currentSchoolName: userData?.currentSchoolName ?? ' ',
 	};
 };
