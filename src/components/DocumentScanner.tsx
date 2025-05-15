@@ -26,6 +26,7 @@ import { getDocumentsList, getUser } from '../services/auth/auth';
 import { uploadUserDocuments } from '../services/user/User';
 import { findDocumentStatus } from '../utils/jsHelper/helper';
 import { AuthContext } from '../utils/context/checkToken';
+import { fetchVCJson } from '../services/benefit/benefits';
 interface Document {
 	name: string;
 	label: string;
@@ -118,30 +119,8 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 		try {
 			console.log('Scanned QR code URL:', result);
 
-			// Extract UUID from the scanned QR code URL
-			const idMatch = result.match(/([0-9a-fA-F\-]{36})/);
-			if (!idMatch || !idMatch[1]) {
-				throw new Error('Invalid QR code: ID not found');
-			}
-			const extractedId = idMatch[1];
-			console.log('Extracted ID:', extractedId);
-
-			// Prepare final VC URL using environment base and extracted ID
-			const vcBaseUrl = import.meta.env.VITE_VC_BASE_URL;
-			const vcUrl = `${vcBaseUrl}${extractedId}.vc`;
-			console.log('Constructed VC URL:', vcUrl);
-
-			// Fetch JSON data from the constructed VC URL
-			const response = await fetch(vcUrl, {
-				method: 'GET',
-				mode: 'cors',
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to fetch document data');
-			}
-
-			const jsonData = await response.json();
+			 // Fetch VC JSON using the service method
+			const jsonData = await fetchVCJson(result);
 			console.log('jsonData', jsonData);
 
 			if (!jsonData || typeof jsonData !== 'object') {
