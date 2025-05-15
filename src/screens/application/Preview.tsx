@@ -113,8 +113,9 @@ const Preview: React.FC = () => {
 				<Text fontWeight={400} fontSize={14}>
 					Status
 				</Text>
-				<Text color="#EDA145" fontWeight={700} fontSize={14}>
-					{status}
+				<Text color="#41424B" fontWeight={700} fontSize={14}>
+					{status.charAt(0).toUpperCase() +
+						status.slice(1).toLowerCase()}
 				</Text>
 			</HStack>
 
@@ -171,14 +172,20 @@ const Preview: React.FC = () => {
 
 					return null;
 				})}
-				<Text {...labelStyles}>Uploaded Documents</Text>
-				<UnorderedList mt={3}>
-					{document
-						?.slice(0, -2)
-						.map((document) => (
-							<ListItem key={document}>{document}</ListItem>
-						))}
-				</UnorderedList>
+				{userData && (
+					<>
+						<Text {...labelStyles}>Uploaded Documents</Text>
+						<UnorderedList mt={3}>
+							{document
+								?.slice(0, -2)
+								.map((document) => (
+									<ListItem key={document}>
+										{document}
+									</ListItem>
+								))}
+						</UnorderedList>
+					</>
+				)}
 			</Box>
 		</Layout>
 	);
