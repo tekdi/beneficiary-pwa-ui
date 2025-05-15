@@ -254,3 +254,22 @@ export const getApplication = async (filters: Filters) => {
 		handleError(error as AxiosError);
 	}
 };
+
+export const fetchVCJson = async (url: string) => {
+	try {
+		const token = localStorage.getItem('authToken');
+		const response = await axios.post(
+			`${apiBaseUrl}/users/fetch-vc-json`,
+			{ url },
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error) {
+		throw error.response ? error.response.data : new Error('Network Error');
+	}
+};
