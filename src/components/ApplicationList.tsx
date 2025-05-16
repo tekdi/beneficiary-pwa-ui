@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, VStack, HStack, Divider } from '@chakra-ui/react';
+import { Box, Text, VStack, Divider } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
 interface Application {
