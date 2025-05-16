@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, VStack, HStack } from '@chakra-ui/react';
+import { Box, Text, VStack, HStack, Divider } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
 interface Application {
@@ -26,11 +26,9 @@ const StatusIcon: React.FC<{ status: string }> = ({ status }) => {
 		status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
 	return (
-		<HStack alignItems="center">
-			<Text fontSize="16px" color={COLORS.text}>
-				{formattedStatus}
-			</Text>
-		</HStack>
+		<Text fontSize="16px" fontWeight="semibold" color={COLORS.text}>
+			{formattedStatus}
+		</Text>
 	);
 };
 
@@ -39,7 +37,6 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 }) => {
 	const navigate = useNavigate();
 
-	// Group applications dynamically by status
 	const groupedApplications = React.useMemo(() => {
 		return applicationList.reduce(
 			(acc, app) => {
@@ -53,70 +50,74 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 		);
 	}, [applicationList]);
 
-	// Get the dynamic list of statuses
-	const statusKeys = React.useMemo(
-		() => Object.keys(groupedApplications).sort(), // optionally sort alphabetically
-		[groupedApplications]
-	);
+	const statusKeys = React.useMemo(() => {
+		return Object.keys(groupedApplications).sort((a, b) =>
+			a.localeCompare(b, undefined, { sensitivity: 'base' })
+		);
+	}, [groupedApplications]);
 
 	return (
 		<Box
 			as="section"
 			aria-label="Applications list"
-			paddingBottom="100px"
-			padding="16px"
+			pb="100px"
+			px="16px"
 			width="100%"
 		>
-			<VStack spacing={4} align="stretch">
+			<VStack spacing={4} align="stretch" mt={'10px'}>
 				{statusKeys.map((status, index) => (
 					<Box
-						borderRadius={10}
+						key={`${status}${index}`}
+						borderRadius="10px"
 						bg="#FFFFFF"
 						shadow="md"
-						borderWidth="0.5px"
-						borderColor="#DDDDDD"
+						border="1px solid #DDDDDD"
 						width="100%"
-						key={`${status}${index}`}
 					>
-						<HStack
-							alignItems="center"
-							borderBottom="1px"
-							borderColor="#DDDDDD"
+						<Box
 							height="56px"
-							alignContent="center"
-							width="100%"
-							paddingLeft="16px"
+							px="16px"
+							display="flex"
+							alignItems="center"
 							bg="#EDEFFF"
+							borderBottom="1px solid #DDDDDD"
+							borderTopRadius="10px"
 						>
 							<StatusIcon status={status} />
-						</HStack>
-						<VStack align="stretch" spacing={2}>
-							{groupedApplications[status].map((app) => (
-								<Box
-									as="button"
-									onClick={() =>
-										navigate(
-											`/previewapplication/${app.internal_application_id}`
-										)
-									}
-									width="100%"
+						</Box>
+
+						<VStack align="stretch" spacing={0}>
+							{groupedApplications[status].map((app, i, arr) => (
+								<React.Fragment
 									key={app.internal_application_id}
 								>
-									<HStack
+									<Box
+										as="button"
+										onClick={() =>
+											navigate(
+												`/previewapplication/${app.internal_application_id}`
+											)
+										}
 										width="100%"
-										height={53}
-										padding="20px 8px 16px 16px"
-										justifyContent="space-between"
+										textAlign="left"
+										px="16px"
+										py="12px"
+										_hover={{ bg: '#F5F5F5' }}
 									>
 										<Text
 											fontSize="14px"
 											color={COLORS.text}
-											border="none"
 										>
 											{app.application_name}
 										</Text>
-									</HStack>
-								</Box>
+									</Box>
+									{i !== arr.length - 1 && (
+										<Divider
+											borderColor="#E2E8F0"
+											marginX="16px"
+										/>
+									)}
+								</React.Fragment>
 							))}
 						</VStack>
 					</Box>

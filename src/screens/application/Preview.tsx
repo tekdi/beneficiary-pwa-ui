@@ -46,6 +46,7 @@ const Preview: React.FC = () => {
 	const [benefitName, setBenefitName] = useState<string | undefined>('');
 	const [status, setStatus] = useState('');
 	const [document, setDocument] = useState<string[]>([]);
+	const [loading, setLoading] = useState(true);
 	const toast = useToast();
 	const handleBack = () => {
 		navigate('/applicationstatus');
@@ -64,6 +65,7 @@ const Preview: React.FC = () => {
 				navigate('/applicationstatus');
 				return;
 			}
+			setLoading(true);
 			const documents = await getDocumentsList();
 			const result = await getApplicationDetails(id);
 
@@ -77,6 +79,7 @@ const Preview: React.FC = () => {
 			setUserData(data);
 
 			setDocument(doc);
+			setLoading(false);
 		} catch (error) {
 			console.error('Error fetching application details:', error);
 
@@ -102,6 +105,7 @@ const Preview: React.FC = () => {
 				subHeading: `Order ID ${benefitName}`,
 				handleBack,
 			}}
+			loading={loading}
 		>
 			<HStack
 				justifyContent="space-between"
