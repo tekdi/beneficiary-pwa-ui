@@ -1,27 +1,18 @@
 import React from 'react';
-import { Box, Text, VStack, HStack } from '@chakra-ui/react';
+import { Box, Text, VStack, Divider } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
 interface Application {
 	benefit_id: string;
 	application_name: string;
 	internal_application_id: string;
-	status: 'submitted' | 'approved' | 'rejected';
+	status: string;
 	application_data: Record<string, unknown>;
 }
 
 interface ApplicationListProps {
 	applicationList?: Application[];
 }
-
-const STATUS = {
-	SUBMITTED: 'submitted',
-	APPROVED: 'approved',
-	PENDING_FOR_REVIEW: 'pending for review',
-	AMOUNT_TRANSFER_IN_PROGRESS: 'amount transfer in progress',
-	SUBMITTED_FOR_DISBURSAL: 'submmited for disbursal',
-	AMOUNT_RECEIVED: 'amount received',
-} as const;
 
 const COLORS = {
 	success: '#0B7B69',
@@ -31,108 +22,106 @@ const COLORS = {
 } as const;
 
 const StatusIcon: React.FC<{ status: string }> = ({ status }) => {
-	const text = (
-		<Text fontSize="16px" color={COLORS.text}>
-			{status.charAt(0).toUpperCase() + status.slice(1)}
+	const formattedStatus =
+		status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+
+	return (
+		<Text fontSize="16px" fontWeight="semibold" color={COLORS.text}>
+			{formattedStatus}
 		</Text>
 	);
-	return <HStack alignItems="center">{text}</HStack>;
 };
 
 const ApplicationList: React.FC<ApplicationListProps> = ({
 	applicationList = [],
 }) => {
 	const navigate = useNavigate();
-	const groupedApplications = React.useMemo(
-		() =>
-			applicationList.reduce(
-				(acc, app) => {
-					if (!acc[app.status]) {
-						acc[app.status] = [];
-					}
-					acc[app.status].push(app);
-					return acc;
-				},
-				{} as Record<keyof typeof STATUS, Application[]>
-			),
-		[applicationList]
-	);
 
-	const statusOrder = [
-		STATUS.SUBMITTED,
-		STATUS.PENDING_FOR_REVIEW,
-		STATUS.SUBMITTED_FOR_DISBURSAL,
-		STATUS.AMOUNT_TRANSFER_IN_PROGRESS,
-		STATUS.APPROVED,
-		STATUS.AMOUNT_RECEIVED,
-	];
+	const groupedApplications = React.useMemo(() => {
+		return applicationList.reduce(
+			(acc, app) => {
+				if (!acc[app.status]) {
+					acc[app.status] = [];
+				}
+				acc[app.status].push(app);
+				return acc;
+			},
+			{} as Record<string, Application[]>
+		);
+	}, [applicationList]);
+
+	const statusKeys = React.useMemo(() => {
+		return Object.keys(groupedApplications).sort((a, b) =>
+			a.localeCompare(b, undefined, { sensitivity: 'base' })
+		);
+	}, [groupedApplications]);
+
 	return (
 		<Box
 			as="section"
 			aria-label="Applications list"
-			style={{
-				paddingBottom: '100px',
-				padding: '16px',
-				width: '100%',
-			}}
+			pb="100px"
+			px="16px"
+			width="100%"
 		>
-			<VStack spacing={4} align="stretch">
-				{statusOrder.map((status, index) =>
-					groupedApplications[status]?.length > 0 ? (
+			<VStack spacing={4} align="stretch" mt={'10px'}>
+				{statusKeys.map((status, index) => (
+					<Box
+						key={`${status}${index}`}
+						borderRadius="10px"
+						bg="#FFFFFF"
+						shadow="md"
+						border="1px solid #DDDDDD"
+						width="100%"
+					>
 						<Box
-							borderRadius={10}
-							bg="#FFFFFF"
-							shadow="md"
-							borderWidth="0.5px"
-							borderColor="#DDDDDD"
-							width="100%"
-							key={`${status}${index}`}
+							height="56px"
+							px="16px"
+							display="flex"
+							alignItems="center"
+							bg="#EDEFFF"
+							borderBottom="1px solid #DDDDDD"
+							borderTopRadius="10px"
 						>
-							<HStack
-								alignItems="center"
-								borderBottom="1px"
-								borderColor="#DDDDDD"
-								height="56px"
-								alignContent="center"
-								width="100%"
-								paddingLeft="16px"
-								bg={'#EDEFFF'}
-							>
-								<StatusIcon status={status} />
-							</HStack>
-							<VStack align="stretch" spacing={2}>
-								{groupedApplications[status].map((app) => (
+							<StatusIcon status={status} />
+						</Box>
+
+						<VStack align="stretch" spacing={0}>
+							{groupedApplications[status].map((app, i, arr) => (
+								<React.Fragment
+									key={app.internal_application_id}
+								>
 									<Box
 										as="button"
 										onClick={() =>
 											navigate(
-												`/previewapplication/${app?.internal_application_id}`
+												`/previewapplication/${app.internal_application_id}`
 											)
-										} // Add your function here
+										}
 										width="100%"
-										key={app.internal_application_id}
+										textAlign="left"
+										px="16px"
+										py="12px"
+										_hover={{ bg: '#F5F5F5' }}
 									>
-										<HStack
-											key={app.benefit_id}
-											width="100%"
-											height={53}
-											padding="20px 8px 16px 16px"
-											justifyContent="space-between"
+										<Text
+											fontSize="14px"
+											color={COLORS.text}
 										>
-											<Text
-												fontSize="14px"
-												color={COLORS.text}
-												border="none"
-											>
-												{app.application_name}
-											</Text>
-										</HStack>
+											{app.application_name}
+										</Text>
 									</Box>
-								))}
-							</VStack>
-						</Box>
-					) : null
-				)}
+									{i !== arr.length - 1 && (
+										<Divider
+											borderColor="#E2E8F0"
+											marginX="16px"
+										/>
+									)}
+								</React.Fragment>
+							))}
+						</VStack>
+					</Box>
+				))}
 			</VStack>
 		</Box>
 	);
