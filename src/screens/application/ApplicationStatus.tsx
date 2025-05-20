@@ -14,8 +14,13 @@ import '../../assets/styles/App.css';
 import Layout from '../../components/common/layout/Layout';
 import ApplicationList from '../../components/ApplicationList';
 
-import { getApplicationList, getUser } from '../../services/auth/auth';
+import {
+	getApplicationList,
+	getUser,
+	logoutUser,
+} from '../../services/auth/auth';
 import CommonButton from '../../components/common/button/Button';
+import { useNavigate } from 'react-router-dom';
 
 // Define a type for your application object if you have specific fields
 type ApplicationType = {
@@ -33,7 +38,7 @@ const ApplicationStatus: React.FC = () => {
 	);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-
+	const navigate = useNavigate();
 	const init = async (SearchText?: string) => {
 		setIsLoading(true);
 		setError(null);
@@ -44,7 +49,13 @@ const ApplicationStatus: React.FC = () => {
 			const data = await getApplicationList(SearchText, user_id);
 			setApplicationList(data.data.applications || []); // Ensure it's an array
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error.message.includes('Unauthorized: Invalid token')) {
+				const response = await logoutUser();
+				if (response) {
+					navigate('/');
+					navigate(0);
+				}
+			} else if (error instanceof Error) {
 				setError(`Failed to fetch applications: ${error.message}`);
 			} else {
 				setError(`Failed to fetch applications: ${String(error)}`);

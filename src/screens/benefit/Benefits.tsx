@@ -12,10 +12,11 @@ import {
 } from '@chakra-ui/react';
 import BenefitCard from '../../components/common/Card';
 import Layout from '../../components/common/layout/Layout';
-import { getUser } from '../../services/auth/auth';
+import { getUser, logoutUser } from '../../services/auth/auth';
 import { getAll } from '../../services/benefit/benefits';
 import { Castes, IncomeRange } from '../../assets/mockdata/FilterData';
 import { getIncomeRangeValue } from '../../utils/jsHelper/helper';
+import { useNavigate } from 'react-router-dom';
 
 // Define types for benefit data and filter structure
 interface Benefit {
@@ -48,7 +49,7 @@ const ExploreBenefits: React.FC = () => {
 	const [initState, setInitState] = useState<string>('yes');
 	const [error, setError] = useState<string | null>(null); // Allow null for error state
 	const [benefits, setBenefits] = useState<Benefit[]>([]); // Use Benefit[] type for benefits
-
+	const navigate = useNavigate();
 	const handleOpen = () => {};
 
 	useEffect(() => {
@@ -78,9 +79,23 @@ const ExploreBenefits: React.FC = () => {
 				}
 				setInitState('no');
 			} catch (e) {
-				setError(
-					`Failed to initialize user data: ${(e as Error).message}`
-				);
+				const errorMessage = (e as Error).message;
+
+				// Check for invalid token and log out
+				if (errorMessage.includes('Unauthorized: Invalid token')) {
+					const response = await logoutUser();
+					if (response) {
+						navigate('/');
+						navigate(0);
+					}
+				} else {
+					setError(`Failed to initialize user data: ${errorMessage}`);
+					console.log(
+						'Error fetching user data:',
+						(e as any).code || errorMessage
+					);
+				}
+
 				setInitState('no');
 			}
 		};
