@@ -315,6 +315,7 @@ export const transformData = (userData) => {
 			userData?.tuitionAndAdminFeePaid?.toString() ?? ' ',
 		miscFeePaid: userData?.miscFeePaid?.toString() ?? ' ',
 		currentSchoolName: userData?.currentSchoolName ?? ' ',
+		bapId: import.meta.env.VITE_API_BASE_ID,
 	};
 };
 
