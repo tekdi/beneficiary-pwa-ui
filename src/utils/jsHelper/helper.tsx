@@ -431,7 +431,7 @@ export function checkEligibilityCriteria({
 		typeof value === 'string'
 			? value.toLowerCase()
 			: (value?.toString() || '').toLowerCase();
-	// if (!val) return false;
+	if (!val) return false;
 
 	// Convert conditionValues to an array of strings
 	const conditionVals: string[] =
