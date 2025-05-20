@@ -82,7 +82,7 @@ const ExploreBenefits: React.FC = () => {
 				const errorMessage = (e as Error).message;
 
 				// Check for invalid token and log out
-				if (errorMessage.includes('Unauthorized: Invalid token')) {
+				if (errorMessage.includes('Unauthorized')) {
 					const response = await logoutUser();
 					if (response) {
 						navigate('/');

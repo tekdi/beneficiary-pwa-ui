@@ -49,7 +49,7 @@ const ApplicationStatus: React.FC = () => {
 			const data = await getApplicationList(SearchText, user_id);
 			setApplicationList(data.data.applications || []); // Ensure it's an array
 		} catch (error) {
-			if (error.message.includes('Unauthorized: Invalid token')) {
+			if (error.message.includes('Unauthorized')) {
 				const response = await logoutUser();
 				if (response) {
 					navigate('/');
