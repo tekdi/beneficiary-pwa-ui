@@ -284,12 +284,26 @@ export const transformUserDataToFormData = (userData) => {
 		},
 	};
 };
+const normalizeGender = (input: string) => {
+	if (!input) {
+		return ' ';
+	}
+	const normalized = input.trim().toLowerCase();
+
+	if (['m', 'male'].includes(normalized)) {
+		return 'male';
+	}
+	if (['f', 'female'].includes(normalized)) {
+		return 'female';
+	}
+	return 'other';
+};
 export const transformData = (userData) => {
 	return {
 		firstName: userData?.firstName ?? '',
 		middleName: userData?.fatherName ?? '',
 		lastName: userData?.lastName ?? '',
-		gender: userData?.gender === 'Male' ? 'male' : 'female',
+		gender: normalizeGender(userData?.gender),
 		class: userData?.class ? `${userData.class}` : '',
 		annualIncome: userData?.annualIncome ?? '',
 		// caste: userData?.caste?.toLowerCase() ?? '',
