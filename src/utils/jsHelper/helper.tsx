@@ -284,7 +284,7 @@ export const transformUserDataToFormData = (userData) => {
 		},
 	};
 };
-function normalizeGender(input: string) {
+const normalizeGender = (input: string) => {
 	if (!input) {
 		return ' ';
 	}
@@ -297,7 +297,7 @@ function normalizeGender(input: string) {
 		return 'female';
 	}
 	return 'other';
-}
+};
 export const transformData = (userData) => {
 	return {
 		firstName: userData?.firstName ?? '',
