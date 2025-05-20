@@ -289,7 +289,7 @@ export const transformData = (userData) => {
 		firstName: userData?.firstName ?? '',
 		middleName: userData?.fatherName ?? '',
 		lastName: userData?.lastName ?? '',
-		gender: userData?.gender === 'Male' ? 'male' : 'female',
+		gender: userData?.gender?.toLowerCase(),
 		class: userData?.class ? `${userData.class}` : '',
 		annualIncome: userData?.annualIncome ?? '',
 		// caste: userData?.caste?.toLowerCase() ?? '',
