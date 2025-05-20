@@ -423,13 +423,15 @@ export function checkEligibilityCriteria({
 	console.log('condition', condition);
 	console.log('conditionValues', conditionValues);
 
-	if (value == null) return false;
+	if (value == null) {
+		value = 0;
+	}
 	// Convert value to string if it's a number
 	const val =
 		typeof value === 'string'
 			? value.toLowerCase()
 			: (value?.toString() || '').toLowerCase();
-	if (!val) return false;
+	// if (!val) return false;
 
 	// Convert conditionValues to an array of strings
 	const conditionVals: string[] =
@@ -455,6 +457,7 @@ export function checkEligibilityCriteria({
 		case 'less than or equals':
 		case 'less than equals':
 			// Check if value is less than or equals the first condition value
+
 			return (
 				conditionVals.length > 0 &&
 				parseInt(conditionVals[0], 10) >= parseInt(val, 10)
