@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 interface UserData {
@@ -13,7 +12,7 @@ interface MobileData {
 	otp: number;
 	token: string;
 }
-const handleClientError = async (error): never => {
+const handleClientError = (error): never => {
 	const errorMessage =
 		error.response.data?.message ||
 		error.response.data?.error ||
@@ -116,7 +115,6 @@ export const loginUser = async (loginData: object) => {
 export const logoutUser = async () => {
 	const accessToken = localStorage.getItem('authToken');
 	const refreshToken = localStorage.getItem('refreshToken');
-	const navigate = useNavigate();
 
 	if (!accessToken || !refreshToken) {
 		throw new Error('No active session found');
