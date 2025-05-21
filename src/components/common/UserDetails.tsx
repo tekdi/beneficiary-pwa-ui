@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, HStack, VStack } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { formatDate } from '../../utils/jsHelper/helper';
+import { calculateAge, formatDate } from '../../utils/jsHelper/helper';
 
 // Define common styles for Text and Input components
 const labelStyles = {
@@ -203,6 +203,12 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 					<Field
 						label={t('USER_DETAILS_MISC_FEE_PAID')}
 						value={userData?.miscFeePaid}
+					/>
+				</HStack>
+				<HStack spacing={4}>
+					<Field
+						label={t('USER_DETAILS_AGE')}
+						value={calculateAge(userData?.dob)}
 					/>
 				</HStack>
 			</VStack>
