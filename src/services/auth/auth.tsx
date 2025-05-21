@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 interface UserData {
@@ -12,7 +13,7 @@ interface MobileData {
 	otp: number;
 	token: string;
 }
-function handleClientError(error): never {
+const handleClientError = async (error): never => {
 	const errorMessage =
 		error.response.data?.message ||
 		error.response.data?.error ||
@@ -22,6 +23,9 @@ function handleClientError(error): never {
 		case 400:
 			throw new Error(`Bad Request: ${errorMessage}`, { cause: error });
 		case 401:
+			localStorage.removeItem('authToken');
+			localStorage.removeItem('refreshToken');
+			window.location.href = '/';
 			throw new Error(`Unauthorized: ${errorMessage}`, { cause: error });
 		case 403:
 			throw new Error(`Forbidden: ${errorMessage}`, { cause: error });
@@ -35,7 +39,7 @@ function handleClientError(error): never {
 				}
 			);
 	}
-}
+};
 
 function handleServerError(error): never {
 	const errorMessage =
@@ -112,6 +116,8 @@ export const loginUser = async (loginData: object) => {
 export const logoutUser = async () => {
 	const accessToken = localStorage.getItem('authToken');
 	const refreshToken = localStorage.getItem('refreshToken');
+	const navigate = useNavigate();
+
 	if (!accessToken || !refreshToken) {
 		throw new Error('No active session found');
 	}
