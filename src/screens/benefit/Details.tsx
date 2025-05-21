@@ -30,7 +30,10 @@ import { MdCurrencyRupee } from 'react-icons/md';
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
-import { checkEligibilityCriteria } from '../../utils/jsHelper/helper';
+import {
+	calculateAge,
+	checkEligibilityCriteria,
+} from '../../utils/jsHelper/helper';
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 
@@ -162,11 +165,10 @@ const BenefitsDetails: React.FC = () => {
 				const allowedProofs = parsed.allowedProofs || [];
 				const isRequired = parsed.isRequired;
 				const label = allowedProofs
-					.map(
-						(proof) =>
-							proof
-								.replace(/([A-Z])/g, ' $1')
-								.replace(/^./, (str) => str.toUpperCase())
+					.map((proof) =>
+						proof
+							.replace(/([A-Z])/g, ' $1')
+							.replace(/^./, (str) => str.toUpperCase())
 					)
 					.join(' / ');
 				docs.push(
@@ -187,6 +189,10 @@ const BenefitsDetails: React.FC = () => {
 
 	const handleAuthenticatedFlow = async (resultItem, id) => {
 		const user = await getUser();
+		if (user?.data?.dob) {
+			const age = calculateAge(user.data.dob);
+			user.data.age = `${age}`;
+		}
 		const eligibilityArr = checkEligibility(resultItem, user);
 		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined);
 		setAuthUser(user?.data || {});
@@ -407,14 +413,20 @@ const BenefitsDetails: React.FC = () => {
 											{(() => {
 												let parsedValue;
 												try {
-													parsedValue = JSON.parse(benefitItem.value);
+													parsedValue = JSON.parse(
+														benefitItem.value
+													);
 												} catch {
 													parsedValue = {};
 												}
 												return (
 													<>
-														<strong>{parsedValue.title}</strong>
-														{parsedValue.description ? `: ${parsedValue.description}` : ''}
+														<strong>
+															{parsedValue.title}
+														</strong>
+														{parsedValue.description
+															? `: ${parsedValue.description}`
+															: ''}
 													</>
 												);
 											})()}
@@ -468,13 +480,12 @@ const BenefitsDetails: React.FC = () => {
 						{t('BENEFIT_DETAILS_DOCUMENTS_REQUIRED')}
 					</Heading>
 
-					
 					<UnorderedList mt={4}>
 						{item?.document?.map((document) => (
 							<ListItem key={document}>{document}</ListItem>
 						))}
 					</UnorderedList>
-					
+
 					{localStorage.getItem('authToken') ? (
 						<CommonButton
 							mt={6}
