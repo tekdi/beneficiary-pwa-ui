@@ -423,16 +423,6 @@ export function checkEligibilityCriteria({
 	console.log('condition', condition);
 	console.log('conditionValues', conditionValues);
 
-	if (value == null) {
-		value = 0;
-	}
-	// Convert value to string if it's a number
-	const val =
-		typeof value === 'string'
-			? value.toLowerCase()
-			: (value?.toString() || '').toLowerCase();
-	if (!val) return false;
-
 	// Convert conditionValues to an array of strings
 	const conditionVals: string[] =
 		typeof conditionValues === 'string'
@@ -441,54 +431,58 @@ export function checkEligibilityCriteria({
 					cv?.toString().toLowerCase()
 				);
 
-	// Evaluate the condition
-	switch (condition.trim()) {
-		case 'equals':
-			// Check if value equals any of the condition values
-			return conditionVals.includes(val);
-		case 'lessThan':
+	const conditionTrimmed = condition.trim().toLowerCase();
+
+	// String-based condition checks
+	if (
+		conditionTrimmed === 'equals' ||
+		conditionTrimmed === 'in' ||
+		conditionTrimmed === 'not in' ||
+		conditionTrimmed === 'notin'
+	) {
+		const val =
+			typeof value === 'string'
+				? value.toLowerCase()
+				: (value?.toString() || '').toLowerCase();
+		if (!val) return false;
+
+		switch (conditionTrimmed) {
+			case 'equals':
+				return conditionVals.includes(val);
+			case 'in':
+				return conditionVals.includes(val);
+			case 'not in':
+			case 'notin':
+				return !conditionVals.includes(val);
+			default:
+				return false;
+		}
+	}
+
+	// Numeric-based condition checks
+	const numericValue = parseInt(value == null ? '0' : value.toString(), 10);
+	const numericCondition = parseInt(conditionVals[0] || '0', 10);
+
+	switch (conditionTrimmed) {
 		case 'less than':
-			// Check if value is less than the first condition value
-			return (
-				conditionVals.length > 0 &&
-				parseInt(conditionVals[0], 10) > parseInt(val, 10)
-			);
-		case 'lessThanOrEquals':
+		case 'lessthan':
+			return numericValue < numericCondition;
 		case 'less than or equals':
 		case 'less than equals':
-			// Check if value is less than or equals the first condition value
-
-			return (
-				conditionVals.length > 0 &&
-				parseInt(conditionVals[0], 10) >= parseInt(val, 10)
-			);
-		case 'greaterThan':
+		case 'lessthanorequals':
+			return numericValue <= numericCondition;
 		case 'greater than':
-			// Check if value is greater than the first condition value
-			return (
-				conditionVals.length > 0 &&
-				parseInt(conditionVals[0], 10) < parseInt(val, 10)
-			);
-		case 'greaterThanOrEquals':
+		case 'greaterthan':
+			return numericValue > numericCondition;
 		case 'greater than or equals':
 		case 'greater than equals':
-			// Check if value is greater than or equals the first condition value
-			return (
-				conditionVals.length > 0 &&
-				parseInt(conditionVals[0], 10) <= parseInt(val, 10)
-			);
-		case 'in':
-			// Check if value is in the condition values
-			return conditionVals.includes(val);
-		case 'notIn':
-		case 'not in':
-			// Check if value is not in the condition values
-			return !conditionVals.includes(val);
+		case 'greaterthanorequals':
+			return numericValue >= numericCondition;
 		default:
-			// Return false for unrecognized conditions
 			return false;
 	}
 }
+
 export function getIncomeRangeValue(annualIncome: string): string | undefined {
 	const income = parseFloat(annualIncome);
 	if (isNaN(income)) return '';
