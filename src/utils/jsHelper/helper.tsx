@@ -538,11 +538,16 @@ export const calculateAge = (birthDateInput: Date | string): number | null => {
 		return null;
 	}
 
-	const today = new Date();
-	let age = today.getFullYear() - birthDate.getFullYear();
-
-	const monthDiff = today.getMonth() - birthDate.getMonth();
-	const dayDiff = today.getDate() - birthDate.getDate();
+	const today = new Date(); // If born on Feb 29 and this year isn’t a leap year, roll “today” back to Feb 28 for comparison
+	const isFeb29 = birthDate.getMonth() === 1 && birthDate.getDate() === 29;
+	const thisYear = today.getFullYear();
+	const isLeap =
+		thisYear % 4 === 0 && (thisYear % 100 !== 0 || thisYear % 400 === 0);
+	const adjustedToday =
+		isFeb29 && !isLeap ? new Date(thisYear, 1, 28) : today;
+	let age = adjustedToday.getFullYear() - birthDate.getFullYear();
+	const monthDiff = adjustedToday.getMonth() - birthDate.getMonth();
+	const dayDiff = adjustedToday.getDate() - birthDate.getDate();
 
 	if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
 		age--;
