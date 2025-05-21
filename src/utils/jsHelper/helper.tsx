@@ -330,6 +330,7 @@ export const transformData = (userData) => {
 		miscFeePaid: userData?.miscFeePaid?.toString() ?? ' ',
 		currentSchoolName: userData?.currentSchoolName ?? ' ',
 		bapId: import.meta.env.VITE_API_BASE_ID,
+		age: userData?.age,
 	};
 };
 
@@ -509,3 +510,42 @@ export function getIncomeRangeValue(annualIncome: string): string | undefined {
 
 	return '';
 }
+export const calculateAge = (birthDateInput: Date | string): number | null => {
+	let birthDate: Date;
+	if (!birthDateInput) return null;
+	if (typeof birthDateInput === 'string') {
+		// Check if string is in DD-MM-YYYY format using regex
+		const ddmmyyyyRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
+		const match = birthDateInput.match(ddmmyyyyRegex);
+
+		if (match) {
+			// Rearrange to YYYY-MM-DD for reliable parsing
+			const [_, dd, mm, yyyy] = match;
+			const isoDateStr = `${yyyy}-${mm}-${dd}`;
+			birthDate = new Date(isoDateStr);
+		} else {
+			// Otherwise, try to parse directly
+			birthDate = new Date(birthDateInput);
+		}
+	} else {
+		birthDate = birthDateInput;
+	}
+
+	// Check if date is valid
+	if (isNaN(birthDate.getTime())) {
+		return null;
+	}
+
+	const today = new Date();
+
+	let age = today.getFullYear() - birthDate.getFullYear();
+
+	const monthDiff = today.getMonth() - birthDate.getMonth();
+	const dayDiff = today.getDate() - birthDate.getDate();
+
+	if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+		age--;
+	}
+
+	return age >= 0 ? age : 0;
+};
