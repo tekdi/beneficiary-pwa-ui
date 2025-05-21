@@ -12,7 +12,7 @@ interface MobileData {
 	otp: number;
 	token: string;
 }
-const handleClientError = (error): never => {
+function handleClientError(error): never {
 	const errorMessage =
 		error.response.data?.message ||
 		error.response.data?.error ||
@@ -38,7 +38,7 @@ const handleClientError = (error): never => {
 				}
 			);
 	}
-};
+}
 
 function handleServerError(error): never {
 	const errorMessage =
