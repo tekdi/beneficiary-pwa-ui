@@ -330,7 +330,7 @@ export const transformData = (userData) => {
 		miscFeePaid: userData?.miscFeePaid?.toString() ?? ' ',
 		currentSchoolName: userData?.currentSchoolName ?? ' ',
 		bapId: import.meta.env.VITE_API_BASE_ID,
-		age: userData?.age,
+		age: userData?.age ?? ' ',
 	};
 };
 
