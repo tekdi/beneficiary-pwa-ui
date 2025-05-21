@@ -512,11 +512,13 @@ export function getIncomeRangeValue(annualIncome: string): string | undefined {
 }
 export const calculateAge = (birthDateInput: Date | string): number | null => {
 	let birthDate: Date;
+
 	if (!birthDateInput) return null;
+
 	if (typeof birthDateInput === 'string') {
 		// Check if string is in DD-MM-YYYY format using regex
 		const ddmmyyyyRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
-		const match = birthDateInput.match(ddmmyyyyRegex);
+		const match = ddmmyyyyRegex.exec(birthDateInput); // using exec instead of match
 
 		if (match) {
 			// Rearrange to YYYY-MM-DD for reliable parsing
@@ -537,7 +539,6 @@ export const calculateAge = (birthDateInput: Date | string): number | null => {
 	}
 
 	const today = new Date();
-
 	let age = today.getFullYear() - birthDate.getFullYear();
 
 	const monthDiff = today.getMonth() - birthDate.getMonth();
