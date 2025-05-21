@@ -191,7 +191,7 @@ const BenefitsDetails: React.FC = () => {
 		const user = await getUser();
 		if (user?.data?.dob) {
 			const age = calculateAge(user.data.dob);
-			user.data.age = age;
+			user.data.age = `${age}`;
 		}
 		const eligibilityArr = checkEligibility(resultItem, user);
 		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined);
