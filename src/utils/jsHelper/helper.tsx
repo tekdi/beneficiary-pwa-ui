@@ -368,7 +368,7 @@ export function getPreviewDetails(applicationData, documents) {
 		if (applicationData.hasOwnProperty(key)) {
 			// Skip keys listed in the `arr`
 			if (
-				!Object.values(documents).some(
+				!documents.some(
 					(doc: { key: string; value: string }) => doc.key === key
 				)
 			) {
@@ -413,8 +413,9 @@ export function getSubmmitedDoc(userData) {
 			userData[key].startsWith('base64')
 		) {
 			const value = extractTitle(userData[key]);
-
-			result.push({ key, value });
+			if (value) {
+				result.push({ key, value });
+			}
 		}
 	}
 
