@@ -22,6 +22,9 @@ function handleClientError(error): never {
 		case 400:
 			throw new Error(`Bad Request: ${errorMessage}`, { cause: error });
 		case 401:
+			localStorage.removeItem('authToken');
+			localStorage.removeItem('refreshToken');
+			window.location.href = '/';
 			throw new Error(`Unauthorized: ${errorMessage}`, { cause: error });
 		case 403:
 			throw new Error(`Forbidden: ${errorMessage}`, { cause: error });
@@ -112,6 +115,7 @@ export const loginUser = async (loginData: object) => {
 export const logoutUser = async () => {
 	const accessToken = localStorage.getItem('authToken');
 	const refreshToken = localStorage.getItem('refreshToken');
+
 	if (!accessToken || !refreshToken) {
 		throw new Error('No active session found');
 	}
