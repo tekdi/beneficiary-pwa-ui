@@ -79,9 +79,16 @@ const Preview: React.FC = () => {
 
 			setBenefitName(result?.data?.external_application_id);
 			const data = getPreviewDetails(result?.data?.application_data, doc);
-			setUserData(data);
 
-			setDocument(doc);
+			setUserData(data);
+			const seen = new Set();
+			const filteredDoc = doc.filter((item) => {
+				if (seen.has(item.value)) return false;
+				seen.add(item.value);
+				return true;
+			});
+
+			setDocument(filteredDoc);
 			setLoading(false);
 		} catch (error) {
 			console.error('Error fetching application details:', error);
