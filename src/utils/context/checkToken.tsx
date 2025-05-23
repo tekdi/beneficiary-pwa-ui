@@ -50,6 +50,7 @@ interface UserData {
 	lastName?: string;
 	email?: string;
 	phone?: string;
+	middleName?: string;
 	// Add any other fields that your user data object might have
 }
 

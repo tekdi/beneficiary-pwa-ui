@@ -62,7 +62,7 @@ const UserProfile: React.FC = () => {
 						color="#433E3F"
 						textAlign={'start'}
 					>
-						{userData?.firstName || ''} {userData?.fatherName || ''}{' '}
+						{userData?.firstName || ''} {userData?.middleName || ''}{' '}
 						{userData?.lastName || ''}
 					</Text>
 					<Text
