@@ -352,7 +352,6 @@ interface UserData {
 export function getPreviewDetails(applicationData, documents) {
 	let idCounter = 1; // To generate unique IDs
 	const result: UserData[] = [];
-	documents.push('docs', 'domicileCertificate');
 
 	function formatKey(key) {
 		// Convert camelCase to space-separated
@@ -368,7 +367,11 @@ export function getPreviewDetails(applicationData, documents) {
 	for (const key in applicationData) {
 		if (applicationData.hasOwnProperty(key)) {
 			// Skip keys listed in the `arr`
-			if (!documents.includes(key)) {
+			if (
+				!documents.some(
+					(doc: { key: string; value: string }) => doc.key === key
+				)
+			) {
 				result.push({
 					id: idCounter++,
 					label: formatKey(key),
@@ -380,18 +383,42 @@ export function getPreviewDetails(applicationData, documents) {
 
 	return result;
 }
-export function getSubmmitedDoc(userData, document) {
-	const result = [];
-	const codes = document.map((item) => item.documentSubType);
+function decodeFromBase64(base64Str: string): string {
+	try {
+		const base64Part = base64Str.replace(/^base64,/, '');
+		return decodeURIComponent(atob(base64Part));
+	} catch (error) {
+		console.error('Failed to decode base64 string:', error);
+		throw new Error('Failed to decode base64 string');
+	}
+}
+function extractTitle(base64Str: string): string | undefined {
+	try {
+		const decoded = decodeFromBase64(base64Str);
+		const parsed = JSON.parse(decoded); // assumes it's JSON
+		const [title] = parsed.credentialSchema.title.split(':');
+
+		return title.trim(); // handles both cases
+	} catch (error) {
+		console.error('Failed to extract title:', error);
+		return undefined;
+	}
+}
+
+export function getSubmmitedDoc(userData) {
+	const result: { key: string; value: string }[] = [];
 	for (const key in userData) {
 		if (
-			codes.includes(key) &&
 			typeof userData[key] === 'string' &&
 			userData[key].startsWith('base64')
 		) {
-			result.push(key);
+			const value = extractTitle(userData[key]);
+			if (value) {
+				result.push({ key, value });
+			}
 		}
 	}
+
 	return result;
 }
 
