@@ -68,14 +68,11 @@ const Preview: React.FC = () => {
 				return;
 			}
 			setLoading(true);
-			const documents = await getDocumentsList();
+
 			const result = await getApplicationDetails(id);
 
 			setStatus(result?.data?.status);
-			const doc = getSubmmitedDoc(
-				result?.data?.application_data,
-				documents.data
-			);
+			const doc = getSubmmitedDoc(result?.data?.application_data);
 
 			setBenefitName(result?.data?.external_application_id);
 			const data = getPreviewDetails(result?.data?.application_data, doc);

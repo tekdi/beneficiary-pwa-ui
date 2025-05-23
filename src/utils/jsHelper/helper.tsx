@@ -405,7 +405,7 @@ function extractTitle(base64Str: string): string | undefined {
 	}
 }
 
-export function getSubmmitedDoc(userData, document) {
+export function getSubmmitedDoc(userData) {
 	const result: { key: string; value: string }[] = [];
 	for (const key in userData) {
 		if (
