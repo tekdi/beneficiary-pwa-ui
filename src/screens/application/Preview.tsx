@@ -45,7 +45,9 @@ const Preview: React.FC = () => {
 	const [userData, setUserData] = useState<UserData[]>();
 	const [benefitName, setBenefitName] = useState<string | undefined>('');
 	const [status, setStatus] = useState('');
-	const [document, setDocument] = useState<string[]>([]);
+	const [document, setDocument] = useState<{ key: string; value: string }[]>(
+		[]
+	);
 	const [loading, setLoading] = useState(true);
 	const toast = useToast();
 	const handleBack = () => {
@@ -74,6 +76,7 @@ const Preview: React.FC = () => {
 				result?.data?.application_data,
 				documents.data
 			);
+
 			setBenefitName(result?.data?.external_application_id);
 			const data = getPreviewDetails(result?.data?.application_data, doc);
 			setUserData(data);
@@ -180,13 +183,11 @@ const Preview: React.FC = () => {
 					<>
 						<Text {...labelStyles}>Uploaded Documents</Text>
 						<UnorderedList mt={3}>
-							{document
-								?.slice(0, -2)
-								.map((document) => (
-									<ListItem key={document}>
-										{document}
-									</ListItem>
-								))}
+							{document.map((document) => (
+								<ListItem key={document.key}>
+									{document.value}
+								</ListItem>
+							))}
 						</UnorderedList>
 					</>
 				)}
