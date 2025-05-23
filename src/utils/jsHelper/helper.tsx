@@ -309,7 +309,7 @@ export const transformData = (userData) => {
 		// caste: userData?.caste?.toLowerCase() ?? '',
 		// disabled: userData?.disability ? 'yes' : 'no',
 		// state: userData?.state ?? '',
-		// studentType: userData?.studentType === 'Day' ? 'dayScholar' : 'hostler',
+		studentType: userData?.studentType ?? '',
 		docs: userData?.docs ?? [],
 		bankAccountHolderName: userData?.bankAccountHolderName ?? '',
 		bankName: userData?.bankName ?? '',
