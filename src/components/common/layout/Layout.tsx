@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Center } from '@chakra-ui/react';
+import { Box, Center, Select } from '@chakra-ui/react';
 import useDeviceSize from './useDeviceSize';
 
 import Navbar from './Navbar'; // Import your Navbar component
@@ -29,12 +29,16 @@ interface LayoutProps {
 			value: string;
 			data: Array<{ label: string; value: string }>;
 		}[];
+		sortOptions?: { label: string; value: string }[]; // Added sortOptions
 		handleBack?: () => void;
 		label?: string;
+		handleSort?: (sortKey: string) => void; // Added handleSort
 	};
 	isBottombar?: boolean;
 	isSearchbar?: boolean;
 	getBodyHeight?: (height: number) => void;
+	sortOptions?: { label: string; value: string }[];
+	handleSort?: (sortKey: string) => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -47,6 +51,8 @@ const Layout: React.FC<LayoutProps> = ({
 	isBottombar = true,
 	isSearchbar = false,
 	getBodyHeight,
+	sortOptions = [],
+	handleSort,
 }) => {
 	const { width, height } = useDeviceSize();
 	const { onSearch } = _heading;
@@ -89,6 +95,39 @@ const Layout: React.FC<LayoutProps> = ({
 							<HeadingText {..._heading} />
 							{isSearchbar && onSearch && (
 								<SearchBar onSearch={onSearch} />
+							)}
+							{(sortOptions.length > 0 || _heading?.isFilter) && (
+								<Box
+									display="flex"
+									justifyContent="space-between"
+									alignItems="center"
+									padding="10px"
+								>
+									{sortOptions.length > 0 && handleSort && (
+										<Select
+											placeholder="Sort by"
+											onChange={(e) =>
+												handleSort(e.target.value)
+											}
+											width="200px"
+										>
+											{sortOptions.map((option) => (
+												<option
+													key={option.value}
+													value={option.value}
+												>
+													{option.label}
+												</option>
+											))}
+										</Select>
+									)}
+									{/* Render filter-related UI */}
+									{_heading?.isFilter && (
+										<Box>
+											{/* ...existing filter UI... */}
+										</Box>
+									)}
+								</Box>
 							)}
 							{afterHeader}
 						</Box>

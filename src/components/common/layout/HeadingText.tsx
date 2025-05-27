@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Box, Text, IconButton, VStack, Avatar } from '@chakra-ui/react';
+import {
+	Box,
+	Text,
+	IconButton,
+	VStack,
+	Avatar,
+	Select,
+} from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import FilterDialog from './Filters';
 
@@ -16,6 +23,8 @@ interface HeadingTextProps {
 		data: Array<{ label: string; value: string }>;
 	}[];
 	setFilter?: React.Dispatch<React.SetStateAction<unknown>>;
+	sortOptions?: { label: string; value: string }[];
+	handleSort?: (sortKey: string) => void;
 }
 
 const BackIcon: React.FC<{ onClick: () => void; iconSize?: number }> = ({
@@ -42,6 +51,8 @@ const HeadingText: React.FC<HeadingTextProps> = ({
 	isFilter,
 	inputs,
 	setFilter,
+	sortOptions,
+	handleSort,
 }) => {
 	return (
 		<Box
@@ -78,6 +89,23 @@ const HeadingText: React.FC<HeadingTextProps> = ({
 									inputs={inputs}
 									setFilter={setFilter}
 								/>
+							)}
+							{sortOptions && handleSort && (
+								<Select
+									placeholder="Sort by"
+									onChange={(e) => handleSort(e.target.value)}
+									width="200px"
+									marginLeft="auto"
+								>
+									{sortOptions.map((option) => (
+										<option
+											key={option.value}
+											value={option.value}
+										>
+											{option.label}
+										</option>
+									))}
+								</Select>
 							)}
 						</Box>
 					)}

@@ -51,7 +51,7 @@ interface FinancialSupportRequest {
 
 const WebViewFormSubmitWithRedirect: React.FC<
 	WebViewFormSubmitWithRedirectProps
-> = ({ url, formData, submitConfirm }) => {
+> = ({ url, formData, submitConfirm, id }) => {
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 
 	useEffect(() => {
@@ -82,7 +82,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
 		>
 			<iframe
 				ref={iframeRef}
-				src={url}
+				src={`http://localhost:5173/benefit/apply/${id}`}
 				style={{ width: '100%' }}
 				title="Form UI"
 				name={JSON.stringify(transformData(formData) ?? {})}
