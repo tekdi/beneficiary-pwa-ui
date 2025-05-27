@@ -284,25 +284,53 @@ export const transformUserDataToFormData = (userData) => {
 		},
 	};
 };
+const normalizeGender = (input: string) => {
+	if (!input) {
+		return ' ';
+	}
+	const normalized = input.trim().toLowerCase();
+
+	if (['m', 'male'].includes(normalized)) {
+		return 'male';
+	}
+	if (['f', 'female'].includes(normalized)) {
+		return 'female';
+	}
+	return 'other';
+};
 export const transformData = (userData) => {
 	return {
 		firstName: userData?.firstName ?? '',
 		middleName: userData?.fatherName ?? '',
 		lastName: userData?.lastName ?? '',
-		gender: userData?.gender ?? '',
+		gender: normalizeGender(userData?.gender),
 		class: userData?.class ? `${userData.class}` : '',
 		annualIncome: userData?.annualIncome ?? '',
-		caste: userData?.caste?.toLowerCase() ?? '',
-		disabled: userData?.disability ? 'yes' : 'no',
-		state: userData?.state ?? '',
-		studentType: userData?.studentType === 'Day' ? 'dayScholar' : 'hostler',
+		// caste: userData?.caste?.toLowerCase() ?? '',
+		// disabled: userData?.disability ? 'yes' : 'no',
+		// state: userData?.state ?? '',
+		studentType: userData?.studentType ?? '',
 		docs: userData?.docs ?? [],
 		bankAccountHolderName: userData?.bankAccountHolderName ?? '',
 		bankName: userData?.bankName ?? '',
 		bankAccountNumber: userData?.bankAccountNumber ?? '',
 		bankIfscCode: userData?.bankIfscCode ?? '',
 		previousYearMarks: userData?.previousYearMarks ?? '',
-		mobile: userData?.phoneNumber ?? '',
+		phoneNumber: userData?.phoneNumber ?? '',
+		aadhaar: userData?.aadhaar?.toString() ?? '',
+		udid: userData?.udid ?? '',
+		dob: formatDate(userData?.dob) ?? '',
+		disabilityRange: userData?.disabilityRange ?? '',
+		disabilityType: userData?.disabilityType ?? ' ',
+		branchCode: userData?.branchCode ?? ' ',
+		bankAddress: userData?.bankAddress ?? ' ',
+		nspOtr: userData?.nspOtr ?? ' ',
+		tuitionAndAdminFeePaid:
+			userData?.tuitionAndAdminFeePaid?.toString() ?? ' ',
+		miscFeePaid: userData?.miscFeePaid?.toString() ?? ' ',
+		currentSchoolName: userData?.currentSchoolName ?? ' ',
+		bapId: import.meta.env.VITE_API_BASE_ID,
+		age: userData?.age ?? ' ',
 	};
 };
 
@@ -324,7 +352,6 @@ interface UserData {
 export function getPreviewDetails(applicationData, documents) {
 	let idCounter = 1; // To generate unique IDs
 	const result: UserData[] = [];
-	documents.push('docs', 'domicileCertificate');
 
 	function formatKey(key) {
 		// Convert camelCase to space-separated
@@ -340,7 +367,11 @@ export function getPreviewDetails(applicationData, documents) {
 	for (const key in applicationData) {
 		if (applicationData.hasOwnProperty(key)) {
 			// Skip keys listed in the `arr`
-			if (!documents.includes(key)) {
+			if (
+				!documents.some(
+					(doc: { key: string; value: string }) => doc.key === key
+				)
+			) {
 				result.push({
 					id: idCounter++,
 					label: formatKey(key),
@@ -352,14 +383,42 @@ export function getPreviewDetails(applicationData, documents) {
 
 	return result;
 }
-export function getSubmmitedDoc(userData, document) {
-	const result = [];
-	const codes = document.map((item) => item.documentSubType);
+function decodeFromBase64(base64Str: string): string {
+	try {
+		const base64Part = base64Str.replace(/^base64,/, '');
+		return decodeURIComponent(atob(base64Part));
+	} catch (error) {
+		console.error('Failed to decode base64 string:', error);
+		throw new Error('Failed to decode base64 string');
+	}
+}
+function extractTitle(base64Str: string): string | undefined {
+	try {
+		const decoded = decodeFromBase64(base64Str);
+		const parsed = JSON.parse(decoded); // assumes it's JSON
+		const [title] = parsed.credentialSchema.title.split(':');
+
+		return title.trim(); // handles both cases
+	} catch (error) {
+		console.error('Failed to extract title:', error);
+		return undefined;
+	}
+}
+
+export function getSubmmitedDoc(userData) {
+	const result: { key: string; value: string }[] = [];
 	for (const key in userData) {
-		if (codes.includes(key)) {
-			result.push(key);
+		if (
+			typeof userData[key] === 'string' &&
+			userData[key].startsWith('base64')
+		) {
+			const value = extractTitle(userData[key]);
+			if (value) {
+				result.push({ key, value });
+			}
 		}
 	}
+
 	return result;
 }
 
@@ -388,6 +447,10 @@ export function checkEligibilityCriteria({
 	condition: string;
 	conditionValues: string | number | (string | number)[];
 }): boolean {
+	console.log('value', value);
+	console.log('condition', condition);
+	console.log('conditionValues', conditionValues);
+
 	if (value == null) return false;
 	// Convert value to string if it's a number
 	const val =
@@ -474,3 +537,48 @@ export function getIncomeRangeValue(annualIncome: string): string | undefined {
 
 	return '';
 }
+export const calculateAge = (birthDateInput: Date | string): number | null => {
+	let birthDate: Date;
+
+	if (!birthDateInput) return null;
+
+	if (typeof birthDateInput === 'string') {
+		// Check if string is in DD-MM-YYYY format using regex
+		const ddmmyyyyRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
+		const match = ddmmyyyyRegex.exec(birthDateInput); // using exec instead of match
+
+		if (match) {
+			// Rearrange to YYYY-MM-DD for reliable parsing
+			const [_, dd, mm, yyyy] = match;
+			const isoDateStr = `${yyyy}-${mm}-${dd}`;
+			birthDate = new Date(isoDateStr);
+		} else {
+			// Otherwise, try to parse directly
+			birthDate = new Date(birthDateInput);
+		}
+	} else {
+		birthDate = birthDateInput;
+	}
+
+	// Check if date is valid
+	if (isNaN(birthDate.getTime())) {
+		return null;
+	}
+
+	const today = new Date(); // If born on Feb 29 and this year isn’t a leap year, roll “today” back to Feb 28 for comparison
+	const isFeb29 = birthDate.getMonth() === 1 && birthDate.getDate() === 29;
+	const thisYear = today.getFullYear();
+	const isLeap =
+		thisYear % 4 === 0 && (thisYear % 100 !== 0 || thisYear % 400 === 0);
+	const adjustedToday =
+		isFeb29 && !isLeap ? new Date(thisYear, 1, 28) : today;
+	let age = adjustedToday.getFullYear() - birthDate.getFullYear();
+	const monthDiff = adjustedToday.getMonth() - birthDate.getMonth();
+	const dayDiff = adjustedToday.getDate() - birthDate.getDate();
+
+	if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+		age--;
+	}
+
+	return age >= 0 ? age : 0;
+};

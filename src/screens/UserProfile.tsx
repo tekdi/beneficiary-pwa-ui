@@ -62,7 +62,7 @@ const UserProfile: React.FC = () => {
 						color="#433E3F"
 						textAlign={'start'}
 					>
-						{userData?.firstName || ''} {userData?.fatherName || ''}{' '}
+						{userData?.firstName || ''} {userData?.middleName || ''}{' '}
 						{userData?.lastName || ''}
 					</Text>
 					<Text
@@ -81,7 +81,7 @@ const UserProfile: React.FC = () => {
 
 			<Box shadow="md" borderWidth="1px" borderRadius="md" p={2}>
 				<ProgressBar
-					totalDocuments={10}
+					totalDocuments={documents?.length}
 					presentDocuments={userData?.docs?.length}
 				/>
 				<Flex

@@ -30,7 +30,10 @@ import { MdCurrencyRupee } from 'react-icons/md';
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
-import { checkEligibilityCriteria } from '../../utils/jsHelper/helper';
+import {
+	calculateAge,
+	checkEligibilityCriteria,
+} from '../../utils/jsHelper/helper';
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 
@@ -46,8 +49,18 @@ interface BenefitItem {
 	};
 	document?: string[];
 	tags?: Array<{
-		descriptor?: { code?: string; short_desc: string };
-		list?: Array<{ value?: string }>;
+		descriptor?: {
+			code?: string;
+			short_desc: string;
+		};
+		list?: Array<{
+			value: string;
+			descriptor?: {
+				code?: string;
+				name?: string;
+				short_desc?: string;
+			};
+		}>;
 	}>;
 }
 interface FinancialSupportRequest {
@@ -134,20 +147,39 @@ const BenefitsDetails: React.FC = () => {
 	const extractResultItem = (result) => {
 		return (
 			(result as { data: { responses: Array<any> } }).data?.responses?.[0]
-				?.message?.order?.items?.[0] || {}
+				?.message?.catalog?.providers?.[0]?.items?.[0] || {}
 		);
 	};
 
 	const extractRequiredDocs = (resultItem) => {
-		return (
-			resultItem?.tags
-				?.find(
-					(e: { descriptor: { code: string } }) =>
-						e?.descriptor?.code === 'required-docs'
-				)
-				?.list?.filter((e: { value: unknown }) => e.value)
-				.map((e: { value: unknown }) => e.value) || []
+		const requiredDocsTag = resultItem?.tags?.find(
+			(e: { descriptor: { code: string } }) =>
+				e?.descriptor?.code === 'required-docs'
 		);
+		if (!requiredDocsTag?.list) return [];
+
+		const docs: string[] = [];
+		for (const doc of requiredDocsTag.list) {
+			try {
+				const parsed = JSON.parse(doc.value);
+				const allowedProofs = parsed.allowedProofs || [];
+				const isRequired = parsed.isRequired;
+				const label = allowedProofs
+					.map((proof) =>
+						proof
+							.replace(/([A-Z])/g, ' $1')
+							.replace(/^./, (str) => str.toUpperCase())
+					)
+					.join(' / ');
+				docs.push(
+					`${label} (${isRequired ? 'Mandatory' : 'Non-mandatory'})`
+				);
+			} catch (e) {
+				// fallback to raw value if parsing fails
+				docs.push('Invalid document data');
+			}
+		}
+		return docs;
 	};
 
 	const extractContext = (result) => {
@@ -157,6 +189,10 @@ const BenefitsDetails: React.FC = () => {
 
 	const handleAuthenticatedFlow = async (resultItem, id) => {
 		const user = await getUser();
+		if (user?.data?.dob) {
+			const age = calculateAge(user.data.dob);
+			user.data.age = `${age}`;
+		}
 		const eligibilityArr = checkEligibility(resultItem, user);
 		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined);
 		setAuthUser(user?.data || {});
@@ -172,36 +208,36 @@ const BenefitsDetails: React.FC = () => {
 	};
 
 	const checkEligibility = (resultItem, user) => {
-		const eligibilityArr = [];
+		const eligibilityArr: string[] = [];
 
-		if (Array.isArray(resultItem?.tags)) {
-			resultItem?.tags?.forEach((e: any) => {
-				if (e?.descriptor?.code === '@eligibility') {
-					if (Array.isArray(e.list)) {
-						e.list.forEach((item: any) => {
-							const code = item?.descriptor?.code;
-							try {
-								const valueObj = JSON.parse(item.value || '{}');
-								const payload = {
-									...valueObj,
-									value: user?.data?.[code],
-								};
-								const result =
-									checkEligibilityCriteria(payload);
-								if (!result) {
-									eligibilityArr.push(code);
-								}
-							} catch (error) {
-								console.error(
-									`Failed to parse eligibility criteria: ${error}`
-								);
-								eligibilityArr.push(code);
-							}
-						});
-					}
-				}
-			});
+		const eligibilityTag = resultItem?.tags?.find(
+			(tag: any) => tag?.descriptor?.code === 'eligibility'
+		);
+
+		if (!eligibilityTag?.list || !Array.isArray(eligibilityTag.list)) {
+			return eligibilityArr;
 		}
+
+		eligibilityTag.list.forEach((item: any) => {
+			const code = item?.descriptor?.code;
+			const eligibilityObj = JSON.parse(item.value);
+			try {
+				const payload = {
+					condition: eligibilityObj?.criteria?.condition,
+					conditionValues: eligibilityObj?.criteria?.conditionValues,
+					value: user?.data?.[code],
+				};
+
+				const result = checkEligibilityCriteria(payload);
+
+				if (!result) {
+					eligibilityArr.push(code);
+				}
+			} catch (error) {
+				console.error(`Failed to parse eligibility criteria:`, error);
+				eligibilityArr.push(code);
+			}
+		});
 
 		return eligibilityArr;
 	};
@@ -248,11 +284,10 @@ const BenefitsDetails: React.FC = () => {
 
 	const submitConfirm = async (payload) => {
 		const confirmPayload = {
-			submission_id: payload?.submit.submission_id,
-			item_id: payload?.submit.application_id,
-			benefit_id: id,
-			context: context,
+			item_id: payload?.submit.application.id,
+			rawContext: context,
 		};
+
 		setLoading(true);
 		try {
 			const result = await confirmApplication(confirmPayload);
@@ -350,17 +385,6 @@ const BenefitsDetails: React.FC = () => {
 		>
 			<Box className="card-scroll invisible-scroll">
 				<Box maxW="2xl" m={4}>
-					<Heading size="md" color="#484848" fontWeight={500}>
-						{t('BENEFIT_DETAILS_HEADING_TITLE')}
-					</Heading>
-					<HStack mt={2}>
-						<Icon
-							as={MdCurrencyRupee}
-							boxSize={5}
-							color="#484848"
-						/>
-						<Text>{item?.price?.value}</Text>
-					</HStack>
 					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
 						{t('BENEFIT_DETAILS_HEADING_DETAILS')}
 					</Heading>
@@ -370,27 +394,98 @@ const BenefitsDetails: React.FC = () => {
 					)}
 
 					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
-						{t('BENEFIT_DETAILS_KEYPOINT_DETAILS')}
+						{t('BENEFIT_DETAILS_BENEFIT_DETAILS')}
 					</Heading>
 					<UnorderedList mt={4}>
 						{item?.tags
-							?.filter((tag) =>
-								['@eligibility'].includes(tag.descriptor?.code)
-							)
-							.map((tag, index) => (
-								<ListItem key={'detail' + index}>
-									{tag.descriptor?.short_desc}
-								</ListItem>
-							))}
+							?.filter(
+								(tag) => tag.descriptor?.code === 'benefits'
+							) // Filter to find the 'eligibility' object
+							.map((tag, index) =>
+								tag.list?.map(
+									(
+										benefitItem,
+										innerIndex // Access list inside descriptor and map through it
+									) => (
+										<ListItem
+											key={`benefit-${index}-${innerIndex}`}
+										>
+											{(() => {
+												let parsedValue;
+												try {
+													parsedValue = JSON.parse(
+														benefitItem.value
+													);
+												} catch {
+													parsedValue = {};
+												}
+												return (
+													<>
+														<strong>
+															{parsedValue.title}
+														</strong>
+														{parsedValue.description
+															? `: ${parsedValue.description}`
+															: ''}
+													</>
+												);
+											})()}
+										</ListItem>
+									)
+								)
+							)}
 					</UnorderedList>
-					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
-						{t('BENEFIT_DETAILS_MANDATORY_DOCUMENTS')}
+
+					{/* <Heading size="md" color="#484848" fontWeight={500}>
+						{t('BENEFIT_DETAILS_HEADING_TITLE')}
 					</Heading>
+					<HStack mt={2}>
+						<Icon
+							as={MdCurrencyRupee}
+							boxSize={5}
+							color="#484848"
+						/>
+						<Text>{item?.price?.value}</Text>
+					</HStack> */}
+
+					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
+						{t('BENEFIT_DETAILS_ELIGIBILITY_DETAILS')}
+					</Heading>
+					<UnorderedList mt={4}>
+						{item?.tags
+							?.filter(
+								(tag) => tag.descriptor?.code === 'eligibility'
+							) // Filter to find the 'eligibility' object
+							.map((tag, index) =>
+								tag.list?.map(
+									(
+										eligibilityItem,
+										innerIndex // Access list inside descriptor and map through it
+									) => (
+										<ListItem
+											key={`eligibility-${index}-${innerIndex}`}
+										>
+											{
+												eligibilityItem?.descriptor
+													?.short_desc
+											}{' '}
+											{/* Render the short_desc from each item in the list */}
+										</ListItem>
+									)
+								)
+							)}
+					</UnorderedList>
+
+					<Heading size="md" mt={6} color="#484848" fontWeight={500}>
+						{t('BENEFIT_DETAILS_DOCUMENTS_REQUIRED')}
+					</Heading>
+
 					<UnorderedList mt={4}>
 						{item?.document?.map((document) => (
 							<ListItem key={document}>{document}</ListItem>
 						))}
 					</UnorderedList>
+
 					{localStorage.getItem('authToken') ? (
 						<CommonButton
 							mt={6}

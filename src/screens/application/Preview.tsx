@@ -45,7 +45,10 @@ const Preview: React.FC = () => {
 	const [userData, setUserData] = useState<UserData[]>();
 	const [benefitName, setBenefitName] = useState<string | undefined>('');
 	const [status, setStatus] = useState('');
-	const [document, setDocument] = useState<string[]>([]);
+	const [document, setDocument] = useState<{ key: string; value: string }[]>(
+		[]
+	);
+	const [loading, setLoading] = useState(true);
 	const toast = useToast();
 	const handleBack = () => {
 		navigate('/applicationstatus');
@@ -64,19 +67,26 @@ const Preview: React.FC = () => {
 				navigate('/applicationstatus');
 				return;
 			}
-			const documents = await getDocumentsList();
+			setLoading(true);
+
 			const result = await getApplicationDetails(id);
 
 			setStatus(result?.data?.status);
-			const doc = getSubmmitedDoc(
-				result?.data?.application_data,
-				documents.data
-			);
+			const doc = getSubmmitedDoc(result?.data?.application_data);
+
 			setBenefitName(result?.data?.external_application_id);
 			const data = getPreviewDetails(result?.data?.application_data, doc);
-			setUserData(data);
 
-			setDocument(doc);
+			setUserData(data);
+			const seen = new Set();
+			const filteredDoc = doc.filter((item) => {
+				if (seen.has(item.value)) return false;
+				seen.add(item.value);
+				return true;
+			});
+
+			setDocument(filteredDoc);
+			setLoading(false);
 		} catch (error) {
 			console.error('Error fetching application details:', error);
 
@@ -102,6 +112,7 @@ const Preview: React.FC = () => {
 				subHeading: `Order ID ${benefitName}`,
 				handleBack,
 			}}
+			loading={loading}
 		>
 			<HStack
 				justifyContent="space-between"
@@ -113,8 +124,9 @@ const Preview: React.FC = () => {
 				<Text fontWeight={400} fontSize={14}>
 					Status
 				</Text>
-				<Text color="#EDA145" fontWeight={700} fontSize={14}>
-					{status}
+				<Text color="#41424B" fontWeight={700} fontSize={14}>
+					{status.charAt(0).toUpperCase() +
+						status.slice(1).toLowerCase()}
 				</Text>
 			</HStack>
 
@@ -171,14 +183,18 @@ const Preview: React.FC = () => {
 
 					return null;
 				})}
-				<Text {...labelStyles}>Uploaded Documents</Text>
-				<UnorderedList mt={3}>
-					{document
-						?.slice(0, -2)
-						.map((document) => (
-							<ListItem key={document}>{document}</ListItem>
-						))}
-				</UnorderedList>
+				{userData && (
+					<>
+						<Text {...labelStyles}>Uploaded Documents</Text>
+						<UnorderedList mt={3}>
+							{document.map((document) => (
+								<ListItem key={document.key}>
+									{document.value}
+								</ListItem>
+							))}
+						</UnorderedList>
+					</>
+				)}
 			</Box>
 		</Layout>
 	);

@@ -118,81 +118,74 @@ export const applyApplication = async ({
 	// }
 };
 interface ConfirmApplicationParams {
-	submission_id: string | undefined;
 	item_id: string | undefined;
-	benefit_id: string | undefined;
-
-	context: {
-		bpp_id?: string;
-		bap_uri?: string;
-	};
+	rawContext: any;
 }
 export const confirmApplication = async ({
-	submission_id,
 	item_id,
-	benefit_id,
-	context,
+
+	rawContext,
 }: ConfirmApplicationParams) => {
 	const data = {
 		context: {
-			...context,
+			domain: 'onest:financial-support',
+			location: {
+				country: {
+					name: 'India',
+					code: 'IND',
+				},
+				city: {
+					name: 'Bangalore',
+					code: 'std:080',
+				},
+			},
 			action: 'confirm',
+			timestamp: rawContext.timestamp,
+			ttl: rawContext.ttl,
+			version: rawContext.version,
+			bap_id: rawContext.bap_id,
+			bap_uri: rawContext.bap_uri,
+			bpp_id: rawContext.bpp_id,
+			bpp_uri: rawContext.bpp_uri,
 			message_id: generateUUID(),
 			transaction_id: generateUUID(),
 		},
 		message: {
 			order: {
 				provider: {
-					id: item_id,
-					descriptor: {
-						name: 'Pre-matric Scholarship-SC',
-						images: [],
-						short_desc:
-							'This scholarship supports SC students from Madhya Pradesh',
-					},
-					rateable: false,
+					id: '',
 				},
 				items: [
 					{
-						id: benefit_id,
-						descriptor: {
-							name: 'Pre-matric Scholarship-SCc',
-							long_desc:
-								'This scholarship supports SC students from Madhya Pradesh',
-						},
-						price: {
-							currency: 'INR',
-							value: 'Upto Rs.100 per year',
-						},
-						xinput: {
-							required: true,
-							form: {
-								url: 'http://localhost:8001/bpp/public/getAdditionalDetails/1113/5d96c1e2-8963-4e71-8f13-83438d8780e6/1938a8597a944c7884bfa7f20abcdfe4',
-								data: {},
-								mime_type: 'text/html',
-								submission_id: submission_id,
-							},
-						},
+						id: `${item_id}`,
 					},
 				],
+				billing: {
+					name: 'Manjunath',
+					organization: {},
+					address: 'No 27, XYZ Lane, etc',
+					phone: '+91-9999999999',
+				},
 				fulfillments: [
 					{
-						id: '',
-						type: 'SCHOLARSHIP',
-						tracking: false,
-						customer: {
-							person: {
-								name: '',
+						customer: {},
+						tags: [
+							{
+								descriptor: {},
+								value: 'PNB',
 							},
-							contact: {
-								phone: '',
-							},
-						},
+						],
+					},
+				],
+				payment: [
+					{
+						params: {},
 					},
 				],
 			},
 		},
 	};
+
 	try {
 		const token = localStorage.getItem('authToken');
 		const response = await axios.post(`${apiBaseUrl}/confirm`, data, {
@@ -259,5 +252,24 @@ export const getApplication = async (filters: Filters) => {
 		return response.data;
 	} catch (error) {
 		handleError(error as AxiosError);
+	}
+};
+
+export const fetchVCJson = async (url: string) => {
+	try {
+		const token = localStorage.getItem('authToken');
+		const response = await axios.post(
+			`${apiBaseUrl}/users/fetch-vc-json`,
+			{ url },
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error) {
+		throw error.response ? error.response.data : new Error('Network Error');
 	}
 };
