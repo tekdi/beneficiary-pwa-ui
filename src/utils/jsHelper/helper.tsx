@@ -331,6 +331,7 @@ export const transformData = (userData) => {
 		currentSchoolName: userData?.currentSchoolName ?? ' ',
 		bapId: import.meta.env.VITE_API_BASE_ID,
 		age: userData?.age ?? ' ',
+		year: userData?.class ? `${userData.class}` : '',
 	};
 };
 
