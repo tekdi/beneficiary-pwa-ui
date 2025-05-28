@@ -20,7 +20,7 @@ jobs:
           if [ -f .env ]; then
           rm .env
           fi
-          echo '${{ secrets.ENV_ROADMAP }}' > .env
+          echo '${{ secrets.ENV_UBA_DEV }}' > .env
           ls -ltra
           npm install --legacy-peer-deps
           npm run build
@@ -53,14 +53,14 @@ jobs:
               
       - name: Configure AWS credentials
         run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID_ROADMAP }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY_ROADMAP }}
-          aws configure set default.region ${{ secrets.AWS_S3_BUCKET_REGION_ROADMAP }}  
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID_UBA_DEV }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY_UBA_DEV }}
+          aws configure set default.region ${{ secrets.AWS_S3_BUCKET_REGION_UBA_DEV }}  
 
       - name: Upload to s3 Bucket
         run: |
-              aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_ROADMAP }}/
-              aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_ROADMAP }} --paths "/*"
+              aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_UBA_DEV }}/
+              aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_UBA_DEV }} --paths "/*"
       - name: Post job cleanup
         run: |
     # Cleanup commands
