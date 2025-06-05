@@ -31,7 +31,7 @@ const Home: React.FC = () => {
 	const purpose_text = 'sign_up_tnc';
 	const toast = useToast();
 	const [fetchingAadhar, setFetchingAadhar] = useState(false);
-
+	const [userDocuments, setUserDocuments] = useState();
 	const handleRedirect = () => {
 		navigate('/explorebenefits');
 	};
@@ -43,6 +43,7 @@ const Home: React.FC = () => {
 			const result = await getUser();
 			const data = await getDocumentsList();
 			updateUserData(result.data, data.data);
+			setUserDocuments(result.data.docs);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
@@ -183,7 +184,7 @@ const Home: React.FC = () => {
 				<VStack spacing={4} align="stretch">
 					<DocumentList
 						documents={documents}
-						userData={userData?.docs}
+						userDocuments={userDocuments}
 					/>
 					<CommonButton
 						onClick={handleScanRedirect}
