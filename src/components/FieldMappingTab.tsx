@@ -30,6 +30,8 @@ import {
 	ChevronDownIcon,
 	ChevronUpIcon,
 } from '@chakra-ui/icons';
+import { getDocumentsList } from '../services/auth/auth';
+import { vcFieldMocks } from '../assets/mockdata/VCFields';
 const FieldMappingTab = () => {
 	const [fields, setFields] = useState([]);
 	const [documents, setDocuments] = useState([]);
@@ -213,14 +215,16 @@ const FieldMappingTab = () => {
 
 	const fetchDocuments = async () => {
 		try {
-			// Mock documents API response
-			const mockDocuments = [
-				{ id: 'doc_1', name: 'Identity Document', type: 'ID' },
-				{ id: 'doc_2', name: 'Education Certificate', type: 'EDU' },
-				{ id: 'doc_3', name: 'Address Proof', type: 'ADDRESS' },
-				{ id: 'doc_4', name: 'Income Certificate', type: 'INCOME' },
-			];
-			setDocuments(mockDocuments);
+			const data = await getDocumentsList();
+			setDocuments(
+				data.data.map((doc, i) => ({
+					id: `doc_${i + 1}`,
+					name: doc.name,
+					label: doc.label,
+					documentSubType: doc.documentSubType,
+					docType: doc.docType,
+				}))
+			);
 		} catch (error) {
 			toast({
 				title: 'Error',
@@ -232,40 +236,20 @@ const FieldMappingTab = () => {
 		}
 	};
 
-	const fetchVcFields = async (documentId, fieldIndex, docIndex) => {
-		if (!documentId) return;
+	const fetchVcFields = async (documentSubType, fieldIndex, docIndex) => {
+		if (!documentSubType) return;
 
 		try {
-			// Mock VC fields API response based on document selection
-			const mockVcFields = {
-				doc_1: [
-					{ id: 'vc_1', label: 'Document Number', type: 'text' },
-					{ id: 'vc_2', label: 'Issue Date', type: 'date' },
-					{ id: 'vc_3', label: 'Expiry Date', type: 'date' },
-					{ id: 'vc_4', label: 'Issuing Authority', type: 'text' },
-				],
-				doc_2: [
-					{ id: 'vc_5', label: 'Certificate Number', type: 'text' },
-					{ id: 'vc_6', label: 'Institution Name', type: 'text' },
-					{ id: 'vc_7', label: 'Grade/Percentage', type: 'number' },
-					{ id: 'vc_8', label: 'Completion Year', type: 'number' },
-				],
-				doc_3: [
-					{ id: 'vc_9', label: 'Address Line 1', type: 'text' },
-					{ id: 'vc_10', label: 'Address Line 2', type: 'text' },
-					{ id: 'vc_11', label: 'City', type: 'text' },
-					{ id: 'vc_12', label: 'Postal Code', type: 'text' },
-				],
-				doc_4: [
-					{ id: 'vc_13', label: 'Annual Income', type: 'number' },
-					{ id: 'vc_14', label: 'Income Source', type: 'text' },
-					{ id: 'vc_15', label: 'Assessment Year', type: 'number' },
-				],
-			};
+			console.log('Requested VC fields for:', documentSubType);
+			console.log('Available mock keys:', Object.keys(vcFieldMocks));
+
+			const vcFields = vcFieldMocks[documentSubType] || [];
+
+			console.log('VC fields fetched:', vcFields);
 
 			const newFieldMappings = [...fieldMappings];
 			newFieldMappings[fieldIndex].documentMappings[docIndex].vcFields =
-				mockVcFields[documentId] || [];
+				vcFields;
 			setFieldMappings(newFieldMappings);
 		} catch (error) {
 			toast({
@@ -277,6 +261,7 @@ const FieldMappingTab = () => {
 			});
 		}
 	};
+
 	const saveAllMappings = async () => {
 		const validationErrors = {};
 		let hasErrors = false;
@@ -341,28 +326,26 @@ const FieldMappingTab = () => {
 		setSaving(true);
 		try {
 			// Prepare data for submission
-			const saveData = {
-				fieldMappings: fieldMappings
-					.filter((f) => f.fieldId)
-					.map((fieldMapping) => ({
-						fieldId: fieldMapping.fieldId,
-						addMapping: fieldMapping.addMapping.trim(),
-						documentMappings: fieldMapping.documentMappings
-							.filter(
-								(doc) =>
-									doc.selectedDocument && doc.selectedVcField
-							)
-							.map((doc) => ({
-								document: doc.selectedDocument,
-								vcField: doc.selectedVcField,
-							})),
-					})),
-			};
+			const saveData = fieldMappings
+				.filter((f) => f.fieldId)
+				.map((fieldMapping) => ({
+					fieldName: getFieldLabel(fieldMapping.fieldId), // Use field label instead of fieldId
+					documentMappings: fieldMapping.documentMappings
+						.filter(
+							(doc) => doc.selectedDocument && doc.selectedVcField
+						)
+						.map((doc) => ({
+							document: doc.selectedDocument,
+							documentField: doc.selectedVcField,
+						})),
+					fieldValueNormalizationMapping:
+						fieldMapping.addMapping.trim(),
+				}));
 
 			await new Promise((resolve) => setTimeout(resolve, 1000)); // mock API
 
-			const totalFields = saveData.fieldMappings.length;
-			const totalDocMappings = saveData.fieldMappings.reduce(
+			const totalFields = saveData.length;
+			const totalDocMappings = saveData.reduce(
 				(sum, field) => sum + field.documentMappings.length,
 				0
 			);
@@ -472,26 +455,27 @@ const FieldMappingTab = () => {
 			setErrors(newErrors);
 		}
 	};
+	const handleDocumentChange = (fieldIndex, docIndex, documentSubType) => {
+		console.log('documentSubType handleDocumentChange', documentSubType);
 
-	const handleDocumentChange = (fieldIndex, docIndex, documentId) => {
 		const newFieldMappings = [...fieldMappings];
 		newFieldMappings[fieldIndex].documentMappings[
 			docIndex
-		].selectedDocument = documentId;
+		].selectedDocument = documentSubType;
 		newFieldMappings[fieldIndex].documentMappings[docIndex].vcFields = [];
 		newFieldMappings[fieldIndex].documentMappings[
 			docIndex
 		].selectedVcField = '';
 		setFieldMappings(newFieldMappings);
 
-		// Clear document error
+		// Clear errors
 		const newErrors = { ...errors };
 		delete newErrors[`field_${fieldIndex}_doc_${docIndex}`];
 		delete newErrors[`field_${fieldIndex}_vc_${docIndex}`];
 		setErrors(newErrors);
 
-		if (documentId) {
-			fetchVcFields(documentId, fieldIndex, docIndex);
+		if (documentSubType) {
+			fetchVcFields(documentSubType, fieldIndex, docIndex);
 		}
 	};
 
@@ -511,7 +495,7 @@ const FieldMappingTab = () => {
 	// Helper functions
 	const getFieldLabel = (fieldId) => {
 		const field = fields.find((f) => f.id === fieldId);
-		return field ? field.label : '';
+		return field ? field.name : '';
 	};
 
 	const getDocumentName = (docId) => {
@@ -844,7 +828,7 @@ const FieldMappingTab = () => {
 																								doc.id
 																							}
 																							value={
-																								doc.id
+																								doc.documentSubType
 																							}
 																						>
 																							{
@@ -852,7 +836,7 @@ const FieldMappingTab = () => {
 																							}{' '}
 																							(
 																							{
-																								doc.type
+																								doc.documentSubType
 																							}
 
 																							)
@@ -860,6 +844,7 @@ const FieldMappingTab = () => {
 																					)
 																				)}
 																			</Select>
+
 																			<FormErrorMessage fontSize="xs">
 																				{
 																					errors[
@@ -898,11 +883,7 @@ const FieldMappingTab = () => {
 																					)
 																				}
 																				disabled={
-																					!docMapping.selectedDocument ||
-																					docMapping
-																						.vcFields
-																						.length ===
-																						0
+																					!docMapping.selectedDocument
 																				}
 																				size="sm"
 																			>
