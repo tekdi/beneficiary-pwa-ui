@@ -30,8 +30,8 @@ const Home: React.FC = () => {
 	const purpose = 'sign_up_tnc';
 	const purpose_text = 'sign_up_tnc';
 	const toast = useToast();
-	const [fetchingAadhar, setFetchingAadhar] = useState(false);
-	const [userDocuments, setUserDocuments] = useState();
+	/* 	const [fetchingAadhar, setFetchingAadhar] = useState(false); */
+
 	const handleRedirect = () => {
 		navigate('/explorebenefits');
 	};
@@ -43,7 +43,6 @@ const Home: React.FC = () => {
 			const result = await getUser();
 			const data = await getDocumentsList();
 			updateUserData(result.data, data.data);
-			setUserDocuments(result.data.docs);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
@@ -107,7 +106,7 @@ const Home: React.FC = () => {
 		getConsent();
 	}, []);
 
-	const handleAadharFetch = async () => {
+	/* 	const handleAadharFetch = async () => {
 		try {
 			const digilockerURL = await getDigiLockerRequest();
 
@@ -170,7 +169,7 @@ const Home: React.FC = () => {
 		} catch (err) {
 			console.error('Error fetching DigiLocker URL:', err);
 		}
-	};
+	}; */
 
 	return (
 		<Layout
@@ -184,7 +183,7 @@ const Home: React.FC = () => {
 				<VStack spacing={4} align="stretch">
 					<DocumentList
 						documents={documents}
-						userDocuments={userDocuments}
+						userDocuments={userData?.docs}
 					/>
 					<CommonButton
 						onClick={handleScanRedirect}

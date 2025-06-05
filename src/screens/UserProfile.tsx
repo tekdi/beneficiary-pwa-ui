@@ -19,7 +19,7 @@ const UserProfile: React.FC = () => {
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-	const [userDocuments, setUserDocuments] = useState();
+
 	const handleBack = () => {
 		navigate(-2);
 	};
@@ -29,7 +29,6 @@ const UserProfile: React.FC = () => {
 			const result = await getUser();
 			const data = await getDocumentsList();
 			updateUserData(result?.data, data?.data);
-			setUserDocuments(result.data.docs);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
@@ -114,7 +113,7 @@ const UserProfile: React.FC = () => {
 					<VStack spacing={4} align="stretch">
 						<DocumentList
 							documents={documents}
-							userDocuments={userDocuments}
+							userDocuments={userData?.docs}
 						/>
 						{showIframe ? (
 							<UploadDocumentEwallet userId={userData?.user_id} />
