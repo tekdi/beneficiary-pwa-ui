@@ -9,17 +9,17 @@ import CommonDialogue from './common/Dialogue';
 
 interface DocumentActionsProps {
 	status: boolean;
-	userData: {
+	userDocuments: {
 		doc_id: string;
 		doc_data: string;
 		doc_name: string;
-	};
+	}[];
 }
 const DocumentActions: React.FC<DocumentActionsProps> = ({
 	status,
-	userData,
+	userDocuments,
 }) => {
-	const documentStatus = findDocumentStatus(userData, status);
+	const documentStatus = findDocumentStatus(userDocuments, status);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 	const [document, setDocument] = useState();
