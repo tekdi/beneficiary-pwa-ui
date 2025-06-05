@@ -582,3 +582,30 @@ export const calculateAge = (birthDateInput: Date | string): number | null => {
 
 	return age >= 0 ? age : 0;
 };
+
+export function getExpiryDate(
+	userData: { doc_subtype: string; doc_data: string }[],
+	doc: string
+) {
+	try {
+		const match = userData.find((item) => item.doc_subtype === doc);
+		if (!match) return { success: false };
+
+		const parsedData = JSON.parse(match.doc_data);
+
+		const expDate = parsedData.validUntil
+			? formatDate(parsedData.validUntil)
+			: parsedData.validUntil;
+
+		const expiry = new Date(parsedData.validUntil);
+		const now = new Date();
+		const isExpired = expiry.getTime() < now.getTime();
+
+		return expDate
+			? { success: true, expDate, isExpired }
+			: { success: false };
+	} catch (error) {
+		console.error('Error parsing document data:', error);
+		return { success: false };
+	}
+}
