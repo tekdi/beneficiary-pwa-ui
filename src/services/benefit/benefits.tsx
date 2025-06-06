@@ -5,7 +5,8 @@ const bap_id = import.meta.env.VITE_API_BASE_ID;
 const bap_uri = import.meta.env.VITE_BAP_URL;
 const bpp_id = import.meta.env.VITE_BPP_ID;
 const bpp_uri = import.meta.env.VITE_BPP_URL;
-
+const base_url_verification_sdk = import.meta.env
+	.VITE_VERIFICATION_SDK_BASE_URL;
 function handleError(error: any) {
 	throw error.response ? error.response.data : new Error('Network Error');
 }
@@ -271,5 +272,33 @@ export const fetchVCJson = async (url: string) => {
 		return response.data;
 	} catch (error) {
 		throw error.response ? error.response.data : new Error('Network Error');
+	}
+};
+
+export const verifyVC = async (credential: object) => {
+	try {
+		const response = await axios.post(
+			`${base_url_verification_sdk}/verification`,
+			{
+				credential,
+				config: {
+					method: 'online',
+					issuerName: 'dhiway',
+				},
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
+		);
+
+		return response.data;
+	} catch (error: any) {
+		console.error(
+			'Verification failed:',
+			error?.response?.data || error.message
+		);
+		throw error;
 	}
 };

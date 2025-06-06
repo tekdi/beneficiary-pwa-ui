@@ -24,7 +24,7 @@ import { getDocumentsList, getUser } from '../services/auth/auth';
 import { uploadUserDocuments } from '../services/user/User';
 import { findDocumentStatus } from '../utils/jsHelper/helper';
 import { AuthContext } from '../utils/context/checkToken';
-import { fetchVCJson } from '../services/benefit/benefits';
+import { fetchVCJson, verifyVC } from '../services/benefit/benefits';
 import Loader from '../components/common/Loader';
 interface Document {
 	name: string;
@@ -119,7 +119,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 		try {
 			console.log('Scanned QR code URL:', result);
 
-			 // Fetch VC JSON using the service method
+			// Fetch VC JSON using the service method
 			const jsonData = await fetchVCJson(result);
 			console.log('jsonData', jsonData);
 
@@ -141,7 +141,17 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 					`Scanned document is not of type: ${docConfig.name}`
 				);
 			}
+			try {
+				const result = await verifyVC(jsonData);
 
+				if (!result.success) {
+					throw new Error(
+						result.errors[0]?.error || 'Error while verifying VC'
+					);
+				}
+			} catch (err: any) {
+				throw new Error(`${err}`);
+			}
 			// Prepare the document payload
 			const documentPayload = [
 				{
@@ -174,14 +184,17 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			onClose(); // Close the modal
 		} catch (error) {
 			console.error('Error uploading document:', error);
+			const description =
+				error && Array.isArray(error.errors) && error.errors.length > 0
+					? error.errors[0].error
+					: error instanceof Error
+						? error.message
+						: 'Unexpected error occurred';
 			toast({
 				title: 'Error',
-				description:
-					error instanceof Error
-						? error.message
-						: 'Unexpected error occurred',
+				description: description,
 				status: 'error',
-				duration: 60000,
+				duration: 6000,
 				isClosable: true,
 			});
 		} finally {
