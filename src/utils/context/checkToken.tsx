@@ -39,7 +39,7 @@ interface UserDocument {
 	length?: number;
 }
 interface UserData {
-	docs: UserDocument;
+	docs: UserDocument[];
 	user_id?: string;
 	name?: string;
 	class?: string;
