@@ -592,18 +592,19 @@ export function getExpiryDate(
 		if (!match) return { success: false };
 
 		const parsedData = JSON.parse(match.doc_data);
-
-		const expDate = parsedData.validUntil
-			? formatDate(parsedData.validUntil)
-			: parsedData.validUntil;
+		if (!parsedData.validUntil) {
+			return { success: false };
+		}
 
 		const expiry = new Date(parsedData.validUntil);
+		if (isNaN(expiry.getTime())) {
+			return { success: false };
+		}
+		const expDate = formatDate(parsedData.validUntil);
 		const now = new Date();
 		const isExpired = expiry.getTime() < now.getTime();
 
-		return expDate
-			? { success: true, expDate, isExpired }
-			: { success: false };
+		return { success: true, expDate, isExpired };
 	} catch (error) {
 		console.error('Error parsing document data:', error);
 		return { success: false };

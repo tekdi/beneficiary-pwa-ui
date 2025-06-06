@@ -52,15 +52,15 @@ const StatusIcon: React.FC<StatusIconProps> = ({
 	userDocuments,
 }) => {
 	const result = findDocumentStatus(userDocuments, status);
-	const { isExpired } = getExpiryDate(userDocuments, status);
-
-	const iconComponent = isExpired
+	const { success, isExpired } = getExpiryDate(userDocuments, status);
+	const documentExpired = success && isExpired;
+	const iconComponent = documentExpired
 		? AiFillCloseCircle
 		: result?.matchFound
 			? CheckCircleIcon
 			: WarningIcon;
 
-	const iconColor = isExpired
+	const iconColor = documentExpired
 		? '#C03744'
 		: result?.matchFound
 			? '#0B7B69'

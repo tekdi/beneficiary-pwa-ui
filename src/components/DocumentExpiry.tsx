@@ -34,13 +34,20 @@ const DocumentExpiry: React.FC<DocumentExpiryProps> = ({
 				userDocuments,
 				status
 			);
-
-			setIsExpired(isExpired || false);
-			setExpiryDate(expDate || '');
-			setDocumentStatus(success || false);
+			if (success) {
+				setIsExpired(isExpired);
+				setExpiryDate(expDate);
+				setDocumentStatus(true);
+			} else {
+				setDocumentStatus(false);
+				setIsExpired(false);
+				setExpiryDate('');
+			}
 		} catch (error) {
 			console.error('Error getting expiry date:', error);
 			setDocumentStatus(false);
+			setIsExpired(false);
+			setExpiryDate('');
 		}
 	}, [status, userDocuments]);
 
