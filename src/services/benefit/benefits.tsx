@@ -297,7 +297,7 @@ export const verifyVC = async (credential: object) => {
 	} catch (error: any) {
 		console.error(
 			'Verification failed:',
-			error?.response?.data || error.message
+			error?.response?.data ?? error.message
 		);
 		throw error;
 	}

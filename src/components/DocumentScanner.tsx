@@ -145,8 +145,8 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 
 			if (!verificationResult.success) {
 				const errorMessage =
-					verificationResult.errors?.[0]?.error ||
-					verificationResult.message ||
+					verificationResult.errors?.[0]?.error ??
+					verificationResult.message ??
 					'Document verification failed';
 				throw new Error(errorMessage);
 			}
