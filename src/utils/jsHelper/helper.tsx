@@ -301,7 +301,8 @@ const normalizeGender = (input: string) => {
 export const transformData = (userData) => {
 	return {
 		firstName: userData?.firstName ?? '',
-		middleName: userData?.fatherName ?? '',
+		middleName: userData?.middleName ?? '',
+		fatherName: userData?.fatherName ?? '',
 		lastName: userData?.lastName ?? '',
 		gender: normalizeGender(userData?.gender),
 		class: userData?.class ? `${userData.class}` : '',
