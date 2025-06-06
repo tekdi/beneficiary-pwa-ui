@@ -141,16 +141,14 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 					`Scanned document is not of type: ${docConfig.name}`
 				);
 			}
-			try {
-				const result = await verifyVC(jsonData);
+			const verificationResult = await verifyVC(jsonData);
 
-				if (!result.success) {
-					throw new Error(
-						result.errors[0]?.error || 'Error while verifying VC'
-					);
-				}
-			} catch (err: any) {
-				throw new Error(`${err}`);
+			if (!verificationResult.success) {
+				const errorMessage =
+					verificationResult.errors?.[0]?.error ||
+					verificationResult.message ||
+					'Document verification failed';
+				throw new Error(errorMessage);
 			}
 			// Prepare the document payload
 			const documentPayload = [
@@ -184,12 +182,19 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			onClose(); // Close the modal
 		} catch (error) {
 			console.error('Error uploading document:', error);
-			const description =
-				error && Array.isArray(error.errors) && error.errors.length > 0
-					? error.errors[0].error
-					: error instanceof Error
-						? error.message
-						: 'Unexpected error occurred';
+			let description;
+
+			if (
+				error &&
+				Array.isArray(error.errors) &&
+				error.errors.length > 0
+			) {
+				description = error.errors[0].error;
+			} else if (error instanceof Error) {
+				description = error.message;
+			} else {
+				description = 'Unexpected error occurred';
+			}
 			toast({
 				title: 'Error',
 				description: description,
