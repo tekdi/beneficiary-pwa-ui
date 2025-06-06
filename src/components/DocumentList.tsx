@@ -54,27 +54,37 @@ const StatusIcon: React.FC<StatusIconProps> = ({
 	const result = findDocumentStatus(userDocuments, status);
 	const { success, isExpired } = getExpiryDate(userDocuments, status);
 	const documentExpired = success && isExpired;
-	const iconComponent = documentExpired
-		? AiFillCloseCircle
-		: result?.matchFound
-			? CheckCircleIcon
-			: WarningIcon;
+	let iconComponent;
+	let iconColor;
 
-	const iconColor = documentExpired
-		? '#C03744'
-		: result?.matchFound
-			? '#0B7B69'
-			: '#EDA145';
+	if (documentExpired) {
+		iconComponent = AiFillCloseCircle;
+		iconColor = '#C03744';
+	} else if (result?.matchFound) {
+		iconComponent = CheckCircleIcon;
+		iconColor = '#0B7B69';
+	} else {
+		iconComponent = WarningIcon;
+		iconColor = '#EDA145';
+	}
 
-	const label =
-		ariaLabel ||
-		`Document status: ${
-			isExpired
-				? 'Expired'
-				: result?.matchFound
-					? 'Available'
-					: 'Incomplete'
-		}`;
+	let label;
+
+	if (ariaLabel) {
+		label = ariaLabel;
+	} else {
+		let statusText;
+
+		if (isExpired) {
+			statusText = 'Expired';
+		} else if (result?.matchFound) {
+			statusText = 'Available';
+		} else {
+			statusText = 'Incomplete';
+		}
+
+		label = `Document status: ${statusText}`;
+	}
 
 	return (
 		<Tooltip label={label} hasArrow>

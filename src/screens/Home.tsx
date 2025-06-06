@@ -18,7 +18,7 @@ import '../assets/styles/App.css';
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonDialogue from '../components/common/Dialogue';
 import termsAndConditions from '../assets/termsAndConditions.json';
-import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar';
+/* import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar'; */
 
 const Home: React.FC = () => {
 	const navigate = useNavigate();
