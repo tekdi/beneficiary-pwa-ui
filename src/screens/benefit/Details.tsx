@@ -159,7 +159,7 @@ const BenefitsDetails: React.FC = () => {
 		);
 		if (!requiredDocsTag?.list) return [];
 
-		const docs: { label: string; proof: string[]; isRequired: boolean }[] =
+		const docs: { label: string; proof: string; isRequired: boolean }[] =
 			[];
 
 		for (const doc of requiredDocsTag.list) {
@@ -183,12 +183,6 @@ const BenefitsDetails: React.FC = () => {
 				});
 			} catch (e) {
 				console.error('Failed to parse document data:', e);
-
-				docs.push({
-					label: 'Invalid document data',
-					proof: '',
-					isRequired: false,
-				});
 			}
 		}
 		return docs;
