@@ -183,16 +183,6 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 				/>
 
 				<CommonDialogue
-					isOpen={isImageDialogOpen}
-					onClose={() => {
-						setIsImageDialogOpen(false);
-						setImageBase64List([]);
-					}}
-					imageBase64List={imageBase64List}
-					documentName={documentStatus.doc_name}
-				/>
-
-				<CommonDialogue
 					isOpen={isPreviewOpen}
 					previewDocument={isPreviewOpen}
 					onClose={() => setIsPreviewOpen(false)}
