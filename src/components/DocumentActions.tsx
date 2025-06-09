@@ -15,6 +15,10 @@ interface DocumentActionsProps {
 		doc_name: string;
 	}[];
 }
+interface ImageEntry {
+	mimetype?: string;
+	content?: string;
+}
 const DocumentActions: React.FC<DocumentActionsProps> = ({
 	status,
 	userDocuments,
@@ -85,18 +89,21 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 				//     • is an object
 				//     • has a `mimetype` beginning with "image/"
 				//     • has a non-empty `content` field
+
 				const imageEntries = Object.values(subject).filter(
-					(entry: any) =>
+					(entry): entry is ImageEntry =>
 						entry &&
 						typeof entry === 'object' &&
-						typeof entry.mimetype === 'string' &&
-						entry.mimetype.toLowerCase().startsWith('image/') &&
-						!!entry.content
+						typeof (entry as ImageEntry).mimetype === 'string' &&
+						(entry as ImageEntry)
+							.mimetype!.toLowerCase()
+							.startsWith('image/') &&
+						!!(entry as ImageEntry).content
 				);
 
 				if (imageEntries.length > 0) {
 					// 3️⃣ Save *all* base-64 strings
-					setImageBase64List(imageEntries.map((e: any) => e.content));
+					setImageBase64List(imageEntries.map((e) => e.content!));
 					setIsImageDialogOpen(true);
 				} else {
 					toast({
