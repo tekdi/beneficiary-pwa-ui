@@ -50,7 +50,7 @@ interface UserDocument {
 
 interface DocumentScannerProps {
 	userId: string;
-	userData: UserDocument;
+	userData: UserDocument[];
 }
 
 const DocumentScanner: React.FC<DocumentScannerProps> = ({
@@ -119,7 +119,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 		try {
 			console.log('Scanned QR code URL:', result);
 
-			 // Fetch VC JSON using the service method
+			// Fetch VC JSON using the service method
 			const jsonData = await fetchVCJson(result);
 			console.log('jsonData', jsonData);
 
