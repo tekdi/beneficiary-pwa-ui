@@ -19,6 +19,7 @@ const UserProfile: React.FC = () => {
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+
 	const handleBack = () => {
 		navigate(-2);
 	};
@@ -112,7 +113,7 @@ const UserProfile: React.FC = () => {
 					<VStack spacing={4} align="stretch">
 						<DocumentList
 							documents={documents}
-							userData={userData?.docs}
+							userDocuments={userData?.docs}
 						/>
 						{showIframe ? (
 							<UploadDocumentEwallet userId={userData?.user_id} />

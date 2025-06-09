@@ -18,7 +18,7 @@ import '../assets/styles/App.css';
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonDialogue from '../components/common/Dialogue';
 import termsAndConditions from '../assets/termsAndConditions.json';
-import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar';
+/* import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar'; */
 
 const Home: React.FC = () => {
 	const navigate = useNavigate();
@@ -30,7 +30,7 @@ const Home: React.FC = () => {
 	const purpose = 'sign_up_tnc';
 	const purpose_text = 'sign_up_tnc';
 	const toast = useToast();
-	const [fetchingAadhar, setFetchingAadhar] = useState(false);
+	/* 	const [fetchingAadhar, setFetchingAadhar] = useState(false); */
 
 	const handleRedirect = () => {
 		navigate('/explorebenefits');
@@ -106,7 +106,7 @@ const Home: React.FC = () => {
 		getConsent();
 	}, []);
 
-	const handleAadharFetch = async () => {
+	/* 	const handleAadharFetch = async () => {
 		try {
 			const digilockerURL = await getDigiLockerRequest();
 
@@ -169,7 +169,7 @@ const Home: React.FC = () => {
 		} catch (err) {
 			console.error('Error fetching DigiLocker URL:', err);
 		}
-	};
+	}; */
 
 	return (
 		<Layout
@@ -183,7 +183,7 @@ const Home: React.FC = () => {
 				<VStack spacing={4} align="stretch">
 					<DocumentList
 						documents={documents}
-						userData={userData?.docs}
+						userDocuments={userData?.docs}
 					/>
 					<CommonButton
 						onClick={handleScanRedirect}
