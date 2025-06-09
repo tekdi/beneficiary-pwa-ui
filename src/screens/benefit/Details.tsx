@@ -182,9 +182,11 @@ const BenefitsDetails: React.FC = () => {
 					isRequired,
 				});
 			} catch (e) {
+				console.error('Failed to parse document data:', e);
+
 				docs.push({
 					label: 'Invalid document data',
-					proof: [],
+					proof: '',
 					isRequired: false,
 				});
 			}
