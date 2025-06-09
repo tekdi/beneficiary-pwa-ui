@@ -5,8 +5,6 @@ import {
 	Text,
 	UnorderedList,
 	ListItem,
-	HStack,
-	Icon,
 	Modal,
 	ModalOverlay,
 	ModalContent,
@@ -26,7 +24,6 @@ import {
 	getApplication,
 	getOne,
 } from '../../services/benefit/benefits';
-import { MdCurrencyRupee } from 'react-icons/md';
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
@@ -36,6 +33,7 @@ import {
 } from '../../utils/jsHelper/helper';
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
+import DocumentActions from '../../components/DocumentActions';
 
 // Define types for benefit item and user
 interface BenefitItem {
@@ -47,7 +45,10 @@ interface BenefitItem {
 		value?: number;
 		currency?: string;
 	};
-	document?: string[];
+	document?: {
+		label?: string;
+		proof?: string;
+	}[];
 	tags?: Array<{
 		descriptor?: {
 			code?: string;
@@ -114,7 +115,7 @@ const BenefitsDetails: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
 	const [isEligible, setIsEligible] = useState<any[]>();
-
+	const [userDocuments, setUserDocuments] = useState();
 	const handleConfirmation = async () => {
 		if (isEligible?.length > 0) {
 			setError(
@@ -158,12 +159,15 @@ const BenefitsDetails: React.FC = () => {
 		);
 		if (!requiredDocsTag?.list) return [];
 
-		const docs: string[] = [];
+		const docs: { label: string; proof: string[]; isRequired: boolean }[] =
+			[];
+
 		for (const doc of requiredDocsTag.list) {
 			try {
 				const parsed = JSON.parse(doc.value);
 				const allowedProofs = parsed.allowedProofs || [];
 				const isRequired = parsed.isRequired;
+
 				const label = allowedProofs
 					.map((proof) =>
 						proof
@@ -171,12 +175,18 @@ const BenefitsDetails: React.FC = () => {
 							.replace(/^./, (str) => str.toUpperCase())
 					)
 					.join(' / ');
-				docs.push(
-					`${label} (${isRequired ? 'Mandatory' : 'Non-mandatory'})`
-				);
+
+				docs.push({
+					label: `${label} (${isRequired ? 'Mandatory' : 'Non-mandatory'})`,
+					proof: allowedProofs[0],
+					isRequired,
+				});
 			} catch (e) {
-				// fallback to raw value if parsing fails
-				docs.push('Invalid document data');
+				docs.push({
+					label: 'Invalid document data',
+					proof: [],
+					isRequired: false,
+				});
 			}
 		}
 		return docs;
@@ -248,6 +258,8 @@ const BenefitsDetails: React.FC = () => {
 			try {
 				const result = await getOne({ id });
 				const resultItem = extractResultItem(result);
+				const user = await getUser();
+				setUserDocuments(user.data.docs);
 				const docs = extractRequiredDocs(resultItem);
 
 				setContext(extractContext(result));
@@ -482,7 +494,23 @@ const BenefitsDetails: React.FC = () => {
 
 					<UnorderedList mt={4}>
 						{item?.document?.map((document) => (
-							<ListItem key={document}>{document}</ListItem>
+							<Box
+								key={document.proof}
+								display="flex"
+								alignItems="center"
+								justifyContent="space-between"
+								width={'100%'}
+							>
+								<ListItem key={document.label}>
+									{document.label}
+								</ListItem>
+
+								<DocumentActions
+									status={document.proof}
+									userDocuments={userDocuments}
+									isDelete={false}
+								/>
+							</Box>
 						))}
 					</UnorderedList>
 

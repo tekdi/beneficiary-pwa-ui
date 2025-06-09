@@ -8,12 +8,13 @@ import { AuthContext } from '../utils/context/checkToken';
 import CommonDialogue from './common/Dialogue';
 import { VscPreview } from 'react-icons/vsc';
 interface DocumentActionsProps {
-	status: boolean;
+	status: string;
 	userDocuments: {
 		doc_id: string;
 		doc_data: string;
 		doc_name: string;
 	}[];
+	isDelete?: boolean;
 }
 interface ImageEntry {
 	mimetype?: string;
@@ -22,6 +23,7 @@ interface ImageEntry {
 const DocumentActions: React.FC<DocumentActionsProps> = ({
 	status,
 	userDocuments,
+	isDelete = true,
 }) => {
 	const documentStatus = findDocumentStatus(userDocuments, status);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -137,7 +139,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 	if (documentStatus?.matchFound) {
 		return (
 			<>
-				<Box>
+				<Box display="flex" gap={2} alignItems="center">
 					<IconButton
 						icon={<FaEye />}
 						aria-label="Preview"
@@ -152,13 +154,15 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 						color="grey"
 						onClick={handleImagePreview}
 					/>
-					<IconButton
-						icon={<FaTrashAlt />}
-						aria-label="Delete"
-						size="sm"
-						color={'grey'}
-						onClick={() => handleOpneConfirmation()}
-					/>
+					{isDelete && (
+						<IconButton
+							icon={<FaTrashAlt />}
+							aria-label="Delete"
+							size="sm"
+							color={'grey'}
+							onClick={() => handleOpneConfirmation()}
+						/>
+					)}
 				</Box>
 
 				<CommonDialogue
