@@ -7,6 +7,7 @@ import { getDocumentsList, getUser } from '../services/auth/auth';
 import { AuthContext } from '../utils/context/checkToken';
 import CommonDialogue from './common/Dialogue';
 import { VscPreview } from 'react-icons/vsc';
+
 interface DocumentActionsProps {
 	status: string;
 	userDocuments: {
@@ -30,7 +31,6 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 	const [document, setDocument] = useState();
 	const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-
 	const [imageBase64List, setImageBase64List] = useState<string[]>([]);
 	const { updateUserData } = useContext(AuthContext)!;
 	const toast = useToast();
@@ -183,10 +183,21 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 				/>
 
 				<CommonDialogue
+					isOpen={isImageDialogOpen}
+					onClose={() => {
+						setIsImageDialogOpen(false);
+						setImageBase64List([]);
+					}}
+					imageBase64List={imageBase64List}
+					documentName={documentStatus.doc_name}
+				/>
+
+				<CommonDialogue
 					isOpen={isPreviewOpen}
 					previewDocument={isPreviewOpen}
 					onClose={() => setIsPreviewOpen(false)}
 					document={document}
+					documentName={documentStatus.doc_name}
 					documentName={documentStatus.doc_name}
 				/>
 			</>
