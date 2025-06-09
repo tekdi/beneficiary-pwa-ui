@@ -198,7 +198,6 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 					onClose={() => setIsPreviewOpen(false)}
 					document={document}
 					documentName={documentStatus.doc_name}
-					documentName={documentStatus.doc_name}
 				/>
 			</>
 		);
