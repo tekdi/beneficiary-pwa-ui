@@ -136,7 +136,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 					>
 						{imageBase64List.map((img, idx) => (
 							<img
-								key={idx}
+								key={img.slice(0, 20)}
 								src={`data:image/jpeg;base64,${img}`}
 								alt={`Document Preview ${idx + 1}`}
 								style={{
