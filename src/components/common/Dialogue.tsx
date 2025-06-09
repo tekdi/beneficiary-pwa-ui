@@ -35,6 +35,7 @@ interface CommonDialogueProps {
 	documentName?: string;
 	document?: object;
 	previewDocument?: boolean;
+	imageBase64List?: string[];
 }
 const CommonDialogue: React.FC<CommonDialogueProps> = ({
 	isOpen,
@@ -45,18 +46,20 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 	documentName,
 	document,
 	previewDocument,
+	imageBase64List,
 }) => {
 	const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 	const handleAccordionChange = (expandedIndex) => {
 		setIsAccordionOpen(expandedIndex.length > 0);
 	};
+
 	const { t } = useTranslation();
 	if (previewDocument) {
 		return (
 			<Modal isOpen={previewDocument} onClose={onClose} size="lg">
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Preview Document</ModalHeader>
+					<ModalHeader>Preview Document: {documentName}</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
 						<Box
@@ -115,6 +118,48 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 			</Modal>
 		);
 	}
+	if (imageBase64List && imageBase64List.length > 0) {
+		return (
+			<Modal isOpen={true} onClose={onClose} size="xl">
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>
+						Document Image Preview: {documentName}
+					</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody
+						display="flex"
+						flexDirection="column"
+						alignItems="center"
+						gap={4}
+						p={4}
+					>
+						{imageBase64List.map((img, idx) => (
+							<img
+								key={idx}
+								src={`data:image/jpeg;base64,${img}`}
+								alt={`Document Preview ${idx + 1}`}
+								style={{
+									maxWidth: '100%',
+									maxHeight: '60vh',
+									borderRadius: '8px',
+									objectFit: 'contain',
+								}}
+							/>
+						))}
+					</ModalBody>
+					<ModalFooter>
+						<CommonButton
+							label="Close"
+							onClick={onClose}
+							width="100px"
+						/>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		);
+	}
+
 	return (
 		<Modal isOpen={Boolean(isOpen)} onClose={onClose}>
 			<ModalOverlay />
