@@ -174,16 +174,30 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			onClose(); // Close the modal
 		} catch (error) {
 			console.error('Error uploading document:', error);
-			toast({
-				title: 'Error',
-				description:
-					error instanceof Error
-						? error.message
-						: 'Unexpected error occurred',
-				status: 'error',
-				duration: 60000,
-				isClosable: true,
-			});
+
+			// Check for API error format
+			const apiErrors = error?.response?.data?.errors;
+			if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+				apiErrors.forEach((errObj) => {
+					toast({
+						title: 'Error',
+						description: errObj.error || 'Unexpected error occurred',
+						status: 'error',
+						duration: 10000,
+						isClosable: true,
+					});
+				});
+			} else {
+				toast({
+					title: 'Error',
+					description:
+						error?.response?.data?.message ||
+						(error instanceof Error ? error.message : 'Unexpected error occurred'),
+					status: 'error',
+					duration: 10000,
+					isClosable: true,
+				});
+			}
 		} finally {
 			setIsLoading(false); // Hide loader
 		}
