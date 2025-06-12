@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 
 import FieldMappingTab from '../../components/FieldMappingTab';
+import DocumentConfigurationTab from '../../components/DocumentConfigurationTab';
 
 const AdminDashboard = () => {
 	return (
@@ -32,7 +33,7 @@ const AdminDashboard = () => {
 				<Tabs variant="enclosed" colorScheme="blue">
 					<TabList>
 						<Tab>Field Mapping</Tab>
-						<Tab>Create field</Tab>
+
 						<Tab>VC Configuration</Tab>
 					</TabList>
 
@@ -42,25 +43,7 @@ const AdminDashboard = () => {
 						</TabPanel>
 
 						<TabPanel>
-							<Alert status="info">
-								<AlertIcon />
-								<AlertTitle>Settings Tab</AlertTitle>
-								<AlertDescription>
-									Configuration settings will be available
-									here.
-								</AlertDescription>
-							</Alert>
-						</TabPanel>
-
-						<TabPanel>
-							<Alert status="info">
-								<AlertIcon />
-								<AlertTitle>Reports Tab</AlertTitle>
-								<AlertDescription>
-									Field mapping reports and analytics will be
-									displayed here.
-								</AlertDescription>
-							</Alert>
+							<DocumentConfigurationTab />
 						</TabPanel>
 					</TabPanels>
 				</Tabs>

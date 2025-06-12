@@ -1069,7 +1069,7 @@ const FieldMappingTab = () => {
 					<Divider />
 
 					<HStack justify="flex-end" spacing={4}>
-						<Button
+						{/* <Button
 							variant="outline"
 							onClick={() => {
 								setFieldMappings([
@@ -1091,7 +1091,7 @@ const FieldMappingTab = () => {
 							}}
 						>
 							Reset All
-						</Button>
+						</Button> */}
 						<Button
 							colorScheme="green"
 							onClick={saveAllMappings}
