@@ -254,15 +254,18 @@ const BenefitsDetails: React.FC = () => {
 			try {
 				const result = await getOne({ id });
 				const resultItem = extractResultItem(result);
-				const user = await getUser();
-				setUserDocuments(user.data.docs);
+				const token = localStorage.getItem('authToken');
+				if (token) {
+					const user = await getUser();
+					setUserDocuments(user.data.docs);
+				}
+
 				const docs = extractRequiredDocs(resultItem);
 
 				setContext(extractContext(result));
 
 				if (mounted) {
 					setItem({ ...resultItem, document: docs });
-					const token = localStorage.getItem('authToken');
 
 					if (token) {
 						await handleAuthenticatedFlow(resultItem, id);
@@ -500,12 +503,13 @@ const BenefitsDetails: React.FC = () => {
 								<ListItem key={document.label}>
 									{document.label}
 								</ListItem>
-
-								<DocumentActions
-									status={document.proof}
-									userDocuments={userDocuments}
-									isDelete={false}
-								/>
+								{userDocuments && (
+									<DocumentActions
+										status={document.proof}
+										userDocuments={userDocuments}
+										isDelete={false}
+									/>
+								)}
 							</Box>
 						))}
 					</UnorderedList>
