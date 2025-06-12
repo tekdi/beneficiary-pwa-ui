@@ -15,13 +15,11 @@ import {
 	Tab,
 	TabPanel,
 	Flex,
-	IconButton,
-	Select,
 } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import BenefitCard from '../../components/common/Card';
 import Layout from '../../components/common/layout/Layout';
 import FilterDialog from '../../components/common/layout/Filters';
+import Pagination from '../../components/common/Pagination'; // Import the new Pagination component
 import { getUser } from '../../services/auth/auth';
 import { getAll } from '../../services/benefit/benefits';
 import { Castes, IncomeRange, Gender } from '../../assets/mockdata/FilterData';
@@ -249,14 +247,12 @@ const ExploreBenefits: React.FC = () => {
 
 	// For server-side pagination, we don't need to slice the data
 	const paginatedBenefits = currentBenefits;
-	const totalPages = currentPagination.totalPages;
 
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page);
 	};
 
-	const handleItemsPerPageChange = (value: string) => {
-		const newItemsPerPage = parseInt(value);
+	const handleItemsPerPageChange = (newItemsPerPage: number) => {
 		setItemsPerPage(newItemsPerPage);
 		setAllBenefitsPage(1);
 		setMyBenefitsPage(1);
@@ -288,122 +284,20 @@ const ExploreBenefits: React.FC = () => {
 	};
 
 	const renderPagination = () => {
-		if (currentPagination.total === 0) return null;
-
-		const pageNumbers = [];
-		const maxVisiblePages = 7;
-		let startPage = Math.max(
-			1,
-			currentPage - Math.floor(maxVisiblePages / 2)
-		);
-		let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-		if (endPage - startPage + 1 < maxVisiblePages) {
-			startPage = Math.max(1, endPage - maxVisiblePages + 1);
-		}
-
-		for (let i = startPage; i <= endPage; i++) {
-			pageNumbers.push(i);
-		}
-
 		return (
-			<Flex
-				justifyContent="space-between"
-				alignItems="center"
-				mt={6}
-				p={4}
-				bg="white"
-				borderRadius="md"
-				boxShadow="sm"
-			>
-				<Flex alignItems="center" gap={2}>
-					<Text fontSize="sm" color="gray.600">
-						Show
-					</Text>
-					<Select
-						size="sm"
-						width="80px"
-						value={itemsPerPage.toString()}
-						onChange={(e) =>
-							handleItemsPerPageChange(e.target.value)
-						}
-					>
-						<option value="5">5</option>
-						<option value="10">10</option>
-						<option value="20">20</option>
-					</Select>
-					<Text fontSize="sm" color="gray.600">
-						per page
-					</Text>
-				</Flex>
-
-				<Flex alignItems="center" gap={2}>
-					<IconButton
-						aria-label="Previous page"
-						icon={<ChevronLeftIcon />}
-						size="sm"
-						onClick={() => handlePageChange(currentPage - 1)}
-						isDisabled={currentPage === 1}
-						variant="outline"
-					/>
-
-					{startPage > 1 && (
-						<>
-							<Button
-								size="sm"
-								variant="outline"
-								onClick={() => handlePageChange(1)}
-							>
-								1
-							</Button>
-							{startPage > 2 && <Text>...</Text>}
-						</>
-					)}
-
-					{pageNumbers.map((page) => (
-						<Button
-							key={page}
-							size="sm"
-							variant={currentPage === page ? 'solid' : 'outline'}
-							colorScheme={currentPage === page ? 'blue' : 'gray'}
-							onClick={() => handlePageChange(page)}
-						>
-							{page}
-						</Button>
-					))}
-
-					{endPage < totalPages && (
-						<>
-							{endPage < totalPages - 1 && <Text>...</Text>}
-							<Button
-								size="sm"
-								variant="outline"
-								onClick={() => handlePageChange(totalPages)}
-							>
-								{totalPages}
-							</Button>
-						</>
-					)}
-
-					<IconButton
-						aria-label="Next page"
-						icon={<ChevronRightIcon />}
-						size="sm"
-						onClick={() => handlePageChange(currentPage + 1)}
-						isDisabled={currentPage === totalPages}
-						variant="outline"
-					/>
-				</Flex>
-
-				<Text fontSize="sm" color="gray.600">
-					Showing {(currentPage - 1) * currentPagination.limit + 1} to{' '}
-					{Math.min(
-						currentPage * currentPagination.limit,
-						currentPagination.total
-					)}{' '}
-					of {currentPagination.total} results
-				</Text>
-			</Flex>
+			<Pagination
+				currentPage={currentPage}
+				totalPages={currentPagination.totalPages}
+				totalItems={currentPagination.total}
+				itemsPerPage={itemsPerPage}
+				onPageChange={handlePageChange}
+				onItemsPerPageChange={handleItemsPerPageChange}
+				itemsPerPageOptions={[5, 10, 20]}
+				maxVisiblePages={7}
+				showItemsPerPageSelector={true}
+				showResultsText={true}
+				size="sm"
+			/>
 		);
 	};
 
