@@ -493,8 +493,8 @@ const ExploreBenefits: React.FC = () => {
 				>
 					<Box flexShrink={0}>
 						<TabList>
-							<Tab>All Benefits</Tab>
 							{isAuthenticated && <Tab>My Benefits</Tab>}
+							<Tab>All Benefits</Tab>
 						</TabList>
 					</Box>
 
@@ -508,10 +508,10 @@ const ExploreBenefits: React.FC = () => {
 				</Flex>
 
 				<TabPanels>
-					<TabPanel px={0}>{benefitsContent}</TabPanel>
 					{isAuthenticated && (
 						<TabPanel px={0}>{benefitsContent}</TabPanel>
 					)}
+					<TabPanel px={0}>{benefitsContent}</TabPanel>
 				</TabPanels>
 			</Tabs>
 		</Layout>
