@@ -135,7 +135,7 @@ const ExploreBenefits: React.FC = () => {
 					Object.keys(userFilters).forEach((key) => {
 						if (userFilters[key] && userFilters[key] !== '') {
 							newUserFilter[key] =
-								userFilters[key]?.toLowerCase() ||
+								userFilters[key]?.toLowerCase() ??
 								userFilters[key];
 						}
 					});
@@ -169,12 +169,12 @@ const ExploreBenefits: React.FC = () => {
 				page: allBenefitsPage,
 				limit: itemsPerPage,
 			});
-			setAllBenefits(result?.data?.ubi_network_cache || []);
+			setAllBenefits(result?.data?.ubi_network_cache ?? []);
 			setAllBenefitsPagination({
-				total: result?.data?.total || 0,
-				page: result?.data?.page || 1,
-				limit: result?.data?.limit || itemsPerPage,
-				totalPages: result?.data?.totalPages || 0,
+				total: result?.data?.total ?? 0,
+				page: result?.data?.page ?? 1,
+				limit: result?.data?.limit ?? itemsPerPage,
+				totalPages: result?.data?.totalPages ?? 0,
 			});
 		} catch (e) {
 			setError(`Failed to fetch all benefits: ${(e as Error).message}`);
@@ -192,21 +192,21 @@ const ExploreBenefits: React.FC = () => {
 					...userFilter,
 					...filter, // Include any additional filters set by user
 					annualIncome:
-						userFilter?.annualIncome || filter?.annualIncome
-							? `${userFilter?.annualIncome || filter?.annualIncome}`
+						(userFilter?.annualIncome ?? filter?.annualIncome)
+							? `${userFilter?.annualIncome ?? filter?.annualIncome}`
 							: '',
-					gender: userFilter?.gender || filter?.gender || '',
+					gender: userFilter?.gender ?? filter?.gender ?? '',
 				},
 				search,
 				page: myBenefitsPage,
 				limit: itemsPerPage,
 			});
-			setMyBenefits(result?.data?.ubi_network_cache || []);
+			setMyBenefits(result?.data?.ubi_network_cache ?? []);
 			setMyBenefitsPagination({
-				total: result?.data?.total || 0,
-				page: result?.data?.page || 1,
-				limit: result?.data?.limit || itemsPerPage,
-				totalPages: result?.data?.totalPages || 0,
+				total: result?.data?.total ?? 0,
+				page: result?.data?.page ?? 1,
+				limit: result?.data?.limit ?? itemsPerPage,
+				totalPages: result?.data?.totalPages ?? 0,
 			});
 		} catch (e) {
 			setError(`Failed to fetch my benefits: ${(e as Error).message}`);
@@ -397,6 +397,7 @@ const ExploreBenefits: React.FC = () => {
 			loading={loading}
 			_heading={{
 				heading: 'Browse Benefits',
+				onSearch: setSearch,
 			}}
 			isSearchbar={true}
 			isMenu={Boolean(localStorage.getItem('authToken'))}
