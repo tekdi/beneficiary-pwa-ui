@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Box,
 	Button,
@@ -21,6 +21,7 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import BenefitCard from '../../components/common/Card';
 import Layout from '../../components/common/layout/Layout';
+import FilterDialog from '../../components/common/layout/Filters';
 import { getUser } from '../../services/auth/auth';
 import { getAll } from '../../services/benefit/benefits';
 import { Castes, IncomeRange, Gender } from '../../assets/mockdata/FilterData';
@@ -78,25 +79,25 @@ const ExploreBenefits: React.FC = () => {
 		useState<PaginationInfo>({
 			total: 0,
 			page: 1,
-			limit: 10,
+			limit: 5,
 			totalPages: 0,
 		});
 	const [myBenefitsPagination, setMyBenefitsPagination] =
 		useState<PaginationInfo>({
 			total: 0,
 			page: 1,
-			limit: 10,
+			limit: 5,
 			totalPages: 0,
 		});
 
 	// Current page states
 	const [allBenefitsPage, setAllBenefitsPage] = useState<number>(1);
 	const [myBenefitsPage, setMyBenefitsPage] = useState<number>(1);
-	const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+	const [itemsPerPage, setItemsPerPage] = useState<number>(5); // Changed from 10 to 1
 
 	const handleOpen = () => {};
 
-	const handleSort = (sortKey: string) => {
+	/* const handleSort = (sortKey: string) => {
 		const sortFn = (a: Benefit, b: Benefit) => {
 			if (sortKey === 'title') {
 				return a.title.localeCompare(b.title);
@@ -111,7 +112,7 @@ const ExploreBenefits: React.FC = () => {
 		} else {
 			setMyBenefits([...myBenefits].sort(sortFn));
 		}
-	};
+	}; */
 
 	// Initialize user data and set user filter for "My Benefits"
 	useEffect(() => {
@@ -157,7 +158,7 @@ const ExploreBenefits: React.FC = () => {
 		try {
 			setLoading(true);
 			const result = await getAll({
-				filters: {}, // No filters for "All Benefits"
+				filters: { gender: '', annualIncome: '', caste: '' }, // Always empty filters for "All Benefits"
 				search,
 				page: allBenefitsPage,
 				limit: itemsPerPage,
@@ -218,7 +219,8 @@ const ExploreBenefits: React.FC = () => {
 			}
 		}
 	}, [
-		filter,
+		// Remove 'filter' from dependencies for "All Benefits" tab
+		...(activeTab === 0 ? [] : [filter]),
 		search,
 		initState,
 		activeTab,
@@ -265,6 +267,7 @@ const ExploreBenefits: React.FC = () => {
 		// Reset pagination when switching tabs
 		if (index === 0) {
 			setAllBenefitsPage(1);
+			// Don't clear filters, just keep them visible but inactive
 		} else {
 			setMyBenefitsPage(1);
 		}
@@ -424,40 +427,62 @@ const ExploreBenefits: React.FC = () => {
 		);
 	};
 
-	// Filter inputs for "My Benefits" tab (allows additional filtering on top of user profile)
+	// Filter inputs for both tabs
 	const getFilterInputs = () => {
-		if (activeTab === 1) {
+		// For "All Benefits" tab, show empty filter values
+		if (activeTab === 0) {
 			return [
 				{
 					label: 'Caste',
 					data: Castes,
-					value:
-						filter?.['caste']?.toLowerCase() ||
-						userFilter?.['caste']?.toLowerCase() ||
-						'',
+					value: '', // Always empty for "All Benefits"
 					key: 'caste',
 				},
 				{
 					label: 'Income Range',
 					data: IncomeRange,
-					value:
-						filter?.['annualIncome'] ||
-						userFilter?.['annualIncome'] ||
-						'',
+					value: '', // Always empty for "All Benefits"
 					key: 'annualIncome',
 				},
 				{
 					label: 'Gender',
 					data: Gender,
-					value:
-						filter?.['gender']?.toLowerCase() ||
-						userFilter?.['gender']?.toLowerCase() ||
-						'',
+					value: '', // Always empty for "All Benefits"
 					key: 'gender',
 				},
 			];
 		}
-		return [];
+
+		// For "My Benefits" tab, show actual filter values
+		return [
+			{
+				label: 'Caste',
+				data: Castes,
+				value:
+					filter?.['caste']?.toLowerCase() ||
+					userFilter?.['caste']?.toLowerCase() ||
+					'',
+				key: 'caste',
+			},
+			{
+				label: 'Income Range',
+				data: IncomeRange,
+				value:
+					filter?.['annualIncome'] ||
+					userFilter?.['annualIncome'] ||
+					'',
+				key: 'annualIncome',
+			},
+			{
+				label: 'Gender',
+				data: Gender,
+				value:
+					filter?.['gender']?.toLowerCase() ||
+					userFilter?.['gender']?.toLowerCase() ||
+					'',
+				key: 'gender',
+			},
+		];
 	};
 
 	return (
@@ -465,19 +490,14 @@ const ExploreBenefits: React.FC = () => {
 			loading={loading}
 			_heading={{
 				heading: 'Browse Benefits',
-				isFilter: activeTab === 1, // Only show filters for "My Benefits" tab
+				isFilter: false, // Removed filter from Layout since we're using FilterDialog in tabs
 				handleOpen: handleOpen,
 				setFilter: setFilter,
 				onSearch: setSearch,
-				inputs: getFilterInputs(),
-				sortOptions: [
-					{ label: 'Title', value: 'title' },
-					{ label: 'Provider Name', value: 'provider_name' },
-				],
+				inputs: [],
 			}}
 			isSearchbar={true}
 			isMenu={Boolean(localStorage.getItem('authToken'))}
-			handleSort={handleSort}
 		>
 			{error && (
 				<Modal isOpen={!!error} onClose={() => setError(null)}>
@@ -504,10 +524,37 @@ const ExploreBenefits: React.FC = () => {
 				onChange={handleTabChange}
 				colorScheme="blue"
 			>
-				<TabList>
-					<Tab>All Benefits</Tab>
-					<Tab>My Benefits</Tab>
-				</TabList>
+				{/* Header section with tabs and filter */}
+				<Flex
+					position="sticky" // or "fixed" if you want it always visible
+					top={0} // sticks to top
+					zIndex={10} // stay above scrollable content
+					bg="white" // background to avoid see-through
+					direction="row"
+					align="center"
+					justify="space-between"
+					gap={4}
+					width="100%"
+					px={4}
+					py={2}
+					flexWrap="nowrap"
+					boxShadow="sm" // optional: add shadow to separate from content
+				>
+					<Box flexShrink={0}>
+						<TabList>
+							<Tab>All Benefits</Tab>
+							<Tab>My Benefits</Tab>
+						</TabList>
+					</Box>
+
+					<Box flexShrink={0}>
+						<FilterDialog
+							inputs={getFilterInputs()}
+							setFilter={activeTab === 0 ? () => {} : setFilter}
+							mr="20px"
+						/>
+					</Box>
+				</Flex>
 
 				<TabPanels>
 					<TabPanel px={0}>{renderBenefitsContent()}</TabPanel>
