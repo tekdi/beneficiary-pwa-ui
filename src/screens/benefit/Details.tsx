@@ -193,8 +193,7 @@ const BenefitsDetails: React.FC = () => {
 			?.responses?.[0]?.context as FinancialSupportRequest;
 	};
 
-	const handleAuthenticatedFlow = async (resultItem, id) => {
-		const user = await getUser();
+	const handleAuthenticatedFlow = async (resultItem, id, user) => {
 		if (user?.data?.dob) {
 			const age = calculateAge(user.data.dob);
 			user.data.age = `${age}`;
@@ -254,18 +253,27 @@ const BenefitsDetails: React.FC = () => {
 			try {
 				const result = await getOne({ id });
 				const resultItem = extractResultItem(result);
-				const user = await getUser();
-				setUserDocuments(user.data.docs);
+				const token = localStorage.getItem('authToken');
+				let user;
+				if (token) {
+					try {
+						user = await getUser();
+						setUserDocuments(user.data.docs ?? []);
+					} catch (err) {
+						console.error('Failed to fetch user', err);
+						user = { data: { docs: [] } };
+					}
+				}
+
 				const docs = extractRequiredDocs(resultItem);
 
 				setContext(extractContext(result));
 
 				if (mounted) {
 					setItem({ ...resultItem, document: docs });
-					const token = localStorage.getItem('authToken');
 
 					if (token) {
-						await handleAuthenticatedFlow(resultItem, id);
+						await handleAuthenticatedFlow(resultItem, id, user);
 					}
 
 					setLoading(false);
@@ -500,12 +508,13 @@ const BenefitsDetails: React.FC = () => {
 								<ListItem key={document.label}>
 									{document.label}
 								</ListItem>
-
-								<DocumentActions
-									status={document.proof}
-									userDocuments={userDocuments}
-									isDelete={false}
-								/>
+								{userDocuments && (
+									<DocumentActions
+										status={document.proof}
+										userDocuments={userDocuments}
+										isDelete={false}
+									/>
+								)}
 							</Box>
 						))}
 					</UnorderedList>
