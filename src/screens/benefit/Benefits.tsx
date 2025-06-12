@@ -73,9 +73,8 @@ const ExploreBenefits: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-	// Separate filter states for each tab
+	// Filter state only for All Benefits tab
 	const [allBenefitsFilter, setAllBenefitsFilter] = useState<Filter>({});
-	const [myBenefitsFilter, setMyBenefitsFilter] = useState<Filter>({});
 
 	// Separate state for each tab
 	const [allBenefits, setAllBenefits] = useState<Benefit[]>([]);
@@ -119,35 +118,46 @@ const ExploreBenefits: React.FC = () => {
 
 	// Memoized current tab data
 	const currentTabData = useMemo(() => {
-		if (activeTab === 0) {
+		// When authenticated: tab 0 = My Benefits, tab 1 = All Benefits
+		// When not authenticated: tab 0 = All Benefits
+		if (
+			(isAuthenticated && activeTab === 0) ||
+			(!isAuthenticated && activeTab === 0 && !isAuthenticated)
+		) {
+			// My Benefits (authenticated) or All Benefits (not authenticated)
+			if (isAuthenticated) {
+				return {
+					benefits: myBenefits,
+					pagination: myBenefitsPagination,
+					page: myBenefitsPage,
+					setPage: setMyBenefitsPage,
+				};
+			} else {
+				return {
+					benefits: allBenefits,
+					pagination: allBenefitsPagination,
+					page: allBenefitsPage,
+					setPage: setAllBenefitsPage,
+				};
+			}
+		} else {
+			// All Benefits (when authenticated)
 			return {
 				benefits: allBenefits,
 				pagination: allBenefitsPagination,
 				page: allBenefitsPage,
 				setPage: setAllBenefitsPage,
-				filter: allBenefitsFilter,
-				setFilter: setAllBenefitsFilter,
-			};
-		} else {
-			return {
-				benefits: myBenefits,
-				pagination: myBenefitsPagination,
-				page: myBenefitsPage,
-				setPage: setMyBenefitsPage,
-				filter: myBenefitsFilter,
-				setFilter: setMyBenefitsFilter,
 			};
 		}
 	}, [
 		activeTab,
+		isAuthenticated,
 		allBenefits,
 		myBenefits,
 		allBenefitsPagination,
 		myBenefitsPagination,
 		allBenefitsPage,
 		myBenefitsPage,
-		allBenefitsFilter,
-		myBenefitsFilter,
 	]);
 
 	// Initialize user data only once
@@ -199,16 +209,19 @@ const ExploreBenefits: React.FC = () => {
 	const fetchAllBenefits = useCallback(async () => {
 		try {
 			setLoading(true);
-			const result = await getAll({
-				filters: {
-					gender: allBenefitsFilter?.gender ?? '',
-					annualIncome: allBenefitsFilter?.annualIncome ?? '',
-					caste: allBenefitsFilter?.caste ?? '',
+			const result = await getAll(
+				{
+					filters: {
+						gender: allBenefitsFilter?.gender ?? '',
+						annualIncome: allBenefitsFilter?.annualIncome ?? '',
+						caste: allBenefitsFilter?.caste ?? '',
+					},
+					search: debouncedSearch,
+					page: allBenefitsPage,
+					limit: itemsPerPage,
 				},
-				search: debouncedSearch,
-				page: allBenefitsPage,
-				limit: itemsPerPage,
-			});
+				false
+			); // Don't send token for All Benefits
 
 			setAllBenefits(result?.data?.ubi_network_cache ?? []);
 			setAllBenefitsPagination({
@@ -228,23 +241,22 @@ const ExploreBenefits: React.FC = () => {
 	const fetchMyBenefits = useCallback(async () => {
 		try {
 			setLoading(true);
-			const result = await getAll({
-				filters: {
-					...userFilter,
-					...myBenefitsFilter,
-					annualIncome:
-						(myBenefitsFilter?.annualIncome ??
-						userFilter?.annualIncome)
-							? `${myBenefitsFilter?.annualIncome ?? userFilter?.annualIncome}`
+			const result = await getAll(
+				{
+					filters: {
+						...userFilter,
+						annualIncome: userFilter?.annualIncome
+							? `${userFilter?.annualIncome}`
 							: '',
-					gender:
-						myBenefitsFilter?.gender ?? userFilter?.gender ?? '',
-					caste: myBenefitsFilter?.caste ?? userFilter?.caste ?? '',
+						gender: userFilter?.gender ?? '',
+						caste: userFilter?.caste ?? '',
+					},
+					search: debouncedSearch,
+					page: myBenefitsPage,
+					limit: itemsPerPage,
 				},
-				search: debouncedSearch,
-				page: myBenefitsPage,
-				limit: itemsPerPage,
-			});
+				true
+			); // Send token for My Benefits
 
 			setMyBenefits(result?.data?.ubi_network_cache ?? []);
 			setMyBenefitsPagination({
@@ -259,23 +271,24 @@ const ExploreBenefits: React.FC = () => {
 		} finally {
 			setLoading(false);
 		}
-	}, [
-		myBenefitsFilter,
-		userFilter,
-		debouncedSearch,
-		myBenefitsPage,
-		itemsPerPage,
-	]);
+	}, [userFilter, debouncedSearch, myBenefitsPage, itemsPerPage]);
 
 	// Separate useEffect for each tab to avoid unnecessary calls
 	useEffect(() => {
-		if (initState === 'no' && activeTab === 0) {
-			fetchAllBenefits();
+		if (initState === 'no') {
+			// When authenticated: tab 0 = My Benefits, tab 1 = All Benefits
+			// When not authenticated: tab 0 = All Benefits
+			if (
+				(isAuthenticated && activeTab === 1) ||
+				(!isAuthenticated && activeTab === 0)
+			) {
+				fetchAllBenefits();
+			}
 		}
-	}, [fetchAllBenefits, initState, activeTab]);
+	}, [fetchAllBenefits, initState, activeTab, isAuthenticated]);
 
 	useEffect(() => {
-		if (initState === 'no' && activeTab === 1 && isAuthenticated) {
+		if (initState === 'no' && activeTab === 0 && isAuthenticated) {
 			fetchMyBenefits();
 		}
 	}, [fetchMyBenefits, initState, activeTab, isAuthenticated]);
@@ -305,80 +318,51 @@ const ExploreBenefits: React.FC = () => {
 	const handleTabChange = useCallback(
 		(index: number) => {
 			// Only allow tab change to "My Benefits" if authenticated
-			if (index === 1 && !isAuthenticated) {
+			if (index === 0 && !isAuthenticated) {
 				return;
 			}
 
 			setActiveTab(index);
 
 			// Reset pagination when switching tabs
-			if (index === 0) {
+			if (
+				(isAuthenticated && index === 1) ||
+				(!isAuthenticated && index === 0)
+			) {
+				// All Benefits tab
 				setAllBenefitsPage(1);
-			} else {
+			} else if (isAuthenticated && index === 0) {
+				// My Benefits tab
 				setMyBenefitsPage(1);
 			}
 		},
 		[isAuthenticated]
 	);
 
-	// Memoized filter inputs
-	const filterInputs = useMemo(() => {
-		const currentFilter =
-			activeTab === 0 ? allBenefitsFilter : myBenefitsFilter;
-
-		if (activeTab === 0) {
-			return [
-				{
-					label: 'Caste',
-					data: Castes,
-					value: currentFilter?.caste ?? '',
-					key: 'caste',
-				},
-				{
-					label: 'Income Range',
-					data: IncomeRange,
-					value: currentFilter?.annualIncome ?? '',
-					key: 'annualIncome',
-				},
-				{
-					label: 'Gender',
-					data: Gender,
-					value: currentFilter?.gender ?? '',
-					key: 'gender',
-				},
-			];
-		}
-
-		return [
+	// Filter inputs only for All Benefits tab
+	const filterInputs = useMemo(
+		() => [
 			{
 				label: 'Caste',
 				data: Castes,
-				value:
-					currentFilter?.caste?.toLowerCase() ??
-					userFilter?.caste?.toLowerCase() ??
-					'',
+				value: allBenefitsFilter?.caste ?? '',
 				key: 'caste',
 			},
 			{
 				label: 'Income Range',
 				data: IncomeRange,
-				value:
-					currentFilter?.annualIncome ??
-					userFilter?.annualIncome ??
-					'',
+				value: allBenefitsFilter?.annualIncome ?? '',
 				key: 'annualIncome',
 			},
 			{
 				label: 'Gender',
 				data: Gender,
-				value:
-					currentFilter?.gender?.toLowerCase() ??
-					userFilter?.gender?.toLowerCase() ??
-					'',
+				value: allBenefitsFilter?.gender ?? '',
 				key: 'gender',
 			},
-		];
-	}, [activeTab, allBenefitsFilter, myBenefitsFilter, userFilter]);
+		],
+		[allBenefitsFilter]
+	);
 
 	// Memoized components
 	const pagination = useMemo(
@@ -475,7 +459,7 @@ const ExploreBenefits: React.FC = () => {
 				onChange={handleTabChange}
 				colorScheme="blue"
 			>
-				{/* Header section with tabs and filter */}
+				{/* Header section with tabs and filter - only show filter for All Benefits tab */}
 				<Flex
 					position="sticky"
 					top={0}
@@ -498,13 +482,17 @@ const ExploreBenefits: React.FC = () => {
 						</TabList>
 					</Box>
 
-					<Box flexShrink={0}>
-						<FilterDialog
-							inputs={filterInputs}
-							setFilter={currentTabData.setFilter}
-							mr="20px"
-						/>
-					</Box>
+					{/* Only show filter for All Benefits tab (when "All Benefits" is active) */}
+					{((isAuthenticated && activeTab === 1) ||
+						(!isAuthenticated && activeTab === 0)) && (
+						<Box flexShrink={0}>
+							<FilterDialog
+								inputs={filterInputs}
+								setFilter={setAllBenefitsFilter}
+								mr="20px"
+							/>
+						</Box>
+					)}
 				</Flex>
 
 				<TabPanels>
