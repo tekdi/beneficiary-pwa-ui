@@ -178,20 +178,25 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			// Check for API error format
 			const apiErrors = error?.response?.data?.errors;
 			if (Array.isArray(apiErrors) && apiErrors.length > 0) {
-				apiErrors.forEach((errObj) => {
-					toast({
-						title: 'Error',
-						description: errObj.error || 'Unexpected error occurred',
-						status: 'error',
-						duration: 10000,
-						isClosable: true,
-					});
+				const errorMessages = apiErrors
+					.map((errObj, idx) => `${idx + 1}. ${errObj.error ?? 'Unexpected error occurred'}`)
+					.join('\n');
+				toast({
+					title: 'Error',
+					description: (
+						<Box as="span" whiteSpace="pre-line">
+							{errorMessages}
+						</Box>
+					),
+					status: 'error',
+					duration: 10000,
+					isClosable: true,
 				});
 			} else {
 				toast({
 					title: 'Error',
 					description:
-						error?.response?.data?.message ||
+						error?.response?.data?.message ??
 						(error instanceof Error ? error.message : 'Unexpected error occurred'),
 					status: 'error',
 					duration: 10000,
