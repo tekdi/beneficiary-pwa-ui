@@ -193,8 +193,7 @@ const BenefitsDetails: React.FC = () => {
 			?.responses?.[0]?.context as FinancialSupportRequest;
 	};
 
-	const handleAuthenticatedFlow = async (resultItem, id) => {
-		const user = await getUser();
+	const handleAuthenticatedFlow = async (resultItem, id, user) => {
 		if (user?.data?.dob) {
 			const age = calculateAge(user.data.dob);
 			user.data.age = `${age}`;
@@ -255,9 +254,15 @@ const BenefitsDetails: React.FC = () => {
 				const result = await getOne({ id });
 				const resultItem = extractResultItem(result);
 				const token = localStorage.getItem('authToken');
+				let user;
 				if (token) {
-					const user = await getUser();
-					setUserDocuments(user.data.docs);
+					try {
+						user = await getUser();
+						setUserDocuments(user.data.docs ?? []);
+					} catch (err) {
+						console.error('Failed to fetch user', err);
+						user = { data: { docs: [] } };
+					}
 				}
 
 				const docs = extractRequiredDocs(resultItem);
@@ -268,7 +273,7 @@ const BenefitsDetails: React.FC = () => {
 					setItem({ ...resultItem, document: docs });
 
 					if (token) {
-						await handleAuthenticatedFlow(resultItem, id);
+						await handleAuthenticatedFlow(resultItem, id, user);
 					}
 
 					setLoading(false);
