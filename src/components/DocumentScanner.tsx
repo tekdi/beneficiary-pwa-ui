@@ -178,9 +178,15 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			// Check for API error format
 			const apiErrors = error?.response?.data?.errors;
 			if (Array.isArray(apiErrors) && apiErrors.length > 0) {
-				const errorMessages = apiErrors
-					.map((errObj, idx) => `${idx + 1}. ${errObj.error ?? 'Unexpected error occurred'}`)
-					.join('\n');
+				const errorMessages =
+					apiErrors.length === 1
+						? apiErrors[0].error ?? 'Unexpected error occurred'
+						: apiErrors
+								.map(
+									(errObj, idx) =>
+										`${idx + 1}. ${errObj.error ?? 'Unexpected error occurred'}`
+								)
+								.join('\n');
 				toast({
 					title: 'Error',
 					description: (
