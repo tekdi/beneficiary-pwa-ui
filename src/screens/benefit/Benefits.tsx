@@ -366,8 +366,8 @@ const ExploreBenefits: React.FC = () => {
 				label: 'Caste',
 				data: Castes,
 				value:
-					filter?.['caste']?.toLowerCase() ||
-					userFilter?.['caste']?.toLowerCase() ||
+					filter?.['caste']?.toLowerCase() ??
+					userFilter?.['caste']?.toLowerCase() ??
 					'',
 				key: 'caste',
 			},
@@ -375,8 +375,8 @@ const ExploreBenefits: React.FC = () => {
 				label: 'Income Range',
 				data: IncomeRange,
 				value:
-					filter?.['annualIncome'] ||
-					userFilter?.['annualIncome'] ||
+					filter?.['annualIncome'] ??
+					userFilter?.['annualIncome'] ??
 					'',
 				key: 'annualIncome',
 			},
@@ -384,8 +384,8 @@ const ExploreBenefits: React.FC = () => {
 				label: 'Gender',
 				data: Gender,
 				value:
-					filter?.['gender']?.toLowerCase() ||
-					userFilter?.['gender']?.toLowerCase() ||
+					filter?.['gender']?.toLowerCase() ??
+					userFilter?.['gender']?.toLowerCase() ??
 					'',
 				key: 'gender',
 			},
