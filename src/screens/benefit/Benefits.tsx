@@ -503,11 +503,6 @@ const ExploreBenefits: React.FC = () => {
 			loading={loading}
 			_heading={{
 				heading: 'Browse Benefits',
-				isFilter: false, // Removed filter from Layout since we're using FilterDialog in tabs
-				handleOpen: handleOpen,
-				setFilter: setFilter,
-				onSearch: setSearch,
-				inputs: [],
 			}}
 			isSearchbar={true}
 			isMenu={Boolean(localStorage.getItem('authToken'))}
