@@ -68,6 +68,7 @@ const ExploreBenefits: React.FC = () => {
 	const [userFilter, setUserFilter] = useState<Filter>({}); // Filter for "My Benefits"
 	const [initState, setInitState] = useState<string>('yes');
 	const [error, setError] = useState<string | null>(null);
+	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
 	// Separate state for each tab
 	const [allBenefits, setAllBenefits] = useState<Benefit[]>([]);
@@ -120,6 +121,7 @@ const ExploreBenefits: React.FC = () => {
 			try {
 				const token = localStorage.getItem('authToken');
 				if (token) {
+					setIsAuthenticated(true);
 					const user = await getUser();
 					const income = getIncomeRangeValue(
 						user?.data?.annualIncome
@@ -141,6 +143,12 @@ const ExploreBenefits: React.FC = () => {
 					});
 
 					setUserFilter(newUserFilter);
+				} else {
+					setIsAuthenticated(false);
+					// If user is not authenticated and on "My Benefits" tab, switch to "All Benefits"
+					if (activeTab === 1) {
+						setActiveTab(0);
+					}
 				}
 				setInitState('no');
 			} catch (e) {
@@ -151,7 +159,7 @@ const ExploreBenefits: React.FC = () => {
 			}
 		};
 		init();
-	}, []);
+	}, [activeTab]);
 
 	// Fetch All Benefits (without user-specific filters)
 	const fetchAllBenefits = async () => {
@@ -214,7 +222,7 @@ const ExploreBenefits: React.FC = () => {
 		if (initState === 'no') {
 			if (activeTab === 0) {
 				fetchAllBenefits();
-			} else {
+			} else if (activeTab === 1 && isAuthenticated) {
 				fetchMyBenefits();
 			}
 		}
@@ -228,6 +236,7 @@ const ExploreBenefits: React.FC = () => {
 		allBenefitsPage,
 		myBenefitsPage,
 		itemsPerPage,
+		isAuthenticated,
 	]);
 
 	// Get current benefits and pagination based on active tab
@@ -263,6 +272,11 @@ const ExploreBenefits: React.FC = () => {
 	};
 
 	const handleTabChange = (index: number) => {
+		// Only allow tab change to "My Benefits" if authenticated
+		if (index === 1 && !isAuthenticated) {
+			return;
+		}
+
 		setActiveTab(index);
 		// Reset pagination when switching tabs
 		if (index === 0) {
@@ -317,7 +331,6 @@ const ExploreBenefits: React.FC = () => {
 						<option value="5">5</option>
 						<option value="10">10</option>
 						<option value="20">20</option>
-						<option value="50">50</option>
 					</Select>
 					<Text fontSize="sm" color="gray.600">
 						per page
@@ -543,7 +556,7 @@ const ExploreBenefits: React.FC = () => {
 					<Box flexShrink={0}>
 						<TabList>
 							<Tab>All Benefits</Tab>
-							<Tab>My Benefits</Tab>
+							{isAuthenticated && <Tab>My Benefits</Tab>}
 						</TabList>
 					</Box>
 
@@ -558,7 +571,9 @@ const ExploreBenefits: React.FC = () => {
 
 				<TabPanels>
 					<TabPanel px={0}>{renderBenefitsContent()}</TabPanel>
-					<TabPanel px={0}>{renderBenefitsContent()}</TabPanel>
+					{isAuthenticated && (
+						<TabPanel px={0}>{renderBenefitsContent()}</TabPanel>
+					)}
 				</TabPanels>
 			</Tabs>
 		</Layout>
