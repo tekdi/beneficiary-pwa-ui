@@ -180,10 +180,15 @@ const ExploreBenefits: React.FC = () => {
 
 					const newUserFilter: Filter = {};
 					Object.keys(userFilters).forEach((key) => {
-						if (userFilters[key] && userFilters[key] !== '') {
+						if (
+							userFilters[key] !== undefined &&
+							userFilters[key] !== ''
+						) {
+							const val = userFilters[key];
 							newUserFilter[key] =
-								userFilters[key]?.toLowerCase() ??
-								userFilters[key];
+								typeof val === 'string'
+									? val.toLowerCase()
+									: String(val);
 						}
 					});
 
@@ -294,12 +299,16 @@ const ExploreBenefits: React.FC = () => {
 	}, [fetchMyBenefits, initState, activeTab, isAuthenticated]);
 
 	// Optimized handlers
-	const handlePageChange = useCallback(
-		(page: number) => {
-			currentTabData.setPage(page);
-		},
-		[currentTabData.setPage]
-	);
+	// If the user is authenticated and on tab-0 we update My Benefits,
+	// otherwise we update All Benefits (covers both unauthenticated case
+	// and authenticated tab-1 case).
+	const handlePageChange = (page: number) => {
+		if (isAuthenticated && activeTab === 0) {
+			setMyBenefitsPage(page);
+		} else {
+			setAllBenefitsPage(page);
+		}
+	};
 
 	const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
 		setItemsPerPage(newItemsPerPage);
@@ -374,7 +383,7 @@ const ExploreBenefits: React.FC = () => {
 				itemsPerPage={itemsPerPage}
 				onPageChange={handlePageChange}
 				onItemsPerPageChange={handleItemsPerPageChange}
-				itemsPerPageOptions={[5, 10, 20]}
+				itemsPerPageOptions={[3, 5, 10, 20]}
 				maxVisiblePages={7}
 				showItemsPerPageSelector={true}
 				showResultsText={true}
