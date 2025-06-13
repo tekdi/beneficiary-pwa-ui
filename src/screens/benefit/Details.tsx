@@ -19,6 +19,7 @@ import Layout from '../../components/common/layout/Layout';
 import { getUser, sendConsent } from '../../services/auth/auth';
 import {
 	applyApplication,
+	checkEligibilityOfUser,
 	confirmApplication,
 	createApplication,
 	getApplication,
@@ -117,20 +118,51 @@ const BenefitsDetails: React.FC = () => {
 	const [isEligible, setIsEligible] = useState<any[]>();
 	const [userDocuments, setUserDocuments] = useState();
 	const handleConfirmation = async () => {
-		if (isEligible?.length > 0) {
+		setLoading(true);
+
+		// Step 1: Try eligibility API
+		let eligibilityResponse;
+		try {
+			eligibilityResponse = await checkEligibilityOfUser(id);
+		} catch (err) {
+			setError('Failed to check eligibility. Please try again later.');
+			setLoading(false);
+			return;
+		}
+
+		// Step 2: Process eligibility reasons
+		const reasons =
+			eligibilityResponse?.ineligible?.[0]?.details?.reasons || [];
+
+		const reasonMessages = reasons.map((r: any) => {
+			if (
+				r.requiredValue &&
+				Array.isArray(r.requiredValue) &&
+				r.requiredValue.length > 0
+			) {
+				return `${r.reason} ${r.requiredValue.join(', ')} ${r?.field}`;
+			}
+			return r.reason;
+		});
+
+		if (reasonMessages.length > 0) {
 			setError(
-				`You cannot proceed further because the criteria are not matching, such as ${isEligible.join(
-					', '
-				)}.`
+				`You cannot proceed further because the following criteria are missing:\n${reasonMessages.join(
+					'\n'
+				)}`
 			);
-		} else {
-			setLoading(true);
+			setLoading(false);
+			return;
+		}
+
+		// Step 3: Apply application
+		try {
 			const result = await applyApplication({ id, context });
+
 			const url = (result as { data: { responses: Array<any> } }).data
 				?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
-			const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
-			setLoading(false);
-			// Only set WebFormProps if the url exists
+
+			const formData = authUser ?? undefined;
 			if (url) {
 				setWebFormProp({
 					url,
@@ -139,7 +171,12 @@ const BenefitsDetails: React.FC = () => {
 			} else {
 				setError('URL not found in response');
 			}
+		} catch (error) {
+			console.error('Error during confirmation:', error);
+			setError('Something went wrong. Please try again.');
 		}
+
+		setLoading(false);
 	};
 
 	const handleBack = () => {

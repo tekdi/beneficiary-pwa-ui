@@ -292,9 +292,9 @@ export const fetchVCJson = async (url: string) => {
 export const checkEligibilityOfUser = async (id: string) => {
 	try {
 		const token = localStorage.getItem('authToken');
-		const response = await axios.post(
+		const response = await axios.get(
 			`${apiBaseUrl}/content/eligibility-check/${id}`,
-			{}, // empty body
+
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
