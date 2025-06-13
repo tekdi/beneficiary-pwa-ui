@@ -19,6 +19,7 @@ import Layout from '../../components/common/layout/Layout';
 import { getUser, sendConsent } from '../../services/auth/auth';
 import {
 	applyApplication,
+	checkEligibilityOfUser,
 	confirmApplication,
 	createApplication,
 	getApplication,
@@ -27,10 +28,7 @@ import {
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
-import {
-	calculateAge,
-	checkEligibilityCriteria,
-} from '../../utils/jsHelper/helper';
+import { calculateAge } from '../../utils/jsHelper/helper';
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 import DocumentActions from '../../components/DocumentActions';
@@ -114,23 +112,67 @@ const BenefitsDetails: React.FC = () => {
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
-	const [isEligible, setIsEligible] = useState<any[]>();
+	// const [isEligible, setIsEligible] = useState<any[]>();
 	const [userDocuments, setUserDocuments] = useState();
 	const handleConfirmation = async () => {
-		if (isEligible?.length > 0) {
+		setLoading(true);
+
+		// Step 1: Try eligibility API
+		let eligibilityResponse;
+		try {
+			if (!id) {
+				setError(
+					'Benefit identifier not available. Please retry from the catalogue.'
+				);
+				setLoading(false);
+				return;
+			}
+			eligibilityResponse = await checkEligibilityOfUser(id);
+		} catch (err) {
+			console.error('Error in checking eligibility', err);
+			setError('Failed to check eligibility. Please try again later.');
+			setLoading(false);
+			return;
+		}
+
+		// Step 2: Process eligibility reasons
+		const reasons =
+			eligibilityResponse?.ineligible?.[0]?.details?.reasons ?? [];
+
+		const reasonMessages = reasons.map((r: any) => {
+			if (
+				r.requiredValue &&
+				Array.isArray(r.requiredValue) &&
+				r.requiredValue.length > 0
+			) {
+				return `${r.reason} ${r.requiredValue.join(', ')} ${r?.field}`;
+			}
+			return r.reason;
+		});
+
+		if (reasonMessages.length > 0) {
 			setError(
-				`You cannot proceed further because the criteria are not matching, such as ${isEligible.join(
-					', '
-				)}.`
+				`You cannot proceed further because the following criteria are missing:\n${reasonMessages.join(
+					'\n'
+				)}`
 			);
-		} else {
-			setLoading(true);
+			setLoading(false);
+			return;
+		}
+
+		// Step 3: Apply application
+		try {
+			if (!context) {
+				setError('Context unavailable. Please reload the page.');
+				setLoading(false);
+				return;
+			}
 			const result = await applyApplication({ id, context });
+
 			const url = (result as { data: { responses: Array<any> } }).data
 				?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
-			const formData = authUser ?? undefined; // Ensure authUser is used or fallback to undefined
-			setLoading(false);
-			// Only set WebFormProps if the url exists
+
+			const formData = authUser ?? undefined;
 			if (url) {
 				setWebFormProp({
 					url,
@@ -139,7 +181,12 @@ const BenefitsDetails: React.FC = () => {
 			} else {
 				setError('URL not found in response');
 			}
+		} catch (error) {
+			console.error('Error during confirmation:', error);
+			setError('Something went wrong. Please try again.');
 		}
+
+		setLoading(false);
 	};
 
 	const handleBack = () => {
@@ -198,8 +245,8 @@ const BenefitsDetails: React.FC = () => {
 			const age = calculateAge(user.data.dob);
 			user.data.age = `${age}`;
 		}
-		const eligibilityArr = checkEligibility(resultItem, user);
-		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined);
+		/* const eligibilityArr = checkEligibility(resultItem, user);
+		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */
 		setAuthUser(user?.data || {});
 
 		const appResult = await getApplication({
@@ -212,7 +259,7 @@ const BenefitsDetails: React.FC = () => {
 		}
 	};
 
-	const checkEligibility = (resultItem, user) => {
+	/* 	const checkEligibility = (resultItem, user) => {
 		const eligibilityArr: string[] = [];
 
 		const eligibilityTag = resultItem?.tags?.find(
@@ -245,7 +292,7 @@ const BenefitsDetails: React.FC = () => {
 		});
 
 		return eligibilityArr;
-	};
+	}; */
 
 	useEffect(() => {
 		let mounted = true;
