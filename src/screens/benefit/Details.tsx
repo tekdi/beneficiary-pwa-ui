@@ -155,6 +155,11 @@ const BenefitsDetails: React.FC = () => {
 
 		// Step 3: Apply application
 		try {
+			if (!context) {
+				setError('Context unavailable. Please reload the page.');
+				setLoading(false);
+				return;
+			}
 			const result = await applyApplication({ id, context });
 
 			const url = (result as { data: { responses: Array<any> } }).data
