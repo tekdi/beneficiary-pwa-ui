@@ -305,8 +305,7 @@ export const checkEligibilityOfUser = async (id: string) => {
 			}
 		);
 		return response.data;
-	} catch (error: any) {
-		console.error('Eligibility check failed:', error);
-		throw error;
+	} catch (error: unknown) {
+		handleError(error as AxiosError);
 	}
 };

@@ -120,6 +120,13 @@ const BenefitsDetails: React.FC = () => {
 		// Step 1: Try eligibility API
 		let eligibilityResponse;
 		try {
+			if (!id) {
+				setError(
+					'Benefit identifier not available. Please retry from the catalogue.'
+				);
+				setLoading(false);
+				return;
+			}
 			eligibilityResponse = await checkEligibilityOfUser(id);
 		} catch (err) {
 			console.error('Error in checking eligibility', err);
