@@ -9,21 +9,37 @@ const bpp_uri = import.meta.env.VITE_BPP_URL;
 function handleError(error: any) {
 	throw error.response ? error.response.data : new Error('Network Error');
 }
-export const getAll = async (userData: {
-	filters: {
-		annualIncome: string;
-		caste?: string;
-	};
-	search: string;
-}) => {
+export const getAll = async (
+	userData: {
+		filters?: {
+			annualIncome: string;
+			caste?: string;
+			gender?: string;
+		};
+		search: string;
+		page: number;
+		limit: number;
+	},
+	sendToken: boolean = false
+) => {
 	try {
+		const headers: { [key: string]: string } = {
+			'Content-Type': 'application/json',
+		};
+
+		// Add Authorization header only if sendToken is true
+		if (sendToken) {
+			const token = localStorage.getItem('authToken');
+			if (token) {
+				headers['Authorization'] = `Bearer ${token}`;
+			}
+		}
+
 		const response = await axios.post(
 			`${apiBaseUrl}/content/search`,
 			userData,
 			{
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers,
 			}
 		);
 		return response.data;
