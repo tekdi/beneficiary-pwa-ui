@@ -137,7 +137,7 @@ const BenefitsDetails: React.FC = () => {
 
 		// Step 2: Process eligibility reasons
 		const reasons =
-			eligibilityResponse?.ineligible?.[0]?.details?.reasons || [];
+			eligibilityResponse?.ineligible?.[0]?.details?.reasons ?? [];
 
 		const reasonMessages = reasons.map((r: any) => {
 			if (
