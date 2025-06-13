@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint:css": "stylelint '**/*.{css,scss}'",
-    "lint:css:fix": "stylelint '**/*.{css,scss}' --fix"
+    "lint:css:fix": "stylelint '**/*.{css,scss}' --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
@@ -56,6 +57,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.13.0",
+    "husky": "^9.1.7",
     "prettier": "^3.4.2",
     "stylelint": "^16.12.0",
     "stylelint-config-rational-order": "^0.1.2",
