@@ -112,7 +112,7 @@ const BenefitsDetails: React.FC = () => {
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
-	const [isEligible, setIsEligible] = useState<any[]>();
+	// const [isEligible, setIsEligible] = useState<any[]>();
 	const [userDocuments, setUserDocuments] = useState();
 	const handleConfirmation = async () => {
 		setLoading(true);
@@ -122,6 +122,7 @@ const BenefitsDetails: React.FC = () => {
 		try {
 			eligibilityResponse = await checkEligibilityOfUser(id);
 		} catch (err) {
+			console.error('Error in checking eligibility', err);
 			setError('Failed to check eligibility. Please try again later.');
 			setLoading(false);
 			return;

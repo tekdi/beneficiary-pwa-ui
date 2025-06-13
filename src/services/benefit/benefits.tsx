@@ -291,6 +291,9 @@ export const fetchVCJson = async (url: string) => {
 };
 export const checkEligibilityOfUser = async (id: string) => {
 	try {
+		if (!id) {
+			throw new Error('Benefit id is required for eligibility check');
+		}
 		const token = localStorage.getItem('authToken');
 		const response = await axios.get(
 			`${apiBaseUrl}/content/eligibility-check/${id}`,
