@@ -28,10 +28,7 @@ import {
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
-import {
-	calculateAge,
-	checkEligibilityCriteria,
-} from '../../utils/jsHelper/helper';
+import { calculateAge } from '../../utils/jsHelper/helper';
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 import DocumentActions from '../../components/DocumentActions';
@@ -235,8 +232,8 @@ const BenefitsDetails: React.FC = () => {
 			const age = calculateAge(user.data.dob);
 			user.data.age = `${age}`;
 		}
-		const eligibilityArr = checkEligibility(resultItem, user);
-		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined);
+		/* const eligibilityArr = checkEligibility(resultItem, user);
+		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */
 		setAuthUser(user?.data || {});
 
 		const appResult = await getApplication({
@@ -249,7 +246,7 @@ const BenefitsDetails: React.FC = () => {
 		}
 	};
 
-	const checkEligibility = (resultItem, user) => {
+	/* 	const checkEligibility = (resultItem, user) => {
 		const eligibilityArr: string[] = [];
 
 		const eligibilityTag = resultItem?.tags?.find(
@@ -282,7 +279,7 @@ const BenefitsDetails: React.FC = () => {
 		});
 
 		return eligibilityArr;
-	};
+	}; */
 
 	useEffect(() => {
 		let mounted = true;
