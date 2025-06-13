@@ -289,3 +289,21 @@ export const fetchVCJson = async (url: string) => {
 		throw error.response ? error.response.data : new Error('Network Error');
 	}
 };
+export const checkEligibilityOfUser = async (id: string) => {
+	try {
+		const token = localStorage.getItem('authToken');
+		const response = await axios.post(
+			`${apiBaseUrl}/content/eligibility-check/${id}`,
+			{}, // empty body
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error: any) {
+		console.error('Eligibility check failed:', error);
+		throw error;
+	}
+};
