@@ -318,13 +318,6 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 									<HStack
 										key={`actions-${doc.documentSubType}-${index}`}
 									>
-										{/* {documentStatus.matchFound && (
-											<Icon
-												key={`icon-${doc.documentSubType}-${index}`}
-												as={CheckCircleIcon}
-												color="green.500"
-											/>
-										)} */}
 										<StatusIcon
 											status={doc.documentSubType}
 											userDocuments={userData || []}
