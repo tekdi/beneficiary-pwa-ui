@@ -6,24 +6,32 @@ import { FaEye, FaTrashAlt } from 'react-icons/fa';
 import { getDocumentsList, getUser } from '../services/auth/auth';
 import { AuthContext } from '../utils/context/checkToken';
 import CommonDialogue from './common/Dialogue';
+import { VscPreview } from 'react-icons/vsc';
 
 interface DocumentActionsProps {
-	status: boolean;
+	status: string;
 	userDocuments: {
 		doc_id: string;
 		doc_data: string;
 		doc_name: string;
 	}[];
+	isDelete?: boolean;
+}
+interface ImageEntry {
+	mimetype?: string;
+	content?: string;
 }
 const DocumentActions: React.FC<DocumentActionsProps> = ({
 	status,
 	userDocuments,
+	isDelete = true,
 }) => {
 	const documentStatus = findDocumentStatus(userDocuments, status);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 	const [document, setDocument] = useState();
-
+	const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+	const [imageBase64List, setImageBase64List] = useState<string[]>([]);
 	const { updateUserData } = useContext(AuthContext)!;
 	const toast = useToast();
 
@@ -72,13 +80,66 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 
 		setIsPreviewOpen(true);
 	};
+
+	const handleImagePreview = () => {
+		try {
+			const parsed = JSON.parse(documentStatus?.doc_data as string);
+			const subject = parsed?.credentialSubject;
+
+			if (subject && typeof subject === 'object') {
+				// 2️⃣ Collect every nested value that:
+				//     • is an object
+				//     • has a `mimetype` beginning with "image/"
+				//     • has a non-empty `content` field
+
+				const imageEntries = Object.values(subject).filter(
+					(entry): entry is ImageEntry =>
+						entry &&
+						typeof entry === 'object' &&
+						typeof (entry as ImageEntry).mimetype === 'string' &&
+						(entry as ImageEntry)
+							.mimetype!.toLowerCase()
+							.startsWith('image/') &&
+						!!(entry as ImageEntry).content
+				);
+
+				if (imageEntries.length > 0) {
+					// 3️⃣ Save *all* base-64 strings
+					setImageBase64List(imageEntries.map((e) => e.content!));
+					setIsImageDialogOpen(true);
+				} else {
+					toast({
+						title: 'No images found in uploaded document',
+						status: 'info',
+						duration: 3000,
+						isClosable: true,
+					});
+				}
+			} else {
+				toast({
+					title: 'No original image data found',
+					status: 'warning',
+					duration: 3000,
+					isClosable: true,
+				});
+			}
+		} catch {
+			toast({
+				title: 'Invalid JSON in document data',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+		}
+	};
+
 	const handleOpneConfirmation = () => {
 		setIsConfirmationOpen(true);
 	};
 	if (documentStatus?.matchFound) {
 		return (
 			<>
-				<Box>
+				<Box display="flex" gap={2} alignItems="center">
 					<IconButton
 						icon={<FaEye />}
 						aria-label="Preview"
@@ -87,12 +148,21 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 						onClick={() => handlepreview()}
 					/>
 					<IconButton
-						icon={<FaTrashAlt />}
-						aria-label="Delete"
+						icon={<VscPreview />}
+						aria-label="Preview Base64 Image"
 						size="sm"
-						color={'grey'}
-						onClick={() => handleOpneConfirmation()}
+						color="grey"
+						onClick={handleImagePreview}
 					/>
+					{isDelete && (
+						<IconButton
+							icon={<FaTrashAlt />}
+							aria-label="Delete"
+							size="sm"
+							color={'grey'}
+							onClick={() => handleOpneConfirmation()}
+						/>
+					)}
 				</Box>
 
 				<CommonDialogue
@@ -103,10 +173,21 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 					documentName={documentStatus.doc_name}
 				/>
 				<CommonDialogue
+					isOpen={isImageDialogOpen}
+					onClose={() => {
+						setIsImageDialogOpen(false);
+						setImageBase64List([]);
+					}}
+					imageBase64List={imageBase64List}
+					documentName={documentStatus.doc_name}
+				/>
+
+				<CommonDialogue
 					isOpen={isPreviewOpen}
 					previewDocument={isPreviewOpen}
 					onClose={() => setIsPreviewOpen(false)}
 					document={document}
+					documentName={documentStatus.doc_name}
 				/>
 			</>
 		);

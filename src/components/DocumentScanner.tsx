@@ -50,7 +50,7 @@ interface UserDocument {
 
 interface DocumentScannerProps {
 	userId: string;
-	userData: UserDocument;
+	userData: UserDocument[];
 }
 
 const DocumentScanner: React.FC<DocumentScannerProps> = ({
@@ -119,7 +119,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 		try {
 			console.log('Scanned QR code URL:', result);
 
-			 // Fetch VC JSON using the service method
+			// Fetch VC JSON using the service method
 			const jsonData = await fetchVCJson(result);
 			console.log('jsonData', jsonData);
 
@@ -174,16 +174,41 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			onClose(); // Close the modal
 		} catch (error) {
 			console.error('Error uploading document:', error);
-			toast({
-				title: 'Error',
-				description:
-					error instanceof Error
-						? error.message
-						: 'Unexpected error occurred',
-				status: 'error',
-				duration: 60000,
-				isClosable: true,
-			});
+
+			// Check for API error format
+			const apiErrors = error?.response?.data?.errors;
+			if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+				const errorMessages =
+					apiErrors.length === 1
+						? apiErrors[0].error ?? 'Unexpected error occurred'
+						: apiErrors
+								.map(
+									(errObj, idx) =>
+										`${idx + 1}. ${errObj.error ?? 'Unexpected error occurred'}`
+								)
+								.join('\n');
+				toast({
+					title: 'Error',
+					description: (
+						<Box as="span" whiteSpace="pre-line">
+							{errorMessages}
+						</Box>
+					),
+					status: 'error',
+					duration: 10000,
+					isClosable: true,
+				});
+			} else {
+				toast({
+					title: 'Error',
+					description:
+						error?.response?.data?.message ??
+						(error instanceof Error ? error.message : 'Unexpected error occurred'),
+					status: 'error',
+					duration: 10000,
+					isClosable: true,
+				});
+			}
 		} finally {
 			setIsLoading(false); // Hide loader
 		}

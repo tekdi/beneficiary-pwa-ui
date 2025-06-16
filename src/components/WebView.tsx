@@ -19,7 +19,10 @@ interface BenefitItem {
 		value?: number;
 		currency?: string;
 	};
-	document?: string[];
+	document?: {
+		label?: string;
+		proof?: string;
+	}[];
 	tags?: Array<{
 		descriptor?: { code?: string; short_desc: string };
 		list?: Array<{ value?: string }>;
