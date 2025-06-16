@@ -35,7 +35,7 @@ interface CommonDialogueProps {
 	documentName?: string;
 	document?: object;
 	previewDocument?: boolean;
-	imageBase64List?: string[];
+	docImageList?: string[];
 }
 const CommonDialogue: React.FC<CommonDialogueProps> = ({
 	isOpen,
@@ -46,7 +46,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 	documentName,
 	document,
 	previewDocument,
-	imageBase64List,
+	docImageList,
 }) => {
 	const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 	const handleAccordionChange = (expandedIndex) => {
@@ -118,7 +118,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 			</Modal>
 		);
 	}
-	if (imageBase64List && imageBase64List.length > 0) {
+	if (docImageList && docImageList.length > 0) {
 		return (
 			<Modal isOpen={true} onClose={onClose} size="xl">
 				<ModalOverlay />
@@ -134,10 +134,10 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 						gap={4}
 						p={4}
 					>
-						{imageBase64List.map((img, idx) => (
+						{docImageList.map((img, idx) => (
 							<img
 								key={img.slice(0, 20)}
-								src={`data:image/jpeg;base64,${img}`}
+								src={`${img}`}
 								alt={`Document Preview ${idx + 1}`}
 								style={{
 									maxWidth: '100%',
