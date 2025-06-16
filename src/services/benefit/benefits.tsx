@@ -289,3 +289,23 @@ export const fetchVCJson = async (url: string) => {
 		throw error.response ? error.response.data : new Error('Network Error');
 	}
 };
+export const checkEligibilityOfUser = async (id: string) => {
+	try {
+		if (!id) {
+			throw new Error('Benefit id is required for eligibility check');
+		}
+		const token = localStorage.getItem('authToken');
+		const response = await axios.get(
+			`${apiBaseUrl}/content/eligibility-check/${id}`,
+
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error: unknown) {
+		handleError(error as AxiosError);
+	}
+};
