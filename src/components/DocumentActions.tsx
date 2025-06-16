@@ -81,17 +81,22 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 		setIsPreviewOpen(true);
 	};
 
-	const handleImagePreview = (doc: Document) => {
+	const handleImagePreview = () => {
 		try {
 			const parseData = JSON.parse(documentStatus?.doc_data as string);
-			const subject = parseData?.credentialSubject;
+			const credentialSubject = parseData?.credentialSubject;
 
 			const images: string[] = [];
 
-			if (subject && typeof subject === 'object') {
-				Object.values(subject).forEach((entry: any) => {
-					if (entry?.url && typeof entry.url === 'string') {
-						images.push(entry.url);
+			if (credentialSubject && typeof credentialSubject === 'object') {
+				Object.values(credentialSubject).forEach((entry) => {
+					if (
+						typeof entry === 'object' &&
+						entry !== null &&
+						'url' in entry &&
+						typeof (entry as { url: unknown }).url === 'string'
+					) {
+						images.push((entry as { url: string }).url);
 					}
 				});
 			}
