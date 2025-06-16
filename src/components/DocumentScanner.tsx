@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import {
 	Box,
 	VStack,
@@ -66,8 +66,11 @@ const StatusIcon: React.FC<StatusIconProps> = ({
 	'aria-label': ariaLabel,
 	userDocuments,
 }) => {
-	const result = findDocumentStatus(userDocuments, status);
-	const { success, isExpired } = getExpiryDate(userDocuments, status);
+	const { result, success, isExpired } = useMemo(() => {
+		const res = findDocumentStatus(userDocuments, status);
+		const { success, isExpired } = getExpiryDate(userDocuments, status);
+		return { result: res, success, isExpired };
+	}, [userDocuments, status]);
 	const documentExpired = success && isExpired;
 	let iconComponent;
 	let iconColor;
