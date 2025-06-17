@@ -259,9 +259,10 @@ const ExploreBenefits: React.FC = () => {
 					search: debouncedSearch,
 					page: myBenefitsPage,
 					limit: itemsPerPage,
-					strictCheck: true, // ✅ Add this line
+					strictCheck: true,
 				},
-				true // send token for authenticated call
+				// Send token for authenticated call
+				true
 			);
 
 			setMyBenefits(result?.data?.ubi_network_cache ?? []);
