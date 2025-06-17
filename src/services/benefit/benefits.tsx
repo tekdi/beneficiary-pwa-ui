@@ -19,6 +19,7 @@ export const getAll = async (
 		search: string;
 		page: number;
 		limit: number;
+		strictCheck?: boolean;
 	},
 	sendToken: boolean = false
 ) => {
@@ -35,18 +36,23 @@ export const getAll = async (
 			}
 		}
 
+		const finalPayload = {
+			...userData,
+			strictCheck: userData.strictCheck ?? false,
+		};
+
 		const response = await axios.post(
 			`${apiBaseUrl}/content/search`,
-			userData,
-			{
-				headers,
-			}
+			finalPayload,
+			{ headers }
 		);
+
 		return response.data;
 	} catch (error) {
 		handleError(error);
 	}
 };
+
 /**
  * Login a user
  * @param {Object} loginData - Contains phoneNumber, password
