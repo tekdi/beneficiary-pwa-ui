@@ -36,6 +36,7 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 
 		const handleClear = () => {
 			setQuery('');
+			onSearch(''); // Clear search results
 			onClose?.();
 		};
 
