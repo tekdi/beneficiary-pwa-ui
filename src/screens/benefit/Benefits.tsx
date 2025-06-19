@@ -21,7 +21,9 @@ import {
 	Tab,
 	TabPanel,
 	Flex,
+	IconButton,
 } from '@chakra-ui/react';
+import { SearchIcon } from '@chakra-ui/icons';
 import BenefitCard from '../../components/common/Card';
 import Layout from '../../components/common/layout/Layout';
 import FilterDialog from '../../components/common/layout/Filters';
@@ -30,6 +32,7 @@ import { getUser } from '../../services/auth/auth';
 import { getAll } from '../../services/benefit/benefits';
 import { Castes, IncomeRange, Gender } from '../../assets/mockdata/FilterData';
 import { getIncomeRangeValue } from '../../utils/jsHelper/helper';
+import SearchBar from '../../components/common/layout/SearchBar';
 
 // Define types for benefit data and filter structure
 interface Benefit {
@@ -108,6 +111,10 @@ const ExploreBenefits: React.FC = () => {
 
 	// Debounce search to avoid excessive API calls
 	const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+
+	const [showSearchBarMyBenefits, setShowSearchBarMyBenefits] = useState(false);
+	const [showSearchBarAllBenefits, setShowSearchBarAllBenefits] = useState(false);
+	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -332,20 +339,7 @@ const ExploreBenefits: React.FC = () => {
 			if (index === 0 && !isAuthenticated) {
 				return;
 			}
-
 			setActiveTab(index);
-
-			// Reset pagination when switching tabs
-			if (
-				(isAuthenticated && index === 1) ||
-				(!isAuthenticated && index === 0)
-			) {
-				// All Benefits tab
-				setAllBenefitsPage(1);
-			} else if (isAuthenticated && index === 0) {
-				// My Benefits tab
-				setMyBenefitsPage(1);
-			}
 		},
 		[isAuthenticated]
 	);
@@ -435,14 +429,39 @@ const ExploreBenefits: React.FC = () => {
 		);
 	}, [currentTabData.benefits, activeTab, pagination]);
 
+	const handleShowSearchBar = () => {
+		if (activeTab === 0) {
+			setShowSearchBarMyBenefits(true);
+			setTimeout(() => {
+				searchInputRef.current?.focus();
+			}, 100);
+		} else {
+			setShowSearchBarAllBenefits(true);
+			setTimeout(() => {
+				searchInputRef.current?.focus();
+			}, 100);
+		}
+	};
+
+	const handleHideSearchBar = () => {
+		if (activeTab === 0) {
+			setShowSearchBarMyBenefits(false);
+		} else {
+			setShowSearchBarAllBenefits(false);
+		}
+	};
+
+	const handleSearch = (query: string) => {
+		setSearch(query);
+		handleHideSearchBar();
+	};
+
 	return (
 		<Layout
 			loading={loading}
 			_heading={{
 				heading: 'Browse Benefits',
-				onSearch: setSearch,
 			}}
-			isSearchbar={true}
 			isMenu={Boolean(localStorage.getItem('authToken'))}
 		>
 			{error && (
@@ -493,24 +512,49 @@ const ExploreBenefits: React.FC = () => {
 						</TabList>
 					</Box>
 
-					{/* Only show filter for All Benefits tab (when "All Benefits" is active) */}
-					{((isAuthenticated && activeTab === 1) ||
-						(!isAuthenticated && activeTab === 0)) && (
-						<Box flexShrink={0}>
+					<Flex flexShrink={0} align="center" gap={2}>
+						<IconButton
+							icon={<SearchIcon />}
+							aria-label="Search"
+							variant="ghost"
+							onClick={handleShowSearchBar}
+						/>
+						{/* Only show filter for All Benefits tab (when "All Benefits" is active) */}
+						{((isAuthenticated && activeTab === 1) || (!isAuthenticated && activeTab === 0)) && (
 							<FilterDialog
 								inputs={filterInputs}
 								setFilter={setAllBenefitsFilter}
 								mr="20px"
 							/>
-						</Box>
-					)}
+						)}
+					</Flex>
 				</Flex>
 
 				<TabPanels>
 					{isAuthenticated && (
-						<TabPanel px={0}>{benefitsContent}</TabPanel>
+						<TabPanel px={0}>
+							{showSearchBarMyBenefits && (
+								<SearchBar
+									onSearch={handleSearch}
+									ref={searchInputRef}
+									onClose={handleHideSearchBar}
+									placeholder="Search My Benefits"
+								/>
+							)}
+							{benefitsContent}
+						</TabPanel>
 					)}
-					<TabPanel px={0}>{benefitsContent}</TabPanel>
+					<TabPanel px={0}>
+						{showSearchBarAllBenefits && (
+							<SearchBar
+								onSearch={handleSearch}
+								ref={searchInputRef}
+								onClose={handleHideSearchBar}
+								placeholder="Search All Benefits"
+							/>
+						)}
+						{benefitsContent}
+					</TabPanel>
 				</TabPanels>
 			</Tabs>
 		</Layout>
