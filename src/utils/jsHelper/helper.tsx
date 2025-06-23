@@ -598,11 +598,11 @@ export function getExpiryDate(
 			return { success: false };
 		}
 
-		const expiry = new Date(parsedData.validUntil);
+		const expiry = new Date('2025-05-19T08:25:06.055Z');
 		if (isNaN(expiry.getTime())) {
 			return { success: false };
 		}
-		const expDate = formatDate(parsedData.validUntil);
+		const expDate = formatDate('2025-05-19T08:25:06.055Z');
 		const now = new Date();
 		const isExpired = expiry.getTime() < now.getTime();
 
@@ -611,4 +611,28 @@ export function getExpiryDate(
 		console.error('Error parsing document data:', error);
 		return { success: false };
 	}
+}
+export function getExpiredRequiredDocsMessage(
+	userData: { doc_subtype: string; doc_data: string }[],
+	documents: { label?: string; proof?: string; isRequired?: boolean }[]
+): string | null {
+	const expiredLabels = documents
+		.filter((doc) => doc.isRequired)
+		.map((doc) => {
+			const result = getExpiryDate(userData, doc.proof);
+			if (result.success && result.isExpired) {
+				// Format: incomeCertificate -> Income Certificate
+				return doc.proof
+					.replace(/([a-z])([A-Z])/g, '$1 $2')
+					.replace(/^./, (s) => s.toUpperCase());
+			}
+			return null;
+		})
+		.filter(Boolean);
+
+	if (expiredLabels.length === 0) return null;
+
+	return `${expiredLabels.join(', ')} ${
+		expiredLabels.length === 1 ? 'has' : 'have'
+	} expired. Please re-upload valid documents to continue.`;
 }
