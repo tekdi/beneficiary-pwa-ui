@@ -122,7 +122,7 @@ const BenefitsDetails: React.FC = () => {
 		setLoading(true);
 		const expiredMessage = getExpiredRequiredDocsMessage(
 			userDocuments,
-			item?.document || []
+			item?.document ?? []
 		);
 
 		if (expiredMessage) {
