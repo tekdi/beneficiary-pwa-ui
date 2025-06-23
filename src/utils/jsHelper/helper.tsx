@@ -598,11 +598,11 @@ export function getExpiryDate(
 			return { success: false };
 		}
 
-		const expiry = new Date('2025-05-19T08:25:06.055Z');
+		const expiry = new Date(parsedData.validUntil);
 		if (isNaN(expiry.getTime())) {
 			return { success: false };
 		}
-		const expDate = formatDate('2025-05-19T08:25:06.055Z');
+		const expDate = formatDate(parsedData.validUntil);
 		const now = new Date();
 		const isExpired = expiry.getTime() < now.getTime();
 
