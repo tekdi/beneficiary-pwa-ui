@@ -120,7 +120,16 @@ const BenefitsDetails: React.FC = () => {
 	const [userDocuments, setUserDocuments] = useState();
 	const handleConfirmation = async () => {
 		setLoading(true);
+		const expiredMessage = getExpiredRequiredDocsMessage(
+			userDocuments,
+			item?.document || []
+		);
 
+		if (expiredMessage) {
+			setError(expiredMessage);
+			setLoading(false);
+			return;
+		}
 		// Step 1: Try eligibility API
 		let eligibilityResponse;
 		try {
@@ -135,17 +144,6 @@ const BenefitsDetails: React.FC = () => {
 		} catch (err) {
 			console.error('Error in checking eligibility', err);
 			setError('Failed to check eligibility. Please try again later.');
-			setLoading(false);
-			return;
-		}
-
-		const expiredMessage = getExpiredRequiredDocsMessage(
-			userDocuments,
-			item?.document || []
-		);
-
-		if (expiredMessage) {
-			setError(expiredMessage);
 			setLoading(false);
 			return;
 		}
