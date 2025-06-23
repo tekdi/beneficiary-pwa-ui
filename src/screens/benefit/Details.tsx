@@ -28,7 +28,10 @@ import {
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
-import { calculateAge } from '../../utils/jsHelper/helper';
+import {
+	calculateAge,
+	getExpiredRequiredDocsMessage,
+} from '../../utils/jsHelper/helper';
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 import DocumentActions from '../../components/DocumentActions';
@@ -46,6 +49,7 @@ interface BenefitItem {
 	document?: {
 		label?: string;
 		proof?: string;
+		isRequired?: boolean;
 	}[];
 	tags?: Array<{
 		descriptor?: {
@@ -131,6 +135,17 @@ const BenefitsDetails: React.FC = () => {
 		} catch (err) {
 			console.error('Error in checking eligibility', err);
 			setError('Failed to check eligibility. Please try again later.');
+			setLoading(false);
+			return;
+		}
+
+		const expiredMessage = getExpiredRequiredDocsMessage(
+			userDocuments,
+			item?.document || []
+		);
+
+		if (expiredMessage) {
+			setError(expiredMessage);
 			setLoading(false);
 			return;
 		}
