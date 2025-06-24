@@ -9,28 +9,50 @@ const bpp_uri = import.meta.env.VITE_BPP_URL;
 function handleError(error: any) {
 	throw error.response ? error.response.data : new Error('Network Error');
 }
-export const getAll = async (userData: {
-	filters: {
-		annualIncome: string;
-		caste?: string;
-	};
-	search: string;
-}) => {
+export const getAll = async (
+	userData: {
+		filters?: {
+			annualIncome: string;
+			caste?: string;
+			gender?: string;
+		};
+		search: string;
+		page: number;
+		limit: number;
+		strictCheck?: boolean;
+	},
+	sendToken: boolean = false
+) => {
 	try {
+		const headers: { [key: string]: string } = {
+			'Content-Type': 'application/json',
+		};
+
+		// Add Authorization header only if sendToken is true
+		if (sendToken) {
+			const token = localStorage.getItem('authToken');
+			if (token) {
+				headers['Authorization'] = `Bearer ${token}`;
+			}
+		}
+
+		const finalPayload = {
+			...userData,
+			strictCheck: userData.strictCheck ?? false,
+		};
+
 		const response = await axios.post(
 			`${apiBaseUrl}/content/search`,
-			userData,
-			{
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			}
+			finalPayload,
+			{ headers }
 		);
+
 		return response.data;
 	} catch (error) {
 		handleError(error);
 	}
 };
+
 /**
  * Login a user
  * @param {Object} loginData - Contains phoneNumber, password
@@ -271,5 +293,25 @@ export const fetchVCJson = async (url: string) => {
 		return response.data;
 	} catch (error) {
 		throw error.response ? error.response.data : new Error('Network Error');
+	}
+};
+export const checkEligibilityOfUser = async (id: string) => {
+	try {
+		if (!id) {
+			throw new Error('Benefit id is required for eligibility check');
+		}
+		const token = localStorage.getItem('authToken');
+		const response = await axios.get(
+			`${apiBaseUrl}/content/eligibility-check/${id}`,
+
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error: unknown) {
+		handleError(error as AxiosError);
 	}
 };

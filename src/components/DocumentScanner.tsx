@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import {
 	Box,
 	VStack,
@@ -16,16 +16,18 @@ import {
 	ModalBody,
 	ModalCloseButton,
 	useDisclosure,
+	Tooltip,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, AttachmentIcon } from '@chakra-ui/icons';
 import Layout from './common/layout/Layout';
 import ScanVC from './ScanVC';
 import { getDocumentsList, getUser } from '../services/auth/auth';
 import { uploadUserDocuments } from '../services/user/User';
-import { findDocumentStatus } from '../utils/jsHelper/helper';
+import { findDocumentStatus, getExpiryDate } from '../utils/jsHelper/helper';
 import { AuthContext } from '../utils/context/checkToken';
 import { fetchVCJson } from '../services/benefit/benefits';
 import Loader from '../components/common/Loader';
+import { AiFillCloseCircle } from 'react-icons/ai';
 interface Document {
 	name: string;
 	label: string;
@@ -52,7 +54,68 @@ interface DocumentScannerProps {
 	userId: string;
 	userData: UserDocument[];
 }
+interface StatusIconProps {
+	status: string;
+	size?: number;
+	'aria-label'?: string;
+	userDocuments: UserDocument[];
+}
+const StatusIcon: React.FC<StatusIconProps> = ({
+	status,
+	size = 4,
+	'aria-label': ariaLabel,
+	userDocuments,
+}) => {
+	const { result, success, isExpired } = useMemo(() => {
+		const res = findDocumentStatus(userDocuments, status);
+		const { success, isExpired } = getExpiryDate(userDocuments, status);
+		return { result: res, success, isExpired };
+	}, [userDocuments, status]);
+	const documentExpired = success && isExpired;
+	let iconComponent;
+	let iconColor;
 
+	if (documentExpired) {
+		iconComponent = AiFillCloseCircle;
+		iconColor = '#C03744';
+	} else if (result?.matchFound) {
+		iconComponent = CheckCircleIcon;
+		iconColor = '#0B7B69';
+	}
+
+	let label;
+
+	if (ariaLabel) {
+		label = ariaLabel;
+	} else {
+		let statusText;
+
+		if (isExpired) {
+			statusText = 'Expired';
+		} else if (result?.matchFound) {
+			statusText = 'Available';
+		}
+
+		label = `Document status: ${statusText}`;
+	}
+
+	if (result?.matchFound) {
+		return (
+			<Tooltip label={label} hasArrow>
+				<Box display="inline-block">
+					<Icon
+						as={iconComponent}
+						color={iconColor}
+						boxSize={size}
+						aria-label={label}
+					/>
+				</Box>
+			</Tooltip>
+		);
+	}
+
+	return null;
+};
 const DocumentScanner: React.FC<DocumentScannerProps> = ({
 	userId,
 	userData = [],
@@ -174,16 +237,43 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			onClose(); // Close the modal
 		} catch (error) {
 			console.error('Error uploading document:', error);
-			toast({
-				title: 'Error',
-				description:
-					error instanceof Error
-						? error.message
-						: 'Unexpected error occurred',
-				status: 'error',
-				duration: 60000,
-				isClosable: true,
-			});
+
+			// Check for API error format
+			const apiErrors = error?.response?.data?.errors;
+			if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+				const errorMessages =
+					apiErrors.length === 1
+						? (apiErrors[0].error ?? 'Unexpected error occurred')
+						: apiErrors
+								.map(
+									(errObj, idx) =>
+										`${idx + 1}. ${errObj.error ?? 'Unexpected error occurred'}`
+								)
+								.join('\n');
+				toast({
+					title: 'Error',
+					description: (
+						<Box as="span" whiteSpace="pre-line">
+							{errorMessages}
+						</Box>
+					),
+					status: 'error',
+					duration: 10000,
+					isClosable: true,
+				});
+			} else {
+				toast({
+					title: 'Error',
+					description:
+						error?.response?.data?.message ??
+						(error instanceof Error
+							? error.message
+							: 'Unexpected error occurred'),
+					status: 'error',
+					duration: 10000,
+					isClosable: true,
+				});
+			}
 		} finally {
 			setIsLoading(false); // Hide loader
 		}
@@ -213,6 +303,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 								userData || [],
 								doc.documentSubType
 							);
+
 							return (
 								<ListItem
 									key={`doc-${doc.documentSubType}-${index}`}
@@ -227,13 +318,10 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 									<HStack
 										key={`actions-${doc.documentSubType}-${index}`}
 									>
-										{documentStatus.matchFound && (
-											<Icon
-												key={`icon-${doc.documentSubType}-${index}`}
-												as={CheckCircleIcon}
-												color="green.500"
-											/>
-										)}
+										<StatusIcon
+											status={doc.documentSubType}
+											userDocuments={userData || []}
+										/>
 										<Button
 											key={`button-${doc.documentSubType}-${index}`}
 											size="sm"

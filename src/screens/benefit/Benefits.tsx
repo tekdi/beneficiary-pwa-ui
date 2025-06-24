@@ -1,4 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+	useEffect,
+	useState,
+	useCallback,
+	useMemo,
+	useRef,
+} from 'react';
 import {
 	Box,
 	Button,
@@ -9,12 +15,20 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	Text,
+	Tabs,
+	TabList,
+	TabPanels,
+	Tab,
+	TabPanel,
+	Flex,
 } from '@chakra-ui/react';
 import BenefitCard from '../../components/common/Card';
 import Layout from '../../components/common/layout/Layout';
+import FilterDialog from '../../components/common/layout/Filters';
+import Pagination from '../../components/common/Pagination';
 import { getUser } from '../../services/auth/auth';
 import { getAll } from '../../services/benefit/benefits';
-import { Castes, IncomeRange } from '../../assets/mockdata/FilterData';
+import { Castes, IncomeRange, Gender } from '../../assets/mockdata/FilterData';
 import { getIncomeRangeValue } from '../../utils/jsHelper/helper';
 
 // Define types for benefit data and filter structure
@@ -36,106 +50,397 @@ interface Benefit {
 		};
 	};
 }
+
 interface Filter {
 	caste?: string;
 	annualIncome?: string;
-	[key: string]: string | undefined; // This allows any string key to be used
+	gender?: string;
+	[key: string]: string | undefined;
 }
+
+interface PaginationInfo {
+	total: number;
+	page: number;
+	limit: number;
+	totalPages: number;
+}
+
 const ExploreBenefits: React.FC = () => {
-	const [loading, setLoading] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [search, setSearch] = useState<string>('');
-	const [filter, setFilter] = useState<Filter>({});
+	const [userFilter, setUserFilter] = useState<Filter>({});
 	const [initState, setInitState] = useState<string>('yes');
-	const [error, setError] = useState<string | null>(null); // Allow null for error state
-	const [benefits, setBenefits] = useState<Benefit[]>([]); // Use Benefit[] type for benefits
+	const [error, setError] = useState<string | null>(null);
+	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-	const handleOpen = () => {};
+	// Filter state only for All Benefits tab
+	const [allBenefitsFilter, setAllBenefitsFilter] = useState<Filter>({});
 
+	// Separate state for each tab
+	const [allBenefits, setAllBenefits] = useState<Benefit[]>([]);
+	const [myBenefits, setMyBenefits] = useState<Benefit[]>([]);
+	const [activeTab, setActiveTab] = useState<number>(0);
+
+	// Separate pagination info for each tab
+	const [allBenefitsPagination, setAllBenefitsPagination] =
+		useState<PaginationInfo>({
+			total: 0,
+			page: 1,
+			limit: 5,
+			totalPages: 0,
+		});
+	const [myBenefitsPagination, setMyBenefitsPagination] =
+		useState<PaginationInfo>({
+			total: 0,
+			page: 1,
+			limit: 5,
+			totalPages: 0,
+		});
+
+	// Current page states
+	const [allBenefitsPage, setAllBenefitsPage] = useState<number>(1);
+	const [myBenefitsPage, setMyBenefitsPage] = useState<number>(1);
+	const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+
+	// Use refs to track if data has been loaded for each tab
+	const allBenefitsLoaded = useRef<boolean>(false);
+	const myBenefitsLoaded = useRef<boolean>(false);
+
+	// Debounce search to avoid excessive API calls
+	const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedSearch(search);
+		}, 500);
+		return () => clearTimeout(timer);
+	}, [search]);
+
+	// Memoized current tab data
+	const currentTabData = useMemo(() => {
+		// When authenticated: tab 0 = My Benefits, tab 1 = All Benefits
+		// When not authenticated: tab 0 = All Benefits
+		if (
+			(isAuthenticated && activeTab === 0) ||
+			(!isAuthenticated && activeTab === 0 && !isAuthenticated)
+		) {
+			// My Benefits (authenticated) or All Benefits (not authenticated)
+			if (isAuthenticated) {
+				return {
+					benefits: myBenefits,
+					pagination: myBenefitsPagination,
+					page: myBenefitsPage,
+					setPage: setMyBenefitsPage,
+				};
+			} else {
+				return {
+					benefits: allBenefits,
+					pagination: allBenefitsPagination,
+					page: allBenefitsPage,
+					setPage: setAllBenefitsPage,
+				};
+			}
+		} else {
+			// All Benefits (when authenticated)
+			return {
+				benefits: allBenefits,
+				pagination: allBenefitsPagination,
+				page: allBenefitsPage,
+				setPage: setAllBenefitsPage,
+			};
+		}
+	}, [
+		activeTab,
+		isAuthenticated,
+		allBenefits,
+		myBenefits,
+		allBenefitsPagination,
+		myBenefitsPagination,
+		allBenefitsPage,
+		myBenefitsPage,
+	]);
+
+	// Initialize user data only once
 	useEffect(() => {
 		const init = async () => {
 			try {
 				const token = localStorage.getItem('authToken');
 				if (token) {
+					setIsAuthenticated(true);
 					const user = await getUser();
 					const income = getIncomeRangeValue(
 						user?.data?.annualIncome
 					);
 
-					const filters: Filter = {
+					const userFilters: Filter = {
 						caste: user?.data?.caste,
 						annualIncome: income,
+						gender: user?.data?.gender,
 					};
 
-					const newFilter: Filter = {};
-					Object.keys(filters).forEach((key) => {
-						if (filters[key] && filters[key] !== '') {
-							newFilter[key] =
-								filters[key]?.toLowerCase() || filters[key];
+					const newUserFilter: Filter = {};
+					Object.keys(userFilters).forEach((key) => {
+						if (
+							userFilters[key] !== undefined &&
+							userFilters[key] !== ''
+						) {
+							const val = userFilters[key];
+							newUserFilter[key] =
+								typeof val === 'string'
+									? val.toLowerCase()
+									: String(val);
 						}
 					});
 
-					// setFilter(newFilter);
+					setUserFilter(newUserFilter);
+				} else {
+					setIsAuthenticated(false);
 				}
-				setInitState('no');
 			} catch (e) {
 				setError(
 					`Failed to initialize user data: ${(e as Error).message}`
 				);
+			} finally {
 				setInitState('no');
 			}
 		};
-		init();
-	}, []);
+
+		if (initState === 'yes') {
+			init();
+		}
+	}, [initState]);
+
+	// Memoized fetch functions
+	const fetchAllBenefits = useCallback(async () => {
+		try {
+			setLoading(true);
+			const result = await getAll(
+				{
+					filters: {
+						gender: allBenefitsFilter?.gender ?? '',
+						annualIncome: allBenefitsFilter?.annualIncome ?? '',
+						caste: allBenefitsFilter?.caste ?? '',
+					},
+					search: debouncedSearch,
+					page: allBenefitsPage,
+					limit: itemsPerPage,
+				},
+				false
+			); // Don't send token for All Benefits
+
+			setAllBenefits(result?.data?.ubi_network_cache ?? []);
+			setAllBenefitsPagination({
+				total: result?.data?.total ?? 0,
+				page: result?.data?.page ?? 1,
+				limit: result?.data?.limit ?? itemsPerPage,
+				totalPages: result?.data?.totalPages ?? 0,
+			});
+			allBenefitsLoaded.current = true;
+		} catch (e) {
+			setError(`Failed to fetch all benefits: ${(e as Error).message}`);
+		} finally {
+			setLoading(false);
+		}
+	}, [allBenefitsFilter, debouncedSearch, allBenefitsPage, itemsPerPage]);
+
+	const fetchMyBenefits = useCallback(async () => {
+		try {
+			setLoading(true);
+			const result = await getAll(
+				{
+					filters: {
+						...userFilter,
+						annualIncome: userFilter?.annualIncome
+							? `${userFilter?.annualIncome}`
+							: '',
+						gender: userFilter?.gender ?? '',
+						caste: userFilter?.caste ?? '',
+					},
+					search: debouncedSearch,
+					page: myBenefitsPage,
+					limit: itemsPerPage,
+					strictCheck: true,
+				},
+				// Send token for authenticated call
+				true
+			);
+
+			setMyBenefits(result?.data?.ubi_network_cache ?? []);
+			setMyBenefitsPagination({
+				total: result?.data?.total ?? 0,
+				page: result?.data?.page ?? 1,
+				limit: result?.data?.limit ?? itemsPerPage,
+				totalPages: result?.data?.totalPages ?? 0,
+			});
+			myBenefitsLoaded.current = true;
+		} catch (e) {
+			setError(`Failed to fetch my benefits: ${(e as Error).message}`);
+		} finally {
+			setLoading(false);
+		}
+	}, [userFilter, debouncedSearch, myBenefitsPage, itemsPerPage]);
+
+	// Separate useEffect for each tab to avoid unnecessary calls
+	useEffect(() => {
+		if (initState === 'no') {
+			// When authenticated: tab 0 = My Benefits, tab 1 = All Benefits
+			// When not authenticated: tab 0 = All Benefits
+			if (
+				(isAuthenticated && activeTab === 1) ||
+				(!isAuthenticated && activeTab === 0)
+			) {
+				fetchAllBenefits();
+			}
+		}
+	}, [fetchAllBenefits, initState, activeTab, isAuthenticated]);
 
 	useEffect(() => {
-		const init = async () => {
-			setLoading(true);
-			try {
-				if (initState === 'no') {
-					const result = await getAll({
-						filters: {
-							...filter,
-							annualIncome: filter?.['annualIncome']
-								? `${filter?.['annualIncome']}`
-								: '',
-						},
-						search,
-					});
+		if (initState === 'no' && activeTab === 0 && isAuthenticated) {
+			fetchMyBenefits();
+		}
+	}, [fetchMyBenefits, initState, activeTab, isAuthenticated]);
 
-					setBenefits(result?.data?.ubi_network_cache || []);
-				}
-			} catch (e) {
-				setError(`Failed to fetch benefits: ${(e as Error).message}`);
-			} finally {
-				setLoading(false);
+	// Optimized handlers
+	// If the user is authenticated and on tab-0 we update My Benefits,
+	// otherwise we update All Benefits (covers both unauthenticated case
+	// and authenticated tab-1 case).
+	const handlePageChange = (page: number) => {
+		if (isAuthenticated && activeTab === 0) {
+			setMyBenefitsPage(page);
+		} else {
+			setAllBenefitsPage(page);
+		}
+	};
+
+	const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
+		setItemsPerPage(newItemsPerPage);
+		setAllBenefitsPage(1);
+		setMyBenefitsPage(1);
+		setAllBenefitsPagination((prev) => ({
+			...prev,
+			limit: newItemsPerPage,
+		}));
+		setMyBenefitsPagination((prev) => ({
+			...prev,
+			limit: newItemsPerPage,
+		}));
+	}, []);
+
+	const handleTabChange = useCallback(
+		(index: number) => {
+			// Only allow tab change to "My Benefits" if authenticated
+			if (index === 0 && !isAuthenticated) {
+				return;
 			}
-		};
-		init();
-	}, [filter, search, initState]);
+
+			setActiveTab(index);
+
+			// Reset pagination when switching tabs
+			if (
+				(isAuthenticated && index === 1) ||
+				(!isAuthenticated && index === 0)
+			) {
+				// All Benefits tab
+				setAllBenefitsPage(1);
+			} else if (isAuthenticated && index === 0) {
+				// My Benefits tab
+				setMyBenefitsPage(1);
+			}
+		},
+		[isAuthenticated]
+	);
+
+	// Filter inputs only for All Benefits tab
+	const filterInputs = useMemo(
+		() => [
+			{
+				label: 'Caste',
+				data: Castes,
+				value: allBenefitsFilter?.caste ?? '',
+				key: 'caste',
+			},
+			{
+				label: 'Income Range',
+				data: IncomeRange,
+				value: allBenefitsFilter?.annualIncome ?? '',
+				key: 'annualIncome',
+			},
+			{
+				label: 'Gender',
+				data: Gender,
+				value: allBenefitsFilter?.gender ?? '',
+				key: 'gender',
+			},
+		],
+		[allBenefitsFilter]
+	);
+
+	// Memoized components
+	const pagination = useMemo(
+		() => (
+			<Pagination
+				currentPage={currentTabData.page}
+				totalPages={currentTabData.pagination.totalPages}
+				totalItems={currentTabData.pagination.total}
+				itemsPerPage={itemsPerPage}
+				onPageChange={handlePageChange}
+				onItemsPerPageChange={handleItemsPerPageChange}
+				itemsPerPageOptions={[3, 5, 10, 20]}
+				maxVisiblePages={7}
+				showItemsPerPageSelector={true}
+				showResultsText={true}
+				size="sm"
+			/>
+		),
+		[
+			currentTabData.page,
+			currentTabData.pagination.totalPages,
+			currentTabData.pagination.total,
+			itemsPerPage,
+			handlePageChange,
+			handleItemsPerPageChange,
+		]
+	);
+
+	const benefitsContent = useMemo(() => {
+		if (currentTabData.benefits.length === 0) {
+			return (
+				<Box
+					display="flex"
+					alignItems="center"
+					justifyContent="center"
+					padding={5}
+					height="200px"
+					bg="#F7F7F7"
+					borderRadius="md"
+				>
+					<Text fontSize="lg" color="gray.600">
+						{activeTab === 0
+							? 'No benefits available'
+							: 'No benefits match your profile'}
+					</Text>
+				</Box>
+			);
+		}
+
+		return (
+			<>
+				<Box className="card-scroll">
+					{currentTabData.benefits.map((benefit) => (
+						<BenefitCard item={benefit} key={benefit.item_id} />
+					))}
+				</Box>
+				{pagination}
+			</>
+		);
+	}, [currentTabData.benefits, activeTab, pagination]);
 
 	return (
 		<Layout
 			loading={loading}
 			_heading={{
 				heading: 'Browse Benefits',
-				isFilter: true,
-				handleOpen: handleOpen,
-				setFilter: setFilter,
 				onSearch: setSearch,
-				inputs: [
-					{
-						label: 'Caste',
-						data: Castes,
-						value: filter?.['caste']?.toLowerCase() || '',
-						key: 'caste',
-					},
-					{
-						label: 'Income Range',
-						data: IncomeRange,
-						value: filter?.['annualIncome'] || '',
-						key: 'annualIncome',
-					},
-				],
 			}}
 			isSearchbar={true}
 			isMenu={Boolean(localStorage.getItem('authToken'))}
@@ -160,27 +465,54 @@ const ExploreBenefits: React.FC = () => {
 				</Modal>
 			)}
 
-			{benefits.length === 0 ? (
-				<Box
-					display="flex"
-					alignItems="center"
-					justifyContent="center"
-					padding={5}
-					height="200px"
-					bg="#F7F7F7"
-					borderRadius="md"
+			<Tabs
+				index={activeTab}
+				onChange={handleTabChange}
+				colorScheme="blue"
+			>
+				{/* Header section with tabs and filter - only show filter for All Benefits tab */}
+				<Flex
+					position="sticky"
+					top={0}
+					zIndex={10}
+					bg="white"
+					direction="row"
+					align="center"
+					justify="space-between"
+					gap={4}
+					width="100%"
+					px={4}
+					py={2}
+					flexWrap="nowrap"
+					boxShadow="sm"
 				>
-					<Text fontSize="lg" color="gray.600">
-						No benefits available
-					</Text>
-				</Box>
-			) : (
-				<Box className="card-scroll">
-					{benefits.map((benefit) => (
-						<BenefitCard item={benefit} key={benefit.item_id} />
-					))}
-				</Box>
-			)}
+					<Box flexShrink={0}>
+						<TabList>
+							{isAuthenticated && <Tab>My Benefits</Tab>}
+							<Tab>All Benefits</Tab>
+						</TabList>
+					</Box>
+
+					{/* Only show filter for All Benefits tab (when "All Benefits" is active) */}
+					{((isAuthenticated && activeTab === 1) ||
+						(!isAuthenticated && activeTab === 0)) && (
+						<Box flexShrink={0}>
+							<FilterDialog
+								inputs={filterInputs}
+								setFilter={setAllBenefitsFilter}
+								mr="20px"
+							/>
+						</Box>
+					)}
+				</Flex>
+
+				<TabPanels>
+					{isAuthenticated && (
+						<TabPanel px={0}>{benefitsContent}</TabPanel>
+					)}
+					<TabPanel px={0}>{benefitsContent}</TabPanel>
+				</TabPanels>
+			</Tabs>
 		</Layout>
 	);
 };

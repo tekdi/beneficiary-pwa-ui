@@ -31,7 +31,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 	const [document, setDocument] = useState();
 	const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-	const [imageBase64List, setImageBase64List] = useState<string[]>([]);
+	const [docImageList, setdocImageList] = useState<string[]>([]);
 	const { updateUserData } = useContext(AuthContext)!;
 	const toast = useToast();
 
@@ -83,42 +83,31 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 
 	const handleImagePreview = () => {
 		try {
-			const parsed = JSON.parse(documentStatus?.doc_data as string);
-			const subject = parsed?.credentialSubject;
+			const parseData = JSON.parse(documentStatus?.doc_data as string);
+			const credentialSubject = parseData?.credentialSubject;
 
-			if (subject && typeof subject === 'object') {
-				// 2️⃣ Collect every nested value that:
-				//     • is an object
-				//     • has a `mimetype` beginning with "image/"
-				//     • has a non-empty `content` field
+			const images: string[] = [];
 
-				const imageEntries = Object.values(subject).filter(
-					(entry): entry is ImageEntry =>
-						entry &&
+			if (credentialSubject && typeof credentialSubject === 'object') {
+				Object.values(credentialSubject).forEach((entry) => {
+					if (
 						typeof entry === 'object' &&
-						typeof (entry as ImageEntry).mimetype === 'string' &&
-						(entry as ImageEntry)
-							.mimetype!.toLowerCase()
-							.startsWith('image/') &&
-						!!(entry as ImageEntry).content
-				);
+						entry !== null &&
+						'url' in entry &&
+						typeof (entry as { url: unknown }).url === 'string'
+					) {
+						images.push((entry as { url: string }).url);
+					}
+				});
+			}
 
-				if (imageEntries.length > 0) {
-					// 3️⃣ Save *all* base-64 strings
-					setImageBase64List(imageEntries.map((e) => e.content!));
-					setIsImageDialogOpen(true);
-				} else {
-					toast({
-						title: 'No images found in uploaded document',
-						status: 'info',
-						duration: 3000,
-						isClosable: true,
-					});
-				}
+			if (images.length > 0) {
+				setdocImageList(images);
+				setIsImageDialogOpen(true);
 			} else {
 				toast({
-					title: 'No original image data found',
-					status: 'warning',
+					title: 'No images found in uploaded document',
+					status: 'info',
 					duration: 3000,
 					isClosable: true,
 				});
@@ -176,9 +165,9 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 					isOpen={isImageDialogOpen}
 					onClose={() => {
 						setIsImageDialogOpen(false);
-						setImageBase64List([]);
+						setdocImageList([]);
 					}}
-					imageBase64List={imageBase64List}
+					docImageList={docImageList}
 					documentName={documentStatus.doc_name}
 				/>
 
