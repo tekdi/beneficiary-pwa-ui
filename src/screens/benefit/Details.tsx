@@ -248,7 +248,7 @@ const BenefitsDetails: React.FC = () => {
 
 			if (mergedMap.has(key)) {
 				// If document with same key exists, merge with the existing entry
-				const existing = mergedMap.get(key)!;
+				const existing = mergedMap.get(key);
 
 				// Normalize codes to arrays
 				const existingCodes = Array.isArray(existing.code)
