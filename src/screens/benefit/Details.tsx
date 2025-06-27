@@ -28,7 +28,11 @@ import {
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
-import { calculateAge } from '../../utils/jsHelper/helper';
+import {
+	calculateAge,
+	formatLabel,
+	parseDocList,
+} from '../../utils/jsHelper/helper';
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 import DocumentActions from '../../components/DocumentActions';
@@ -218,31 +222,21 @@ const BenefitsDetails: React.FC = () => {
 			(e: any) => e?.descriptor?.code === 'eligibility'
 		);
 
-		const parseDocList = (list: any[], fromEligibility = false) => {
-			return list.map((item: any) => {
-				const value = JSON.parse(item?.value || '{}');
-				return {
-					id: value.id,
-					code: value.documentType || value.evidence,
-					isRequired: fromEligibility ? true : value.isRequired,
-					allowedProofs: value.allowedProofs || [],
-				};
-			});
-		};
-
-		const requiredList = parseDocList(requiredDocsTag?.list || [], false);
-		const eligibilityList = parseDocList(eligibilityTag?.list || [], true);
+		const requiredList = parseDocList(requiredDocsTag?.list ?? [], false);
+		const eligibilityList = parseDocList(eligibilityTag?.list ?? [], true);
 
 		const allDocs = [...requiredList, ...eligibilityList];
 
 		const mergedMap = new Map<string, DocumentItem>();
-		console.log('all Docs', allDocs);
 
 		allDocs.forEach((doc) => {
 			const key = doc.allowedProofs.join(',');
 
 			if (mergedMap.has(key)) {
 				const existing = mergedMap.get(key)!;
+				console.log('key', key);
+				console.log('existing', existing);
+
 				const existingCodes = Array.isArray(existing.code)
 					? existing.code
 					: [existing.code];
@@ -260,29 +254,6 @@ const BenefitsDetails: React.FC = () => {
 				});
 			}
 		});
-
-		const formatLabel = (proofs: string[], codes: string[]) => {
-			console.log('proofs', proofs, codes);
-
-			const label = proofs
-				.map((p) =>
-					p
-						.replace(/([A-Z])/g, ' $1')
-						.replace(/^./, (str) => str.toUpperCase())
-				)
-				.join(' / ');
-			return `Document for ${codes.join(', ')} (${label} ) `;
-		};
-		console.log(
-			'sdfg',
-			Array.from(mergedMap.values()).map((doc) => ({
-				...doc,
-				label: formatLabel(
-					doc.allowedProofs,
-					Array.isArray(doc.code) ? doc.code : [doc.code]
-				),
-			}))
-		);
 
 		return Array.from(mergedMap.values()).map((doc) => ({
 			...doc,
