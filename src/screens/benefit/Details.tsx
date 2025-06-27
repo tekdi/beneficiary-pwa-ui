@@ -213,7 +213,7 @@ const BenefitsDetails: React.FC = () => {
 		);
 	};
 
-	const extractRequiredDocs = (resultItem: any): DocumentItem[] => {
+	const extractRequiredDocs = (resultItem): DocumentItem[] => {
 		const requiredDocsTag = resultItem?.tags?.find(
 			(e: any) => e?.descriptor?.code === 'required-docs'
 		);
@@ -255,11 +255,14 @@ const BenefitsDetails: React.FC = () => {
 			}
 		});
 
+		console.log('Merged Documents:', mergedMap);
+
 		return Array.from(mergedMap.values()).map((doc) => ({
 			...doc,
 			label: formatLabel(
 				doc.allowedProofs,
-				Array.isArray(doc.code) ? doc.code : [doc.code]
+				Array.isArray(doc.code) ? doc.code : [doc.code],
+				doc.isRequired
 			),
 		}));
 	};

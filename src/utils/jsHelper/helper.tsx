@@ -612,7 +612,11 @@ export function getExpiryDate(
 		return { success: false };
 	}
 }
-export const formatLabel = (proofs: string[], codes: string[]) => {
+export const formatLabel = (
+	proofs: string[],
+	codes: string[],
+	isRequired: boolean
+) => {
 	console.log('proofs', proofs, codes);
 
 	const label = proofs
@@ -622,7 +626,8 @@ export const formatLabel = (proofs: string[], codes: string[]) => {
 				.replace(/^./, (str) => str.toUpperCase())
 		)
 		.join(' / ');
-	return `Document for ${codes.join(', ')} (${label} ) `;
+	const requiredMark = isRequired ? ' *' : '';
+	return `Document for ${codes.join(', ')} (${label} )${requiredMark}`;
 };
 export const parseDocList = (list: any[], fromEligibility = false) => {
 	return list.map((item: any) => {
