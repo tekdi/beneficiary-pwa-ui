@@ -449,10 +449,6 @@ export function checkEligibilityCriteria({
 	condition: string;
 	conditionValues: string | number | (string | number)[];
 }): boolean {
-	console.log('value', value);
-	console.log('condition', condition);
-	console.log('conditionValues', conditionValues);
-
 	if (value == null) return false;
 	// Convert value to string if it's a number
 	const val =
@@ -617,8 +613,6 @@ export const formatLabel = (
 	codes: string[],
 	isRequired: boolean
 ) => {
-	console.log('proofs', proofs, codes);
-
 	const label = proofs
 		.map((p) =>
 			p
@@ -629,9 +623,24 @@ export const formatLabel = (
 	const requiredMark = isRequired ? ' *' : '';
 	return `Document for ${codes.join(', ')} (${label} )${requiredMark}`;
 };
-export const parseDocList = (list: any[], fromEligibility = false) => {
+export interface Descriptor {
+	code: string;
+	name: string;
+}
+export interface DocumentTag {
+	descriptor: Descriptor;
+	value: string;
+	display: boolean;
+}
+export const parseDocList = (list: DocumentTag[], fromEligibility = false) => {
 	return list.map((item: any) => {
-		const value = JSON.parse(item?.value ?? '{}');
+		let value;
+		try {
+			value = JSON.parse(item?.value ?? '{}');
+		} catch (error) {
+			console.error('Failed to parse document item value:', error);
+			value = {};
+		}
 		return {
 			id: value.id,
 			code: value.documentType ?? value.evidence,
