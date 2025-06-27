@@ -612,3 +612,26 @@ export function getExpiryDate(
 		return { success: false };
 	}
 }
+export const formatLabel = (proofs: string[], codes: string[]) => {
+	console.log('proofs', proofs, codes);
+
+	const label = proofs
+		.map((p) =>
+			p
+				.replace(/([A-Z])/g, ' $1')
+				.replace(/^./, (str) => str.toUpperCase())
+		)
+		.join(' / ');
+	return `Document for ${codes.join(', ')} (${label} ) `;
+};
+export const parseDocList = (list: any[], fromEligibility = false) => {
+	return list.map((item: any) => {
+		const value = JSON.parse(item?.value ?? '{}');
+		return {
+			id: value.id,
+			code: value.documentType ?? value.evidence,
+			isRequired: fromEligibility ? true : value.isRequired,
+			allowedProofs: value.allowedProofs ?? [],
+		};
+	});
+};
