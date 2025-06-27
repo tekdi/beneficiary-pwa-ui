@@ -608,12 +608,20 @@ export function getExpiryDate(
 		return { success: false };
 	}
 }
+/**
+ * Utility function to format a user-readable label for a document.
+ *
+ * @param proofs - Array of allowed proof strings (e.g., ["incomeCertificate"]).
+ * @param evidence - Array of document types or codes (e.g., ["incomeProof"]).
+ * @param isRequired - Flag to indicate whether the document is required.
+ * @returns A formatted string label like "Document for incomeProof (Income Certificate) *"
+ */
 export const formatLabel = (
 	proofs: string[],
-	codes: string[],
+	evidence: string[],
 	isRequired: boolean
 ) => {
-	const label = proofs
+	const documentName = proofs
 		.map((p) =>
 			p
 				.replace(/([A-Z])/g, ' $1')
@@ -621,7 +629,7 @@ export const formatLabel = (
 		)
 		.join(' / ');
 	const requiredMark = isRequired ? ' *' : '';
-	return `Document for ${codes.join(', ')} (${label} )${requiredMark}`;
+	return `Document for ${evidence.join(', ')} (${documentName} )${requiredMark}`;
 };
 export interface Descriptor {
 	code: string;
@@ -633,7 +641,7 @@ export interface DocumentTag {
 	display: boolean;
 }
 export const parseDocList = (list: DocumentTag[], fromEligibility = false) => {
-	return list.map((item: any) => {
+	return list.map((item: DocumentTag) => {
 		let value;
 		try {
 			value = JSON.parse(item?.value ?? '{}');

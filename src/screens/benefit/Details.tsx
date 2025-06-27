@@ -213,40 +213,57 @@ const BenefitsDetails: React.FC = () => {
 		);
 	};
 
+	/**
+	 * Extracts and merges required and eligibility document items from the result item.
+	 *
+	 * @param resultItem - An object containing tags with document metadata.
+	 * @returns A list of merged and formatted DocumentItem objects.
+	 */
 	const extractRequiredDocs = (resultItem): DocumentItem[] => {
+		// Find the tag with code 'required-docs'
 		const requiredDocsTag = resultItem?.tags?.find(
 			(e: any) => e?.descriptor?.code === 'required-docs'
 		);
 
+		// Find the tag with code 'eligibility'
 		const eligibilityTag = resultItem?.tags?.find(
 			(e: any) => e?.descriptor?.code === 'eligibility'
 		);
 
+		// Parse the list of required documents (isRequired = false)
 		const requiredList = parseDocList(requiredDocsTag?.list ?? [], false);
+
+		// Parse the list of eligibility documents (isRequired = true)
 		const eligibilityList = parseDocList(eligibilityTag?.list ?? [], true);
 
+		// Combine both required and eligibility documents
 		const allDocs = [...requiredList, ...eligibilityList];
 
+		// Create a map to merge documents based on their allowedProofs
 		const mergedMap = new Map<string, DocumentItem>();
 
 		allDocs.forEach((doc) => {
+			// Use a stringified version of allowedProofs as a unique key
 			const key = doc.allowedProofs.join(',');
 
 			if (mergedMap.has(key)) {
+				// If document with same key exists, merge with the existing entry
 				const existing = mergedMap.get(key)!;
-				console.log('key', key);
-				console.log('existing', existing);
 
+				// Normalize codes to arrays
 				const existingCodes = Array.isArray(existing.code)
 					? existing.code
 					: [existing.code];
+
+				// Merge current doc with existing one
 				mergedMap.set(key, {
 					...existing,
-					code: [...existingCodes, doc.code],
-					proof: [...existingCodes, doc.code],
-					isRequired: existing.isRequired || doc.isRequired, // at least one required
+					code: [...existingCodes, doc.code], // Merge codes ( evidence)
+					proof: [...existingCodes, doc.code], // Merge proof values (document name)
+					isRequired: existing.isRequired || doc.isRequired, // Keep true if any is required
 				});
 			} else {
+				// If it's a new document group, add to the map
 				mergedMap.set(key, {
 					...doc,
 					code: doc.code,
@@ -255,8 +272,7 @@ const BenefitsDetails: React.FC = () => {
 			}
 		});
 
-		console.log('Merged Documents:', mergedMap);
-
+		// Convert merged map to array and format each document with label
 		return Array.from(mergedMap.values()).map((doc) => ({
 			...doc,
 			label: formatLabel(
