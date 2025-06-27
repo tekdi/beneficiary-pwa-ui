@@ -46,6 +46,8 @@ interface BenefitItem {
 	document?: {
 		label?: string;
 		proof?: string;
+		code?: string;
+		allowedProofs?: string[];
 	}[];
 	tags?: Array<{
 		descriptor?: {
@@ -91,6 +93,14 @@ interface WebFormProps {
 	url?: string;
 	formData?: {};
 	item?: BenefitItem;
+}
+export interface DocumentItem {
+	id?: number;
+	code?: string | string[];
+	isRequired?: boolean;
+	allowedProofs?: string[];
+	proof?: string | string[];
+	label?: string;
 }
 
 const BenefitsDetails: React.FC = () => {
@@ -199,40 +209,88 @@ const BenefitsDetails: React.FC = () => {
 		);
 	};
 
-	const extractRequiredDocs = (resultItem) => {
+	const extractRequiredDocs = (resultItem: any): DocumentItem[] => {
 		const requiredDocsTag = resultItem?.tags?.find(
-			(e: { descriptor: { code: string } }) =>
-				e?.descriptor?.code === 'required-docs'
+			(e: any) => e?.descriptor?.code === 'required-docs'
 		);
-		if (!requiredDocsTag?.list) return [];
 
-		const docs: { label: string; proof: string; isRequired: boolean }[] =
-			[];
+		const eligibilityTag = resultItem?.tags?.find(
+			(e: any) => e?.descriptor?.code === 'eligibility'
+		);
 
-		for (const doc of requiredDocsTag.list) {
-			try {
-				const parsed = JSON.parse(doc.value);
-				const allowedProofs = parsed.allowedProofs || [];
-				const isRequired = parsed.isRequired;
+		const parseDocList = (list: any[], fromEligibility = false) => {
+			return list.map((item: any) => {
+				const value = JSON.parse(item?.value || '{}');
+				return {
+					id: value.id,
+					code: value.documentType || value.evidence,
+					isRequired: fromEligibility ? true : value.isRequired,
+					allowedProofs: value.allowedProofs || [],
+				};
+			});
+		};
 
-				const label = allowedProofs
-					.map((proof) =>
-						proof
-							.replace(/([A-Z])/g, ' $1')
-							.replace(/^./, (str) => str.toUpperCase())
-					)
-					.join(' / ');
+		const requiredList = parseDocList(requiredDocsTag?.list || [], false);
+		const eligibilityList = parseDocList(eligibilityTag?.list || [], true);
 
-				docs.push({
-					label: `${label} (${isRequired ? 'Mandatory' : 'Non-mandatory'})`,
-					proof: allowedProofs[0],
-					isRequired,
+		const allDocs = [...requiredList, ...eligibilityList];
+
+		const mergedMap = new Map<string, DocumentItem>();
+		console.log('all Docs', allDocs);
+
+		allDocs.forEach((doc) => {
+			const key = doc.allowedProofs.join(',');
+
+			if (mergedMap.has(key)) {
+				const existing = mergedMap.get(key)!;
+				const existingCodes = Array.isArray(existing.code)
+					? existing.code
+					: [existing.code];
+				mergedMap.set(key, {
+					...existing,
+					code: [...existingCodes, doc.code],
+					proof: [...existingCodes, doc.code],
+					isRequired: existing.isRequired || doc.isRequired, // at least one required
 				});
-			} catch (e) {
-				console.error('Failed to parse document data:', e);
+			} else {
+				mergedMap.set(key, {
+					...doc,
+					code: doc.code,
+					proof: doc.code,
+				});
 			}
-		}
-		return docs;
+		});
+
+		const formatLabel = (proofs: string[], codes: string[]) => {
+			console.log('proofs', proofs, codes);
+
+			const label = proofs
+				.map((p) =>
+					p
+						.replace(/([A-Z])/g, ' $1')
+						.replace(/^./, (str) => str.toUpperCase())
+				)
+				.join(' / ');
+			return `Document for ${codes.join(', ')} (${label} ) `;
+		};
+		console.log(
+			'sdfg',
+			Array.from(mergedMap.values()).map((doc) => ({
+				...doc,
+				label: formatLabel(
+					doc.allowedProofs,
+					Array.isArray(doc.code) ? doc.code : [doc.code]
+				),
+			}))
+		);
+
+		return Array.from(mergedMap.values()).map((doc) => ({
+			...doc,
+			label: formatLabel(
+				doc.allowedProofs,
+				Array.isArray(doc.code) ? doc.code : [doc.code]
+			),
+		}));
 	};
 
 	const extractContext = (result) => {
@@ -546,22 +604,35 @@ const BenefitsDetails: React.FC = () => {
 					<UnorderedList mt={4}>
 						{item?.document?.map((document) => (
 							<Box
-								key={document.proof}
+								key={document.label}
 								display="flex"
 								alignItems="center"
 								justifyContent="space-between"
-								width={'100%'}
+								width="100%"
+								mb={4} // spacing between document rows
 							>
-								<ListItem key={document.label}>
-									{document.label}
-								</ListItem>
-								{userDocuments && (
-									<DocumentActions
-										status={document.proof}
-										userDocuments={userDocuments}
-										isDelete={false}
-									/>
-								)}
+								<Box width="70%">
+									<ListItem>{document.label}</ListItem>
+								</Box>
+
+								<Box
+									width="30%"
+									display="flex"
+									flexDirection="column"
+									alignItems="flex-end"
+									justifyContent="flex-start"
+									pt="2px"
+									gap={1} // vertical spacing between DocumentActions
+								>
+									{document.allowedProofs.map((proof) => (
+										<DocumentActions
+											key={proof}
+											status={proof}
+											userDocuments={userDocuments}
+											isDelete={false}
+										/>
+									))}
+								</Box>
 							</Box>
 						))}
 					</UnorderedList>
