@@ -1,59 +1,99 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import {
 	Input,
 	InputGroup,
 	InputRightElement,
 	IconButton,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { SearchIcon, CloseIcon } from '@chakra-ui/icons';
 
 interface SearchBarProps {
 	onSearch: (query: string) => void;
 	placeholder?: string;
+	onClose?: () => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({
-	onSearch,
-	placeholder = 'Search By Name',
-}) => {
-	const [query, setQuery] = useState('');
+const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
+	({ onSearch, placeholder = 'Search By Name', onClose }, ref) => {
+		const [query, setQuery] = useState('');
 
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const newQuery = event.target.value;
-		setQuery(newQuery);
-	};
+		const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+			const newQuery = event.target.value;
+			setQuery(newQuery);
+		};
 
-	const handleSearchClick = () => {
-		onSearch(query);
-	};
+		const handleSearchClick = () => {
+			onSearch(query);
+		};
 
-	return (
-		<InputGroup>
-			<Input
-				type="text"
-				placeholder={placeholder}
-				value={query}
-				onChange={handleChange}
-				borderRadius={28}
-				h="12"
-				bg="#E9E7EF"
-				m="4"
-				mt="3"
-				aria-label="Search input"
-			/>
+		const handleKeyDown = (
+			event: React.KeyboardEvent<HTMLInputElement>
+		) => {
+			if (event.key === 'Enter' && query.trim() !== '') {
+				onSearch(query);
+			}
+		};
 
-			<InputRightElement h={55} margin={4} mr={6} mt={2}>
-				<IconButton
-					icon={<SearchIcon />}
-					aria-label="Search"
-					onClick={handleSearchClick}
-					bg="transparent"
-					_hover={{ bg: 'transparent' }}
-					_focus={{ outline: 'none' }}
+		const handleClear = () => {
+			setQuery('');
+			onSearch(''); // Clear search results
+			onClose?.();
+		};
+
+		return (
+			<InputGroup>
+				<Input
+					type="text"
+					placeholder={placeholder}
+					value={query}
+					onChange={handleChange}
+					onKeyDown={handleKeyDown}
+					borderRadius={28}
+					h="12"
+					bg="#E9E7EF"
+					m="4"
+					mt="3"
+					aria-label="Search input"
+					ref={ref}
+					pr="80px"
 				/>
-			</InputRightElement>
-		</InputGroup>
-	);
-};
 
+				<InputRightElement
+					h={'100%'}
+					w="60px"
+					display="flex"
+					alignItems="center"
+					justifyContent="flex-end"
+					pr="20px"
+				>
+					{query && (
+						<IconButton
+							icon={<SearchIcon />}
+							aria-label="Search"
+							onClick={handleSearchClick}
+							bg="transparent"
+							_hover={{ bg: 'transparent' }}
+							_focus={{ outline: 'none' }}
+							size="sm"
+							mr={onClose ? 1 : 0}
+						/>
+					)}
+					{onClose && (
+						<IconButton
+							icon={<CloseIcon />}
+							aria-label="Close"
+							onClick={handleClear}
+							bg="transparent"
+							_hover={{ bg: 'transparent' }}
+							_focus={{ outline: 'none' }}
+							size="sm"
+							ml={1}
+						/>
+					)}
+				</InputRightElement>
+			</InputGroup>
+		);
+	}
+);
+SearchBar.displayName = 'SearchBar';
 export default SearchBar;
