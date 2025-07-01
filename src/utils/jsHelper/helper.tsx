@@ -449,10 +449,6 @@ export function checkEligibilityCriteria({
 	condition: string;
 	conditionValues: string | number | (string | number)[];
 }): boolean {
-	console.log('value', value);
-	console.log('condition', condition);
-	console.log('conditionValues', conditionValues);
-
 	if (value == null) return false;
 	// Convert value to string if it's a number
 	const val =
@@ -636,3 +632,52 @@ export function getExpiredRequiredDocsMessage(
 		expiredLabels.length === 1 ? 'has' : 'have'
 	} expired. Please upload valid documents to proceed further.`;
 }
+/**
+ * Utility function to format a user-readable label for a document.
+ *
+ * @param proofs - Array of allowed proof strings (e.g., ["incomeCertificate"]).
+ * @param evidence - Array of document types or codes (e.g., ["incomeProof"]).
+ * @param isRequired - Flag to indicate whether the document is required.
+ * @returns A formatted string label like "Document for incomeProof (Income Certificate) *"
+ */
+export const formatLabel = (
+	proofs: string[],
+	evidence: string[],
+	isRequired: boolean
+) => {
+	const documentName = proofs
+		.map((p) =>
+			p
+				.replace(/([A-Z])/g, ' $1')
+				.replace(/^./, (str) => str.toUpperCase())
+		)
+		.join(' / ');
+	const requiredMark = isRequired ? ' *' : '';
+	return `Document for ${evidence.join(', ')} (${documentName} )${requiredMark}`;
+};
+export interface Descriptor {
+	code: string;
+	name: string;
+}
+export interface DocumentTag {
+	descriptor: Descriptor;
+	value: string;
+	display: boolean;
+}
+export const parseDocList = (list: DocumentTag[], fromEligibility = false) => {
+	return list.map((item: DocumentTag) => {
+		let value;
+		try {
+			value = JSON.parse(item?.value ?? '{}');
+		} catch (error) {
+			console.error('Failed to parse document item value:', error);
+			value = {};
+		}
+		return {
+			id: value.id,
+			code: value.documentType ?? value.evidence,
+			isRequired: fromEligibility ? true : value.isRequired,
+			allowedProofs: value.allowedProofs ?? [],
+		};
+	});
+};

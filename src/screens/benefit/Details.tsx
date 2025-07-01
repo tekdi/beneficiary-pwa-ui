@@ -30,8 +30,11 @@ import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
 import {
 	calculateAge,
+	formatLabel,
 	getExpiredRequiredDocsMessage,
+	parseDocList,
 } from '../../utils/jsHelper/helper';
+
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 import DocumentActions from '../../components/DocumentActions';
@@ -49,6 +52,8 @@ interface BenefitItem {
 	document?: {
 		label?: string;
 		proof?: string;
+		code?: string;
+		allowedProofs?: string[];
 		isRequired?: boolean;
 	}[];
 	tags?: Array<{
@@ -95,6 +100,14 @@ interface WebFormProps {
 	url?: string;
 	formData?: {};
 	item?: BenefitItem;
+}
+export interface DocumentItem {
+	id?: number;
+	code?: string | string[];
+	isRequired?: boolean;
+	allowedProofs?: string[];
+	proof?: string | string[];
+	label?: string;
 }
 
 const BenefitsDetails: React.FC = () => {
@@ -212,40 +225,74 @@ const BenefitsDetails: React.FC = () => {
 		);
 	};
 
-	const extractRequiredDocs = (resultItem) => {
+	/**
+	 * Extracts and merges required and eligibility document items from the result item.
+	 *
+	 * @param resultItem - An object containing tags with document metadata.
+	 * @returns A list of merged and formatted DocumentItem objects.
+	 */
+	const extractRequiredDocs = (resultItem): DocumentItem[] => {
+		// Find the tag with code 'required-docs'
 		const requiredDocsTag = resultItem?.tags?.find(
-			(e: { descriptor: { code: string } }) =>
-				e?.descriptor?.code === 'required-docs'
+			(e: any) => e?.descriptor?.code === 'required-docs'
 		);
-		if (!requiredDocsTag?.list) return [];
 
-		const docs: { label: string; proof: string; isRequired: boolean }[] =
-			[];
+		// Find the tag with code 'eligibility'
+		const eligibilityTag = resultItem?.tags?.find(
+			(e: any) => e?.descriptor?.code === 'eligibility'
+		);
 
-		for (const doc of requiredDocsTag.list) {
-			try {
-				const parsed = JSON.parse(doc.value);
-				const allowedProofs = parsed.allowedProofs || [];
-				const isRequired = parsed.isRequired;
+		// Parse the list of required documents (isRequired = false)
+		const requiredList = parseDocList(requiredDocsTag?.list ?? [], false);
 
-				const label = allowedProofs
-					.map((proof) =>
-						proof
-							.replace(/([A-Z])/g, ' $1')
-							.replace(/^./, (str) => str.toUpperCase())
-					)
-					.join(' / ');
+		// Parse the list of eligibility documents (isRequired = true)
+		const eligibilityList = parseDocList(eligibilityTag?.list ?? [], true);
 
-				docs.push({
-					label: `${label} (${isRequired ? 'Mandatory' : 'Non-mandatory'})`,
-					proof: allowedProofs[0],
-					isRequired,
+		// Combine both required and eligibility documents
+		const allDocs = [...requiredList, ...eligibilityList];
+
+		// Create a map to merge documents based on their allowedProofs
+		const mergedMap = new Map<string, DocumentItem>();
+
+		allDocs.forEach((doc) => {
+			// Use a stringified version of allowedProofs as a unique key
+			const key = doc.allowedProofs.join(',');
+
+			if (mergedMap.has(key)) {
+				// If document with same key exists, merge with the existing entry
+				const existing = mergedMap.get(key);
+
+				// Normalize codes to arrays
+				const existingCodes = Array.isArray(existing.code)
+					? existing.code
+					: [existing.code];
+
+				// Merge current doc with existing one
+
+				mergedMap.set(key, {
+					...existing,
+					code: [...existingCodes, doc.code], // Merge codes ( evidence)
+
+					isRequired: existing.isRequired || doc.isRequired, // Keep true if any is required
 				});
-			} catch (e) {
-				console.error('Failed to parse document data:', e);
+			} else {
+				// If it's a new document group, add to the map
+				mergedMap.set(key, {
+					...doc,
+					code: doc.code,
+				});
 			}
-		}
-		return docs;
+		});
+
+		// Convert merged map to array and format each document with label
+		return Array.from(mergedMap.values()).map((doc) => ({
+			...doc,
+			label: formatLabel(
+				doc.allowedProofs,
+				Array.isArray(doc.code) ? doc.code : [doc.code],
+				doc.isRequired
+			),
+		}));
 	};
 
 	const extractContext = (result) => {
@@ -559,22 +606,35 @@ const BenefitsDetails: React.FC = () => {
 					<UnorderedList mt={4}>
 						{item?.document?.map((document) => (
 							<Box
-								key={document.proof}
+								key={document.label}
 								display="flex"
 								alignItems="center"
 								justifyContent="space-between"
-								width={'100%'}
+								width="100%"
+								mb={4} // spacing between document rows
 							>
-								<ListItem key={document.label}>
-									{document.label}
-								</ListItem>
-								{userDocuments && (
-									<DocumentActions
-										status={document.proof}
-										userDocuments={userDocuments}
-										isDelete={false}
-									/>
-								)}
+								<Box width="70%">
+									<ListItem>{document.label}</ListItem>
+								</Box>
+
+								<Box
+									width="30%"
+									display="flex"
+									flexDirection="column"
+									alignItems="flex-end"
+									justifyContent="flex-start"
+									pt="2px"
+									gap={1} // vertical spacing between DocumentActions
+								>
+									{document.allowedProofs.map((proof) => (
+										<DocumentActions
+											key={proof}
+											status={proof}
+											userDocuments={userDocuments}
+											isDelete={false}
+										/>
+									))}
+								</Box>
 							</Box>
 						))}
 					</UnorderedList>
