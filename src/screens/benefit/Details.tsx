@@ -176,10 +176,22 @@ const BenefitsDetails: React.FC = () => {
 			const url = (result as { data: { responses: Array<any> } }).data
 				?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
 
+			// If the application is resubmmit, merge `authUser` and `applicationData`
+			// Priority is given to keys from `applicationData`, but any extra keys
+			// from `authUser` that are not present in `applicationData` will be included.
+			// Otherwise, use `authUser` as the formData.
+
 			const formData =
 				applicationStatus === 'application pending'
-					? applicationData
+					? {
+							...(authUser || {}),
+							...(applicationData.application_data || {}),
+							internal_application_id:
+								applicationData.internal_application_id,
+						}
 					: (authUser ?? undefined);
+			console.log('formData', formData);
+
 			if (url) {
 				setWebFormProp({
 					url,
@@ -260,11 +272,10 @@ const BenefitsDetails: React.FC = () => {
 			user_id: user?.data?.user_id,
 			benefit_id: id,
 		});
-		console.log('appResult', appResult);
 
 		if (appResult?.data?.applications?.length > 0) {
 			const status = appResult.data.applications[0].status;
-			setApplicationData(appResult.data.applications[0].application_data);
+			setApplicationData(appResult.data.applications[0]);
 			setApplicationStatus(status); // Can be 'submitted', 'resubmit', etc.
 		}
 	};
