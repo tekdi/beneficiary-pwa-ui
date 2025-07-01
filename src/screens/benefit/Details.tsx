@@ -256,10 +256,11 @@ const BenefitsDetails: React.FC = () => {
 					: [existing.code];
 
 				// Merge current doc with existing one
+
 				mergedMap.set(key, {
 					...existing,
 					code: [...existingCodes, doc.code], // Merge codes ( evidence)
-					proof: [...existingCodes, doc.code], // Merge proof values (document name)
+
 					isRequired: existing.isRequired || doc.isRequired, // Keep true if any is required
 				});
 			} else {
@@ -267,7 +268,6 @@ const BenefitsDetails: React.FC = () => {
 				mergedMap.set(key, {
 					...doc,
 					code: doc.code,
-					proof: doc.code,
 				});
 			}
 		});
