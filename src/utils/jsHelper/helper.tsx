@@ -333,6 +333,15 @@ export const transformData = (userData) => {
 		bapId: import.meta.env.VITE_API_BASE_ID,
 		age: userData?.age ?? ' ',
 		year: userData?.class ? `${userData.class}` : '',
+		currentlyEnrolledInOtherGovtScheme:
+			userData?.currentlyEnrolledInOtherGovtScheme ?? ' ',
+		haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship:
+			userData?.haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship ??
+			' ',
+		studentId: userData?.studentId ?? ' ',
+		...(userData?.internal_application_id
+			? { internal_application_id: userData.internal_application_id }
+			: {}),
 	};
 };
 

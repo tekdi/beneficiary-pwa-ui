@@ -62,6 +62,7 @@
     "BENEFIT_DETAILS_OBJECTIVE_DETAILS": "प्रारंभिक शिष्यवृत्ती-एससीचे उद्दिष्ट:",
     "BENEFIT_DETAILS_DOCUMENTS_REQUIRED": "आवश्यक दस्तऐवज",
     "BENEFIT_DETAILS_APPLICATION_SUBMITTED": "अर्ज आधीच सादर केलेला आहे",
+      "BENEFIT_DETAILS_RESUBMIT_APPLICATION":"अर्ज पुन्हा जमा करा",
     "BENEFIT_DETAILS_PROCEED_TO_APPLY": "अर्जासाठी पुढे जा",
     "BENEFIT_DETAILS_LOGIN_TO_APPLY": "अर्ज करण्यासाठी लॉगिन करा",
     "SUBMIT_DIALOGUE_HEADING_TEXT": "अर्ज सादर केला",
