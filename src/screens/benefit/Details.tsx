@@ -99,7 +99,10 @@ const BenefitsDetails: React.FC = () => {
 	);
 	const [item, setItem] = useState<BenefitItem | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [isApplied, setIsApplied] = useState<boolean>(false);
+	const [applicationStatus, setApplicationStatus] = useState<string | null>(
+		null
+	);
+
 	const [error, setError] = useState<string>('');
 	const [authUser, setAuthUser] = useState<AuthUser | null>(null);
 	const [webFormProp, setWebFormProp] = useState<WebFormProps>({});
@@ -114,6 +117,7 @@ const BenefitsDetails: React.FC = () => {
 	const { t } = useTranslation();
 	// const [isEligible, setIsEligible] = useState<any[]>();
 	const [userDocuments, setUserDocuments] = useState();
+	const [applicationData, setApplicationData] = useState<any>(null);
 	const handleConfirmation = async () => {
 		setLoading(true);
 
@@ -172,7 +176,10 @@ const BenefitsDetails: React.FC = () => {
 			const url = (result as { data: { responses: Array<any> } }).data
 				?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
 
-			const formData = authUser ?? undefined;
+			const formData =
+				applicationStatus === 'application pending'
+					? applicationData
+					: (authUser ?? undefined);
 			if (url) {
 				setWebFormProp({
 					url,
@@ -253,9 +260,12 @@ const BenefitsDetails: React.FC = () => {
 			user_id: user?.data?.user_id,
 			benefit_id: id,
 		});
+		console.log('appResult', appResult);
 
 		if (appResult?.data?.applications?.length > 0) {
-			setIsApplied(true);
+			const status = appResult.data.applications[0].status;
+			setApplicationData(appResult.data.applications[0].application_data);
+			setApplicationStatus(status); // Can be 'submitted', 'resubmit', etc.
 		}
 	};
 
@@ -571,11 +581,21 @@ const BenefitsDetails: React.FC = () => {
 							mt={6}
 							onClick={handleConfirmation}
 							label={
-								isApplied
-									? t('BENEFIT_DETAILS_APPLICATION_SUBMITTED')
-									: t('BENEFIT_DETAILS_PROCEED_TO_APPLY')
+								!applicationStatus
+									? t('BENEFIT_DETAILS_PROCEED_TO_APPLY') // if status is empty/null/undefined
+									: applicationStatus ===
+										  'application pending'
+										? t(
+												'BENEFIT_DETAILS_RESUBMIT_APPLICATION'
+											)
+										: t(
+												'BENEFIT_DETAILS_APPLICATION_SUBMITTED'
+											)
 							}
-							isDisabled={isApplied}
+							isDisabled={
+								!!applicationStatus &&
+								applicationStatus !== 'application pending'
+							}
 						/>
 					) : (
 						<CommonButton
