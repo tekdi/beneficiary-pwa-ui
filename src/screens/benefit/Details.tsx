@@ -31,8 +31,10 @@ import Loader from '../../components/common/Loader';
 import {
 	calculateAge,
 	formatLabel,
+	getExpiredRequiredDocsMessage,
 	parseDocList,
 } from '../../utils/jsHelper/helper';
+
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 import DocumentActions from '../../components/DocumentActions';
@@ -52,6 +54,7 @@ interface BenefitItem {
 		proof?: string;
 		code?: string;
 		allowedProofs?: string[];
+		isRequired?: boolean;
 	}[];
 	tags?: Array<{
 		descriptor?: {
@@ -130,7 +133,16 @@ const BenefitsDetails: React.FC = () => {
 	const [userDocuments, setUserDocuments] = useState();
 	const handleConfirmation = async () => {
 		setLoading(true);
+		const expiredMessage = getExpiredRequiredDocsMessage(
+			userDocuments,
+			item?.document ?? []
+		);
 
+		if (expiredMessage) {
+			setError(expiredMessage);
+			setLoading(false);
+			return;
+		}
 		// Step 1: Try eligibility API
 		let eligibilityResponse;
 		try {
