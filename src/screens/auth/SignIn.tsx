@@ -55,6 +55,21 @@ const SignIn: React.FC = () => {
 					'refreshToken',
 					response.data.refresh_token
 				);
+				localStorage.setItem(
+					'walletToken',
+					response.data.walletToken
+				);
+				localStorage.setItem(
+					'user',
+					JSON.stringify({
+						accountId: response.data.username,
+						firstName: '',
+						lastName: '',
+						email: '',
+						phone: '',
+						username: response.data.username,
+					})
+				);
 				navigate(0);
 			}
 		} catch (error) {
