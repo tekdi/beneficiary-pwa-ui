@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { uploadUserDocuments } from '../../services/user/User';
 import { getDocumentsList, getUser } from '../../services/auth/auth';
 import { AuthContext } from '../../utils/context/checkToken';
@@ -57,7 +57,8 @@ const UploadDocumentEwallet = () => {
 		// Validate the URL configuration
 		try {
 			new URL(VITE_EWALLET_IFRAME_SRC);
-		} catch (e) {
+		} catch (error) {
+			console.error('Invalid wallet URL configuration:', error);
 			setError('Invalid wallet URL configuration. Please check your environment variables.');
 			return;
 		}
@@ -111,8 +112,12 @@ const UploadDocumentEwallet = () => {
 		
 		const documentsResponse = await getDocumentsList();
 		// Ensure we have an array of documents, assuming documents are in data property
-		const documents = Array.isArray(documentsResponse) ? documentsResponse : 
-						 Array.isArray(documentsResponse.data) ? documentsResponse.data : [];
+		let documents: any[] = [];
+		if (Array.isArray(documentsResponse)) {
+			documents = documentsResponse;
+		} else if (Array.isArray(documentsResponse.data)) {
+			documents = documentsResponse.data;
+		}
 
 		console.log('Available documents:', documents);
 
@@ -137,15 +142,148 @@ const UploadDocumentEwallet = () => {
 		}];
 	};
 
+	// Helper to show upload status toast
+	const showUploadStatusToast = (results: any[]) => {
+		const successDocs = results.filter(r => r.success);
+		const failedDocs = results.filter(r => !r.success);
+
+		const statusMessage = (
+			<Box bg="white" p={3} borderRadius="md" boxShadow="sm">
+				{successDocs.length > 0 && (
+					<Box mb={3} bg="green.50" p={2} borderRadius="md">
+						<Text fontWeight="bold" color="green.700" mb={2}>
+							Successfully Uploaded:
+						</Text>
+						{successDocs.map((doc, idx) => (
+							<Text key={doc.docName} ml={2} color="green.600">
+								• {doc.docName}
+							</Text>
+						))}
+					</Box>
+				)}
+				{failedDocs.length > 0 && (
+					<Box bg="red.50" p={2} borderRadius="md">
+						<Text fontWeight="bold" color="red.700" mb={2}>
+							Failed to Upload:
+						</Text>
+						{failedDocs.map((doc, idx) => {
+							const showFullError = doc.fullError && doc.error === 'Document type not accepted';
+							return (
+								<Box key={doc.docName ?? idx} ml={2} mb={2}>
+									<Text color="red.700" fontWeight="semibold">
+										• {doc.docName}
+									</Text>
+									{showFullError ? (
+										<Text ml={4} fontSize="sm" mt={1} color="red.600">
+											{doc.fullError}
+										</Text>
+									) : (
+										<Text ml={4} fontSize="sm" color="red.600">
+											{doc.error}
+										</Text>
+									)}
+								</Box>
+							);
+						})}
+					</Box>
+				)}
+			</Box>
+		);
+
+		toast({
+			title: 'Document Upload Status',
+			description: statusMessage,
+			status: 'info',
+			duration: 10000,
+			isClosable: true,
+			position: 'top',
+		});
+	};
+
+	// Helper to process a single document
+	const processDocument = async (vc: any) => {
+		if (!vc.json) return null;
+		try {
+			const payload = await preparePayload(vc.json);
+			await uploadUserDocuments(payload);
+			return {
+				success: true,
+				docName: payload[0].doc_name,
+				docType: payload[0].doc_type
+			};
+		} catch (docError: any) {
+			console.error('Error processing document:', docError);
+			const documentName = vc.json?.credentialSchema?.title ?? 'Unknown document';
+			let errorMessage;
+			if (docError instanceof Error && docError.message.includes('does not match any of the accepted document types')) {
+				errorMessage = 'Document type not accepted';
+			} else if (docError?.response?.data?.message) {
+				errorMessage = docError.response.data.message;
+			} else if (docError instanceof Error) {
+				errorMessage = docError.message;
+			} else {
+				errorMessage = 'Document upload failed. Please try again.';
+			}
+			return {
+				success: false,
+				docName: documentName,
+				error: errorMessage,
+				fullError: docError instanceof Error ? docError.message : undefined
+			};
+		}
+	};
+
+	// Helper to handle VC_SHARED type
+	const handleVCShared = async (data: any, processingToastIdRef: { current: string | number | undefined }) => {
+		setIsProcessing(true);
+		if (!data?.vcs || !Array.isArray(data.vcs)) {
+			throw new Error('No valid documents received from wallet');
+		}
+		setIsLoading(true);
+
+		processingToastIdRef.current = toast({
+			title: 'Processing Documents',
+			description: (
+				<Box>
+					<Text mb={2}>Please wait while your documents are being processed...</Text>
+					<Progress size="xs" isIndeterminate />
+				</Box>
+			),
+			status: 'info',
+			duration: null,
+			isClosable: false,
+			position: 'top',
+		});
+
+		const results = [];
+		for (const vc of data.vcs) {
+			const result = await processDocument(vc);
+			if (result) results.push(result);
+		}
+
+		if (processingToastIdRef.current) {
+			toast.close(processingToastIdRef.current);
+		}
+
+		if (results.length > 0) {
+			showUploadStatusToast(results);
+		}
+
+		await init();
+		closeWalletUI();
+		setIsLoading(false);
+		setIsProcessing(false);
+	};
+
 	// Listen for messages from the iframe
 	useEffect(() => {
-		let processingToastId: string | number | undefined;
+		const processingToastIdRef = { current: undefined as string | number | undefined };
 
 		const handleMessage = async (event: MessageEvent) => {
 			if (event.origin !== VITE_EWALLET_ORIGIN) return;
 
 			try {
-				let { type, data } = event.data;
+				const { type, data } = event.data;
 				console.log('Received message from wallet:', type, data);
 
 				if (!type) {
@@ -153,178 +291,43 @@ const UploadDocumentEwallet = () => {
 					return;
 				}
 
-				// Clear any existing processing toast
-				if (processingToastId) {
-					toast.close(processingToastId);
+				if (processingToastIdRef.current) {
+					toast.close(processingToastIdRef.current);
 				}
-				
+
 				if (type === 'VC_SHARED') {
 					try {
-						// Set processing state to true when starting document upload
-						setIsProcessing(true);
-						// Validate incoming data
-						if (!data?.vcs || !Array.isArray(data.vcs)) {
-							throw new Error('No valid documents received from wallet');
-						}
-
-						setIsLoading(true);
-						const results = [];
-
-						// Show initial processing toast
-						processingToastId = toast({
-							title: 'Processing Documents',
-							description: (
-								<Box>
-									<Text mb={2}>Please wait while your documents are being processed...</Text>
-									<Progress size="xs" isIndeterminate />
-								</Box>
-							),
-							status: 'info',
-							duration: null,
-							isClosable: false,
-							position: 'top',
-						});
-
-						// Process each VC in the array
-						for (const vc of data.vcs) {
-							if (!vc.json) continue;
-
-							try {
-								// Try to prepare the payload first
-								const payload = await preparePayload(vc.json);
-
-								// If preparation succeeds, try to upload
-								await uploadUserDocuments(payload);
-
-								results.push({
-									success: true,
-									docName: payload[0].doc_name,
-									docType: payload[0].doc_type
-								});
-							} catch (docError: any) {
-								console.error('Error processing document:', docError);
-
-								// Format the error message
-								const documentName = vc.json?.credentialSchema?.title || 'Unknown document';
-								let errorMessage;
-
-								if (docError instanceof Error && docError.message.includes('does not match any of the accepted document types')) {
-									// For document type mismatch, use a shorter error message in the results
-									errorMessage = 'Document type not accepted';
-								} else if (docError?.response?.data?.message) {
-									errorMessage = docError.response.data.message;
-								} else if (docError instanceof Error) {
-									errorMessage = docError.message;
-								} else {
-									errorMessage = 'Document upload failed. Please try again.';
-								}
-
-								results.push({
-									success: false,
-									docName: documentName,
-									error: errorMessage,
-									fullError: docError instanceof Error ? docError.message : undefined
-								});
-							}
-						}
-
-						// Always close the processing toast before showing results
-						if (processingToastId) {
-							toast.close(processingToastId);
-						}
-
-						// Only show result if we processed any documents
-						if (results.length > 0) {
-							const successDocs = results.filter(r => r.success);
-							const failedDocs = results.filter(r => !r.success);
-
-							const statusMessage = (
-								<Box bg="white" p={3} borderRadius="md" boxShadow="sm">
-									{successDocs.length > 0 && (
-										<Box mb={3} bg="green.50" p={2} borderRadius="md">
-											<Text fontWeight="bold" color="green.700" mb={2}>
-												Successfully Uploaded:
-											</Text>
-											{successDocs.map((doc, idx) => (
-												<Text key={idx} ml={2} color="green.600">
-													• {doc.docName}
-												</Text>
-											))}
-										</Box>
-									)}
-									{failedDocs.length > 0 && (
-										<Box bg="red.50" p={2} borderRadius="md">
-											<Text fontWeight="bold" color="red.700" mb={2}>
-												Failed to Upload:
-											</Text>
-											{failedDocs.map((doc, idx) => {
-												const showFullError = doc.fullError && doc.error === 'Document type not accepted';
-												return (
-													<Box key={idx} ml={2} mb={2}>
-														<Text color="red.700" fontWeight="semibold">
-															• {doc.docName}
-														</Text>
-														{showFullError ? (
-															<Text ml={4} fontSize="sm" mt={1} color="red.600">
-																{doc.fullError}
-															</Text>
-														) : (
-															<Text ml={4} fontSize="sm" color="red.600">
-																{doc.error}
-															</Text>
-														)}
-													</Box>
-												);
-											})}
-										</Box>
-									)}
-								</Box>
-							);
-
-							// Show the final status toast
-							toast({
-								title: 'Document Upload Status',
-								description: statusMessage,
-								status: 'info', // Using info status for better contrast
-								duration: 10000,
-								isClosable: true,
-								position: 'top',
-							});
-						}
-
-						await init(); // Refresh the documents list
-						closeWalletUI();
+						await handleVCShared(data, processingToastIdRef);
 					} catch (error: any) {
 						console.error('Error handling VC_SHARED:', error);
-						if (processingToastId) {
-							toast.close(processingToastId);
+						if (processingToastIdRef.current) {
+							toast.close(processingToastIdRef.current);
 						}
 						toast({
 							title: 'Error',
-						 description: error.message || 'Failed to process documents',
-						 status: 'error',
-						 duration: 5000,
-						 isClosable: true,
-						 position: 'top',
+							description: error.message ?? 'Failed to process documents',
+							status: 'error',
+							duration: 5000,
+							isClosable: true,
+							position: 'top',
 						});
-					} finally {
 						setIsLoading(false);
-						setIsProcessing(false); // Reset processing state
+						setIsProcessing(false);
 						closeWalletUI();
 					}
 				}
 			} catch (error) {
 				console.error('Error handling wallet message:', error);
 				setIsLoading(false);
-				setIsProcessing(false); // Reset processing state in case of error
+				setIsProcessing(false);
 			}
 		};
 
 		window.addEventListener('message', handleMessage);
 		return () => {
 			window.removeEventListener('message', handleMessage);
-			if (processingToastId) {
-				toast.close(processingToastId);
+			if (processingToastIdRef.current) {
+				toast.close(processingToastIdRef.current);
 			}
 		};
 	}, [init, updateUserData, toast]);

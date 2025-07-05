@@ -47,7 +47,10 @@ const SignIn: React.FC = () => {
 				// Store tokens
 				localStorage.setItem('authToken', response.data.access_token);
 				localStorage.setItem('refreshToken', response.data.refresh_token);
-				localStorage.setItem('walletToken', response.data.walletToken);
+				if (response.data.walletToken) {
+					// Store wallet token if available
+					localStorage.setItem('walletToken', response.data.walletToken);
+				}
 
 				// Create user object with data from API response
 				const userData = {
