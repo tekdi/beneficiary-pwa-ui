@@ -6,12 +6,11 @@ import CommonButton from './button/Button';
 import { useTranslation } from 'react-i18next';
 import { Box, Text, Alert, AlertIcon, IconButton, useToast, Progress } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { mockUploadDocumentPayload, mockUploadDocumentPayload2 } from '../../assets/mockdata/DocumentMockData';
 
 const VITE_EWALLET_ORIGIN = import.meta.env.VITE_EWALLET_ORIGIN;
 const VITE_EWALLET_IFRAME_SRC = import.meta.env.VITE_EWALLET_IFRAME_SRC;
 
-const UploadDocumentEwallet = ({ userId }: { userId: string }) => {
+const UploadDocumentEwallet = () => {
 	const { t } = useTranslation();
 	const { updateUserData } = useContext(AuthContext);
 	const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -40,14 +39,26 @@ const UploadDocumentEwallet = ({ userId }: { userId: string }) => {
 
 	// Function to open wallet UI
 	const openWalletUI = () => {
-		const authToken = localStorage.getItem('authToken');
-		if (!authToken) {
-			setError('Authentication token not found. Please login again.');
+		localStorage.setItem('embeddedMode', 'true');
+
+		const walletToken = localStorage.getItem('walletToken');
+		const user = localStorage.getItem('user');
+
+		if (!walletToken || !user) {
+			setError('Wallet authentication data not found. Please ensure wallet is properly configured.');
 			return;
 		}
 
-		if (!VITE_EWALLET_IFRAME_SRC || !VITE_EWALLET_ORIGIN) {
-			setError('Wallet configuration is missing. Please contact support.');
+		if (!VITE_EWALLET_IFRAME_SRC) {
+			setError('Wallet configuration is missing. Please check your environment variables.');
+			return;
+		}
+
+		// Validate the URL configuration
+		try {
+			new URL(VITE_EWALLET_IFRAME_SRC);
+		} catch (e) {
+			setError('Invalid wallet URL configuration. Please check your environment variables.');
 			return;
 		}
 
@@ -63,17 +74,29 @@ const UploadDocumentEwallet = ({ userId }: { userId: string }) => {
 	// Send authentication data to iframe
 	const sendAuthToIframe = () => {
 		if (!iframeRef.current) return;
+		
+		// Get specific wallet authentication data
 		const walletToken = localStorage.getItem('walletToken');
-		if (!walletToken) return;
-		const walletUser = localStorage.getItem('user');
+		const user = JSON.parse(localStorage.getItem('user'));
+		
+		if (!walletToken || !user) {
+			setError('Wallet authentication data not found. Please ensure wallet is properly configured.');
+			return;
+		}
+
+		// Create message data with authentication info
 		const messageData = {
-			walletToken: walletToken,
-			user: walletUser,
-			embeddedMode: true
+			type: 'WALLET_AUTH', // Add a type to identify the message
+			data: {
+				walletToken: walletToken,
+				user: user,
+				embeddedMode: true
+			}
 		};
 
 		try {
-			iframeRef.current.contentWindow?.postMessage(messageData, VITE_EWALLET_ORIGIN);
+			// Only use postMessage for communication
+			iframeRef.current.contentWindow?.postMessage(messageData, VITE_EWALLET_IFRAME_SRC);
 		} catch (error) {
 			console.error('Failed to send message to iframe:', error);
 			setError('Failed to communicate with wallet. Please try again.');
@@ -140,7 +163,6 @@ const UploadDocumentEwallet = ({ userId }: { userId: string }) => {
 						// Set processing state to true when starting document upload
 						setIsProcessing(true);
 						// Validate incoming data
-						// data = {vcs: [{json: mockUploadDocumentPayload2}, {json: mockUploadDocumentPayload}]};
 						if (!data?.vcs || !Array.isArray(data.vcs)) {
 							throw new Error('No valid documents received from wallet');
 						}
@@ -382,7 +404,7 @@ const UploadDocumentEwallet = ({ userId }: { userId: string }) => {
 							title="Wallet Interface"
 							onLoad={() => {
 								// Send auth data once iframe loads
-								setTimeout(() => sendAuthToIframe(), 100);
+								setTimeout(() => sendAuthToIframe());
 							}}
 							onError={() => {
 								setError('Failed to load wallet interface. Please check your connection and try again.');
