@@ -200,7 +200,7 @@ const Home: React.FC = () => {
 						label={t('PROFILE_EXPLORE_BENEFITS')}
 					/>
 					{!showIframe ? (
-						<UploadDocumentEwallet userId={userData?.user_id} />
+						<UploadDocumentEwallet/>
 					) : (
 						<CommonButton
 							onClick={() => setShowIframe(false)}

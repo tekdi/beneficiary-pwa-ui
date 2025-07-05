@@ -116,7 +116,7 @@ const UserProfile: React.FC = () => {
 							userDocuments={userData?.docs}
 						/>
 						{showIframe ? (
-							<UploadDocumentEwallet userId={userData?.user_id} />
+							<UploadDocumentEwallet/>
 						) : (
 							<CommonButton
 								onClick={() => setShowIframe(true)}
