@@ -38,7 +38,7 @@ const SignIn: React.FC = () => {
 			setLoading(true); // Show loading indicator
 
 			const response = await loginUser({ username, password });
-			if (response && response.data) {
+			if (response?.data) {
 				// Validate required fields
 				if (!response.data.username) {
 					throw new Error(t('USERNAME_MISSING_ERROR'));
@@ -55,10 +55,10 @@ const SignIn: React.FC = () => {
 				// Create user object with data from API response
 				const userData = {
 					accountId: response.data.username,
-					firstName: response.data.firstName || '',
-					lastName: response.data.lastName || '',
-					email: response.data.email || '',
-					phone: response.data.phone || '',
+					firstName: response.data.firstName ?? '',
+					lastName: response.data.lastName ?? '',
+					email: response.data.email ?? '',
+					phone: response.data.phone ?? '',
 					username: response.data.username,
 					// Add any additional user fields from the API response
 				};
@@ -87,7 +87,7 @@ const SignIn: React.FC = () => {
 				status: 'error',
 				duration: 10000,
 				isClosable: true,
-				description: error?.message || t('UNKNOWN_ERROR'),
+				description: error?.message ?? t('UNKNOWN_ERROR'),
 			});
 		} finally {
 			setLoading(false);

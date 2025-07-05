@@ -357,7 +357,7 @@ const UploadDocumentEwallet = () => {
 				label={t('UPLOAD_DOCUMENT_EWALLET')}
 				mt={2}
 				variant="outline"
-				isDisabled={isLoading || isIframeVisible}
+				isDisabled={isLoading ?? isIframeVisible}
 				loading={isLoading}
 				loadingLabel="Loading..."
 			/>
