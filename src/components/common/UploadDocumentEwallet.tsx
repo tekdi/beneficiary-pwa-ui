@@ -78,10 +78,18 @@ const UploadDocumentEwallet = () => {
 		
 		// Get specific wallet authentication data
 		const walletToken = localStorage.getItem('walletToken');
-		const user = JSON.parse(localStorage.getItem('user'));
+		const userStr = localStorage.getItem('user');
 		
-		if (!walletToken || !user) {
+		if (!walletToken || !userStr) {
 			setError('Wallet authentication data not found. Please ensure wallet is properly configured.');
+			return;
+		}
+
+		let user;
+		try {
+			user = JSON.parse(userStr);
+		} catch {
+			setError('Invalid user data found. Please check wallet configuration.');
 			return;
 		}
 
@@ -105,13 +113,20 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Prepare payload for document upload
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const preparePayload = async (data: any) => {
 		// Parse the stringified JSON if it's a string
-		const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+		let parsedData;
+		try {
+			parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+		} catch {
+			throw new Error('Invalid document data format received from wallet.');
+		}
 		console.log('Parsed data:', parsedData);
 		
 		const documentsResponse = await getDocumentsList();
 		// Ensure we have an array of documents, assuming documents are in data property
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let documents: any[] = [];
 		if (Array.isArray(documentsResponse)) {
 			documents = documentsResponse;
@@ -121,8 +136,14 @@ const UploadDocumentEwallet = () => {
 
 		console.log('Available documents:', documents);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const availableDocTypes = documents.map((doc: any) => doc.name).join(', ');
-		const matchedDocument = documents.find((doc: any) => parsedData?.credentialSchema?.title?.includes(doc.name));
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const matchedDocument = documents.find((doc: any) =>
+			parsedData?.credentialSchema?.title &&
+			typeof parsedData.credentialSchema.title === 'string' &&
+			parsedData.credentialSchema.title.includes(doc.name)
+		);
 
 		if (!matchedDocument) {
 			throw new Error(
@@ -143,6 +164,7 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to show upload status toast
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const showUploadStatusToast = (results: any[]) => {
 		const successDocs = results.filter(r => r.success);
 		const failedDocs = results.filter(r => !r.success);
@@ -201,6 +223,7 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to process a single document
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const processDocument = async (vc: any) => {
 		if (!vc.json) return null;
 		try {
@@ -211,6 +234,7 @@ const UploadDocumentEwallet = () => {
 				docName: payload[0].doc_name,
 				docType: payload[0].doc_type
 			};
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (docError: any) {
 			console.error('Error processing document:', docError);
 			const documentName = vc.json?.credentialSchema?.title ?? 'Unknown document';
@@ -234,6 +258,7 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to handle VC_SHARED type
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const handleVCShared = async (data: any, processingToastIdRef: { current: string | number | undefined }) => {
 		setIsProcessing(true);
 		if (!data?.vcs || !Array.isArray(data.vcs)) {
@@ -283,11 +308,17 @@ const UploadDocumentEwallet = () => {
 			if (event.origin !== VITE_EWALLET_ORIGIN) return;
 
 			try {
+				// Type check the event data structure
+				if (!event.data || typeof event.data !== 'object') {
+					console.warn('Received invalid message format:', event.data);
+					return;
+				}
+
 				const { type, data } = event.data;
 				console.log('Received message from wallet:', type, data);
 
-				if (!type) {
-					console.warn('Received message without type:', event.data);
+				if (!type || typeof type !== 'string') {
+					console.warn('Received message without valid type:', event.data);
 					return;
 				}
 
@@ -298,6 +329,7 @@ const UploadDocumentEwallet = () => {
 				if (type === 'VC_SHARED') {
 					try {
 						await handleVCShared(data, processingToastIdRef);
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					} catch (error: any) {
 						console.error('Error handling VC_SHARED:', error);
 						if (processingToastIdRef.current) {
@@ -318,6 +350,7 @@ const UploadDocumentEwallet = () => {
 				}
 			} catch (error) {
 				console.error('Error handling wallet message:', error);
+				// Ensure we clean up states on any error
 				setIsLoading(false);
 				setIsProcessing(false);
 			}
