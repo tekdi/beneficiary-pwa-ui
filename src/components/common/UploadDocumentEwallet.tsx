@@ -48,6 +48,18 @@ interface WalletMessageData {
 	vcs?: VCData[];
 }
 
+interface ApiError {
+	response?: {
+		data?: {
+			message?: string;
+		};
+	};
+}
+
+const isApiError = (error: unknown): error is ApiError => {
+	return typeof error === 'object' && error !== null && 'response' in error;
+};
+
 const VITE_EWALLET_ORIGIN = import.meta.env.VITE_EWALLET_ORIGIN;
 const VITE_EWALLET_IFRAME_SRC = import.meta.env.VITE_EWALLET_IFRAME_SRC;
 
@@ -291,18 +303,8 @@ const UploadDocumentEwallet = () => {
 			let errorMessage;
 			if (docError instanceof Error && docError.message.includes('does not match any of the accepted document types')) {
 				errorMessage = 'Document type not accepted';
-			} else if (
-				typeof docError === 'object' &&
-				docError !== null &&
-				'response' in docError &&
-				typeof (docError as any).response === 'object' &&
-				(docError as any).response !== null &&
-				'data' in (docError as any).response &&
-				typeof (docError as any).response.data === 'object' &&
-				(docError as any).response.data !== null &&
-				'message' in (docError as any).response.data
-			) {
-				errorMessage = (docError as any).response.data.message;
+			} else if (isApiError(docError)) {
+				errorMessage = docError.response?.data?.message || 'API error occurred';
 			} else if (docError instanceof Error) {
 				errorMessage = docError.message;
 			} else {
