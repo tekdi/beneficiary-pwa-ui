@@ -277,6 +277,36 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to process a single document
+	const getProcessDocumentError = (vc: VCData, docError: unknown): ProcessResult => {
+		let parsedJson: VerifiableCredential | undefined;
+		if (typeof vc.json === 'string') {
+			try {
+				parsedJson = JSON.parse(vc.json);
+			} catch {
+				parsedJson = undefined;
+			}
+		} else {
+			parsedJson = vc.json;
+		}
+		const documentName = parsedJson?.credentialSchema?.title ?? 'Unknown document';
+		let errorMessage;
+		if (docError instanceof Error && docError.message.includes('does not match any of the accepted document types')) {
+			errorMessage = 'Document type not accepted';
+		} else if (isApiError(docError)) {
+			errorMessage = docError.response?.data?.message || 'API error occurred';
+		} else if (docError instanceof Error) {
+			errorMessage = docError.message;
+		} else {
+			errorMessage = 'Document upload failed. Please try again.';
+		}
+		return {
+			success: false,
+			docName: documentName,
+			error: errorMessage,
+			fullError: docError instanceof Error ? docError.message : undefined
+		};
+	};
+
 	const processDocument = async (vc: VCData): Promise<ProcessResult | null> => {
 		if (!vc.json) return null;
 		try {
@@ -289,33 +319,7 @@ const UploadDocumentEwallet = () => {
 			};
 		} catch (docError: unknown) {
 			console.error('Error processing document:', docError);
-			let parsedJson: VerifiableCredential | undefined;
-			if (typeof vc.json === 'string') {
-				try {
-					parsedJson = JSON.parse(vc.json);
-				} catch {
-					parsedJson = undefined;
-				}
-			} else {
-				parsedJson = vc.json;
-			}
-			const documentName = parsedJson?.credentialSchema?.title ?? 'Unknown document';
-			let errorMessage;
-			if (docError instanceof Error && docError.message.includes('does not match any of the accepted document types')) {
-				errorMessage = 'Document type not accepted';
-			} else if (isApiError(docError)) {
-				errorMessage = docError.response?.data?.message || 'API error occurred';
-			} else if (docError instanceof Error) {
-				errorMessage = docError.message;
-			} else {
-				errorMessage = 'Document upload failed. Please try again.';
-			}
-			return {
-				success: false,
-				docName: documentName,
-				error: errorMessage,
-				fullError: docError instanceof Error ? docError.message : undefined
-			};
+			return getProcessDocumentError(vc, docError);
 		}
 	};
 
