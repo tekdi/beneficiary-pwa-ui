@@ -7,6 +7,47 @@ import { useTranslation } from 'react-i18next';
 import { Box, Text, Alert, AlertIcon, IconButton, useToast, Progress } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
+// Type definitions for better type safety
+interface VerifiableCredential {
+	credentialSchema?: {
+		title?: string;
+	};
+	[key: string]: any; // Allow any additional fields
+}
+
+interface DocumentType {
+	name: string;
+	docType: string;
+	documentSubType: string;
+}
+
+interface UploadPayload {
+	doc_name: string;
+	doc_type: string;
+	doc_subtype: string;
+	doc_data: VerifiableCredential;
+	uploaded_at: string;
+	imported_from: string;
+	doc_datatype: string;
+}
+
+interface ProcessResult {
+	success: boolean;
+	docName: string;
+	docType?: string;
+	error?: string;
+	fullError?: string;
+}
+
+interface VCData {
+	json?: VerifiableCredential | string;
+}
+
+interface WalletMessageData {
+	type: string;
+	vcs?: VCData[];
+}
+
 const VITE_EWALLET_ORIGIN = import.meta.env.VITE_EWALLET_ORIGIN;
 const VITE_EWALLET_IFRAME_SRC = import.meta.env.VITE_EWALLET_IFRAME_SRC;
 
@@ -95,7 +136,7 @@ const UploadDocumentEwallet = () => {
 
 		// Create message data with authentication info
 		const messageData = {
-			type: 'WALLET_AUTH', // Add a type to identify the message
+			type: 'WALLET_AUTH',
 			data: {
 				walletToken: walletToken,
 				user: user,
@@ -104,8 +145,12 @@ const UploadDocumentEwallet = () => {
 		};
 
 		try {
-			// Only use postMessage for communication
-			iframeRef.current.contentWindow?.postMessage(messageData, VITE_EWALLET_IFRAME_SRC);
+			// Validate origin before sending for better security
+			const targetOrigin = new URL(VITE_EWALLET_IFRAME_SRC).origin;
+			iframeRef.current.contentWindow?.postMessage(
+				messageData,
+				targetOrigin
+			);
 		} catch (error) {
 			console.error('Failed to send message to iframe:', error);
 			setError('Failed to communicate with wallet. Please try again.');
@@ -113,10 +158,11 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Prepare payload for document upload
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const preparePayload = async (data: any) => {
+	const preparePayload = async (
+		data: VerifiableCredential | string
+	): Promise<UploadPayload[]> => {
 		// Parse the stringified JSON if it's a string
-		let parsedData;
+		let parsedData: VerifiableCredential;
 		try {
 			parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 		} catch {
@@ -126,8 +172,7 @@ const UploadDocumentEwallet = () => {
 		
 		const documentsResponse = await getDocumentsList();
 		// Ensure we have an array of documents, assuming documents are in data property
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		let documents: any[] = [];
+		let documents: DocumentType[] = [];
 		if (Array.isArray(documentsResponse)) {
 			documents = documentsResponse;
 		} else if (Array.isArray(documentsResponse.data)) {
@@ -136,10 +181,8 @@ const UploadDocumentEwallet = () => {
 
 		console.log('Available documents:', documents);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const availableDocTypes = documents.map((doc: any) => doc.name).join(', ');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const matchedDocument = documents.find((doc: any) =>
+		const availableDocTypes = documents.map((doc: DocumentType) => doc.name).join(', ');
+		const matchedDocument = documents.find((doc: DocumentType) =>
 			parsedData?.credentialSchema?.title &&
 			typeof parsedData.credentialSchema.title === 'string' &&
 			parsedData.credentialSchema.title.includes(doc.name)
@@ -164,10 +207,9 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to show upload status toast
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const showUploadStatusToast = (results: any[]) => {
-		const successDocs = results.filter(r => r.success);
-		const failedDocs = results.filter(r => !r.success);
+	const showUploadStatusToast = (results: ProcessResult[]) => {
+		const successDocs = results.filter((r) => r.success);
+		const failedDocs = results.filter((r) => !r.success);
 
 		const statusMessage = (
 			<Box bg="white" p={3} borderRadius="md" boxShadow="sm">
@@ -176,7 +218,7 @@ const UploadDocumentEwallet = () => {
 						<Text fontWeight="bold" color="green.700" mb={2}>
 							Successfully Uploaded:
 						</Text>
-						{successDocs.map((doc, idx) => (
+						{successDocs.map((doc) => (
 							<Text key={doc.docName} ml={2} color="green.600">
 								• {doc.docName}
 							</Text>
@@ -223,8 +265,7 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to process a single document
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const processDocument = async (vc: any) => {
+	const processDocument = async (vc: VCData): Promise<ProcessResult | null> => {
 		if (!vc.json) return null;
 		try {
 			const payload = await preparePayload(vc.json);
@@ -234,15 +275,34 @@ const UploadDocumentEwallet = () => {
 				docName: payload[0].doc_name,
 				docType: payload[0].doc_type
 			};
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (docError: any) {
+		} catch (docError: unknown) {
 			console.error('Error processing document:', docError);
-			const documentName = vc.json?.credentialSchema?.title ?? 'Unknown document';
+			let parsedJson: VerifiableCredential | undefined;
+			if (typeof vc.json === 'string') {
+				try {
+					parsedJson = JSON.parse(vc.json);
+				} catch {
+					parsedJson = undefined;
+				}
+			} else {
+				parsedJson = vc.json;
+			}
+			const documentName = parsedJson?.credentialSchema?.title ?? 'Unknown document';
 			let errorMessage;
 			if (docError instanceof Error && docError.message.includes('does not match any of the accepted document types')) {
 				errorMessage = 'Document type not accepted';
-			} else if (docError?.response?.data?.message) {
-				errorMessage = docError.response.data.message;
+			} else if (
+				typeof docError === 'object' &&
+				docError !== null &&
+				'response' in docError &&
+				typeof (docError as any).response === 'object' &&
+				(docError as any).response !== null &&
+				'data' in (docError as any).response &&
+				typeof (docError as any).response.data === 'object' &&
+				(docError as any).response.data !== null &&
+				'message' in (docError as any).response.data
+			) {
+				errorMessage = (docError as any).response.data.message;
 			} else if (docError instanceof Error) {
 				errorMessage = docError.message;
 			} else {
@@ -258,8 +318,7 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to handle VC_SHARED type
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const handleVCShared = async (data: any, processingToastIdRef: { current: string | number | undefined }) => {
+	const handleVCShared = async (data: WalletMessageData, processingToastIdRef: { current: string | number | undefined }) => {
 		setIsProcessing(true);
 		if (!data?.vcs || !Array.isArray(data.vcs)) {
 			throw new Error('No valid documents received from wallet');
@@ -329,15 +388,14 @@ const UploadDocumentEwallet = () => {
 				if (type === 'VC_SHARED') {
 					try {
 						await handleVCShared(data, processingToastIdRef);
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					} catch (error: any) {
+					} catch (error: unknown) {
 						console.error('Error handling VC_SHARED:', error);
 						if (processingToastIdRef.current) {
 							toast.close(processingToastIdRef.current);
 						}
 						toast({
 							title: 'Error',
-							description: error.message ?? 'Failed to process documents',
+							description: (error instanceof Error ? error.message : undefined) ?? 'Failed to process documents',
 							status: 'error',
 							duration: 5000,
 							isClosable: true,
