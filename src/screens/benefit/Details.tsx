@@ -510,7 +510,10 @@ const BenefitsDetails: React.FC = () => {
 	const handleRedirect = () => {
 		navigate('/applicationStatus');
 	};
-	const getActionLabel = (status: string | null, t: any): string => {
+	const getActionLabel = (
+		status: string | null,
+		t: (key: string) => string
+	): string => {
 		if (!status) {
 			return t('BENEFIT_DETAILS_PROCEED_TO_APPLY');
 		} else if (status === 'application resubmit') {
