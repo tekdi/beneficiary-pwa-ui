@@ -39,12 +39,12 @@ const StatusIcon = ({ status }: { status: string }) => {
 	switch (key) {
 		case 'approved':
 			IconComponent = IoCheckmarkCircle;
-			iconColor = '#0B7B69';
+			iconColor = COLORS.success;
 			label = `Application ${label}`;
 			break;
 		case 'rejected':
 			IconComponent = IoCloseCircle;
-			iconColor = '#8C1823';
+			iconColor = COLORS.error;
 			label = `Application ${label}`;
 			break;
 		case 'pending':
@@ -59,7 +59,7 @@ const StatusIcon = ({ status }: { status: string }) => {
 			break;
 		case 'application resubmit':
 			IconComponent = IoWarning;
-			iconColor = '#EDA145';
+			iconColor = COLORS.warning;
 			break;
 		default:
 			IconComponent = IoHelpCircleOutline;
@@ -71,9 +71,9 @@ const StatusIcon = ({ status }: { status: string }) => {
 		<HStack spacing={2} align="center">
 			<IconComponent
 				style={{ fontSize: 23, color: iconColor }}
-				aria-label={label + ' status'}
+				aria-label={`${label} status`}
 			/>
-			<Text fontSize="16px" fontWeight="semibold" color="#1F1B13">
+			<Text fontSize="16px" fontWeight="semibold" color={COLORS.text}>
 				{label}
 			</Text>
 		</HStack>
@@ -112,7 +112,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 			px="16px"
 			width="100%"
 		>
-			<VStack spacing={4} align="stretch" mt={'10px'}>
+			<VStack spacing={4} align="stretch" mt="10px">
 				{statusKeys.map((status, index) => (
 					<Box
 						key={`${status}${index}`}
@@ -136,11 +136,17 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 
 						<VStack align="stretch" spacing={0}>
 							{groupedApplications[status].map((app, i, arr) => {
-								const hasRemark =
-									app.remark && app.remark.trim() !== '';
+								const hasRemark = !!app.remark?.trim();
 								const isResubmit =
 									app.status.toLowerCase() ===
 									'application resubmit';
+
+								const paddingBottom = isResubmit
+									? hasRemark
+										? '48px'
+										: '40px'
+									: 'initial';
+
 								return (
 									<React.Fragment
 										key={app.internal_application_id}
@@ -158,13 +164,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 											py="12px"
 											_hover={{ bg: '#F5F5F5' }}
 											position="relative"
-											pb={
-												isResubmit && hasRemark
-													? '48px'
-													: isResubmit
-														? '40px'
-														: 'initial'
-											}
+											pb={paddingBottom}
 										>
 											<Text
 												fontSize="14px"
@@ -172,6 +172,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 											>
 												{app.application_name}
 											</Text>
+
 											{hasRemark && (
 												<Text
 													mt={2}
@@ -184,6 +185,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 													{app.remark}
 												</Text>
 											)}
+
 											{isResubmit && (
 												<Button
 													size="sm"
@@ -193,7 +195,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 													bottom="12px"
 													right="16px"
 													mt={hasRemark ? 2 : 0}
-													_hover={{ bg: '#3c5fdd' }} // override hover to keep same background
+													_hover={{ bg: '#3c5fdd' }}
 													onClick={(e) => {
 														e.stopPropagation();
 														navigate(

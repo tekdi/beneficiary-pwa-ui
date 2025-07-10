@@ -510,6 +510,12 @@ const BenefitsDetails: React.FC = () => {
 	const handleRedirect = () => {
 		navigate('/applicationStatus');
 	};
+	const actionLabel = !applicationStatus
+		? t('BENEFIT_DETAILS_PROCEED_TO_APPLY')
+		: applicationStatus === 'application resubmit'
+			? t('BENEFIT_DETAILS_RESUBMIT_APPLICATION')
+			: t('BENEFIT_DETAILS_APPLICATION_SUBMITTED');
+
 	return (
 		<Layout
 			_heading={{ heading: item?.descriptor?.name || '', handleBack }}
@@ -652,21 +658,10 @@ const BenefitsDetails: React.FC = () => {
 						<CommonButton
 							mt={6}
 							onClick={handleConfirmation}
-							label={
-								!applicationStatus
-									? t('BENEFIT_DETAILS_PROCEED_TO_APPLY') // if status is empty/null/undefined
-									: applicationStatus ===
-										  'application resubmit'
-										? t(
-												'BENEFIT_DETAILS_RESUBMIT_APPLICATION'
-											)
-										: t(
-												'BENEFIT_DETAILS_APPLICATION_SUBMITTED'
-											)
-							}
+							label={actionLabel}
 							isDisabled={
 								!!applicationStatus &&
-								applicationStatus !==   'application resubmit'
+								applicationStatus !== 'application resubmit'
 							}
 						/>
 					) : (
