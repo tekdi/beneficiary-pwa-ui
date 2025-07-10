@@ -196,7 +196,7 @@ const BenefitsDetails: React.FC = () => {
 			// Otherwise, use `authUser` as the formData.
 
 			const formData =
-				applicationStatus === 'application pending'
+				applicationStatus === 'application resubmit'
 					? {
 							...(authUser || {}),
 							...(applicationData.application_data || {}),
@@ -656,7 +656,7 @@ const BenefitsDetails: React.FC = () => {
 								!applicationStatus
 									? t('BENEFIT_DETAILS_PROCEED_TO_APPLY') // if status is empty/null/undefined
 									: applicationStatus ===
-										  'application pending'
+										  'application resubmit'
 										? t(
 												'BENEFIT_DETAILS_RESUBMIT_APPLICATION'
 											)
@@ -666,7 +666,7 @@ const BenefitsDetails: React.FC = () => {
 							}
 							isDisabled={
 								!!applicationStatus &&
-								applicationStatus !== 'application pending'
+								applicationStatus !==   'application resubmit'
 							}
 						/>
 					) : (
