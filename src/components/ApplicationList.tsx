@@ -32,31 +32,28 @@ const COLORS = {
 
 const StatusIcon = ({ status }: { status: string }) => {
 	const key = status.toLowerCase();
-	let IconComponent: React.ComponentType<any> = IoTimeOutline;
-	let iconColor = '#999999';
+	let IconComponent;
+	let iconColor;
 	let label = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
 	switch (key) {
-		case 'approved':
+		case 'application approved':
 			IconComponent = IoCheckmarkCircle;
 			iconColor = COLORS.success;
 			label = `Application ${label}`;
 			break;
-		case 'rejected':
+		case 'application rejected':
 			IconComponent = IoCloseCircle;
 			iconColor = COLORS.error;
 			label = `Application ${label}`;
 			break;
-		case 'pending':
+		case 'application pending':
+		case 'submitted':
 			IconComponent = IoTimeOutline;
 			iconColor = '#CC7914';
 			label = `Application ${label}`;
 			break;
-		case 'submitted':
-			IconComponent = IoArrowUpCircle;
-			iconColor = '#3D3A89';
-			label = `Application ${label}`;
-			break;
+
 		case 'application resubmit':
 			IconComponent = IoWarning;
 			iconColor = COLORS.warning;
@@ -141,11 +138,15 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 									app.status.toLowerCase() ===
 									'application resubmit';
 
-								const paddingBottom = isResubmit
-									? hasRemark
-										? '48px'
-										: '40px'
-									: 'initial';
+								let paddingBottom = 'initial';
+
+								if (isResubmit) {
+									if (hasRemark) {
+										paddingBottom = '48px';
+									} else {
+										paddingBottom = '40px';
+									}
+								}
 
 								return (
 									<React.Fragment
