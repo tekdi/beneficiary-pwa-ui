@@ -62,6 +62,7 @@
   "BENEFIT_DETAILS_OBJECTIVE_DETAILS": "प्रारंभिक छात्रवृत्ति-एससी के उद्देश्य:",
   "BENEFIT_DETAILS_DOCUMENTS_REQUIRED": "आवश्यक दस्तावेज़",
   "BENEFIT_DETAILS_APPLICATION_SUBMITTED": "आवेदन पहले ही जमा किया गया",
+  "BENEFIT_DETAILS_RESUBMIT_APPLICATION":"आवेदन पुनः जमा करें",
   "BENEFIT_DETAILS_PROCEED_TO_APPLY": "आवेदन के लिए आगे बढ़ें",
   "BENEFIT_DETAILS_LOGIN_TO_APPLY": "आवेदन के लिए लॉगिन करें",
   "SUBMIT_DIALOGUE_HEADING_TEXT": "आवेदन जमा किया गया",

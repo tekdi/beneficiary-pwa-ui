@@ -109,14 +109,21 @@ export interface DocumentItem {
 	proof?: string | string[];
 	label?: string;
 }
-
+interface ApplicationData {
+	status: string;
+	application_data?: Record<string, any>;
+	external_application_id?: string;
+}
 const BenefitsDetails: React.FC = () => {
 	const [context, setContext] = useState<FinancialSupportRequest | null>(
 		null
 	);
 	const [item, setItem] = useState<BenefitItem | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [isApplied, setIsApplied] = useState<boolean>(false);
+	const [applicationStatus, setApplicationStatus] = useState<string | null>(
+		null
+	);
+
 	const [error, setError] = useState<string>('');
 	const [authUser, setAuthUser] = useState<AuthUser | null>(null);
 	const [webFormProp, setWebFormProp] = useState<WebFormProps>({});
@@ -131,6 +138,8 @@ const BenefitsDetails: React.FC = () => {
 	const { t } = useTranslation();
 	// const [isEligible, setIsEligible] = useState<any[]>();
 	const [userDocuments, setUserDocuments] = useState();
+	const [applicationData, setApplicationData] =
+		useState<ApplicationData | null>(null);
 	const handleConfirmation = async () => {
 		setLoading(true);
 		const expiredMessage = getExpiredRequiredDocsMessage(
@@ -198,7 +207,21 @@ const BenefitsDetails: React.FC = () => {
 			const url = (result as { data: { responses: Array<any> } }).data
 				?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
 
-			const formData = authUser ?? undefined;
+			// If the application is resubmit, merge `authUser` and `applicationData`
+			// Priority is given to keys from `applicationData`, but any extra keys
+			// from `authUser` that are not present in `applicationData` will be included.
+			// Otherwise, use `authUser` as the formData.
+
+			const formData =
+				applicationStatus === 'application resubmit'
+					? {
+							...(authUser || {}),
+							...(applicationData?.application_data || {}),
+							external_application_id:
+								applicationData?.external_application_id,
+						}
+					: (authUser ?? undefined);
+
 			if (url) {
 				setWebFormProp({
 					url,
@@ -315,7 +338,9 @@ const BenefitsDetails: React.FC = () => {
 		});
 
 		if (appResult?.data?.applications?.length > 0) {
-			setIsApplied(true);
+			const status = appResult.data.applications[0].status;
+			setApplicationData(appResult.data.applications[0]);
+			setApplicationStatus(status); // Can be 'submitted', 'resubmit', etc.
 		}
 	};
 
@@ -501,6 +526,19 @@ const BenefitsDetails: React.FC = () => {
 	const handleRedirect = () => {
 		navigate('/applicationStatus');
 	};
+	const getActionLabel = (
+		status: string | null,
+		t: (key: string) => string
+	): string => {
+		if (!status) {
+			return t('BENEFIT_DETAILS_PROCEED_TO_APPLY');
+		} else if (status === 'application resubmit') {
+			return t('BENEFIT_DETAILS_RESUBMIT_APPLICATION');
+		} else {
+			return t('BENEFIT_DETAILS_APPLICATION_SUBMITTED');
+		}
+	};
+
 	return (
 		<Layout
 			_heading={{ heading: item?.descriptor?.name || '', handleBack }}
@@ -643,12 +681,11 @@ const BenefitsDetails: React.FC = () => {
 						<CommonButton
 							mt={6}
 							onClick={handleConfirmation}
-							label={
-								isApplied
-									? t('BENEFIT_DETAILS_APPLICATION_SUBMITTED')
-									: t('BENEFIT_DETAILS_PROCEED_TO_APPLY')
+							label={getActionLabel(applicationStatus, t)}
+							isDisabled={
+								!!applicationStatus &&
+								applicationStatus !== 'application resubmit'
 							}
-							isDisabled={isApplied}
 						/>
 					) : (
 						<CommonButton
