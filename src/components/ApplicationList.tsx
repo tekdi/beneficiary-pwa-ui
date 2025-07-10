@@ -8,6 +8,7 @@ import {
 	IoWarning,
 	IoHelpCircleOutline,
 } from 'react-icons/io5';
+import { useTranslation } from 'react-i18next';
 
 interface Application {
 	benefit_id: string;
@@ -80,7 +81,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 	applicationList = [],
 }) => {
 	const navigate = useNavigate();
-
+	const { t } = useTranslation();
 	const groupedApplications = React.useMemo(() => {
 		return applicationList.reduce(
 			(acc, app) => {
@@ -203,7 +204,9 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 														);
 													}}
 												>
-													Resubmit Application
+													{t(
+														'BENEFIT_DETAILS_RESUBMIT_APPLICATION'
+													)}
 												</Button>
 											)}
 										</Box>
