@@ -38,7 +38,34 @@ const SignIn: React.FC = () => {
 			setLoading(true); // Show loading indicator
 
 			const response = await loginUser({ username, password });
-			if (response) {
+			if (response?.data) {
+				// Validate required fields
+				if (!response.data.username) {
+					throw new Error(t('USERNAME_MISSING_ERROR'));
+				}
+
+				// Store tokens
+				localStorage.setItem('authToken', response.data.access_token);
+				localStorage.setItem('refreshToken', response.data.refresh_token);
+				if (response.data.walletToken) {
+					// Store wallet token if available
+					localStorage.setItem('walletToken', response.data.walletToken);
+				}
+
+				// Create user object with data from API response
+				const userData = {
+					accountId: response.data.username,
+					firstName: response.data.firstName ?? '',
+					lastName: response.data.lastName ?? '',
+					email: response.data.email ?? '',
+					phone: response.data.phone ?? '',
+					username: response.data.username,
+					// Add any additional user fields from the API response
+				};
+
+				// Store user data
+				localStorage.setItem('user', JSON.stringify(userData));
+
 				toast({
 					title: t('SIGNIN_SUCCESSFULL'),
 					status: 'success',
@@ -50,12 +77,9 @@ const SignIn: React.FC = () => {
 					},
 				});
 
-				localStorage.setItem('authToken', response.data.access_token);
-				localStorage.setItem(
-					'refreshToken',
-					response.data.refresh_token
-				);
 				navigate(0);
+			} else {
+				throw new Error(t('INVALID_RESPONSE_ERROR'));
 			}
 		} catch (error) {
 			toast({
@@ -63,7 +87,7 @@ const SignIn: React.FC = () => {
 				status: 'error',
 				duration: 10000,
 				isClosable: true,
-				description: error?.message,
+				description: error?.message ?? t('UNKNOWN_ERROR'),
 			});
 		} finally {
 			setLoading(false);

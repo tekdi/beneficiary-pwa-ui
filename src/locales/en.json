@@ -94,7 +94,7 @@
   "USER_PROFILE_BASIC_DETAILS": "Basic Details",
   "USER_PROFILE_UPLOAD_MISSING_DOCUMENTS": "Upload Missing Documents",
   "USER_PROFILE_ERROR_FETCHING_DATA": "Error fetching user data or documents",
-  "UPLOAD_DOCUMENT_EWALLET": "Upload Missing Document",
+  "UPLOAD_DOCUMENT_EWALLET": "Upload Document From Wallet",
   "DIALOGUE_T&C": "Terms and Conditions",
   "DIALOGUE_CLICK_TO_READ_AND_PROCEED": "Click to read and proceed",
   "SCAN_UPLOAD_DOCUMENT": "Scan & Upload Documents",
@@ -104,5 +104,6 @@
   "USER_DETAILS_NSP_OTR": "NSP OTR",
   "USER_DETAILS_TUTION_ADMIN_FEE_PAID": "Tuition/Admin Fee Paid",
   "USER_DETAILS_MISC_FEE_PAID": "Miscellaneous Fee Paid",
-  "USER_DETAILS_AGE": "Age"
+  "USER_DETAILS_AGE": "Age",
+  "WALLET_INTERFACE": "My Wallet"
 }

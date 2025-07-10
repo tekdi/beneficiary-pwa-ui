@@ -617,6 +617,30 @@ export function getExpiryDate(
 		return { success: false };
 	}
 }
+export function getExpiredRequiredDocsMessage(
+	userData: { doc_subtype: string; doc_data: string }[],
+	documents: { label?: string; proof?: string; isRequired?: boolean }[]
+): string | null {
+	const expiredLabels = documents
+		.filter((doc) => doc.isRequired)
+		.map((doc) => {
+			const result = getExpiryDate(userData, doc.proof);
+			if (result.success && result.isExpired) {
+				// Format: incomeCertificate -> Income Certificate
+				return doc.proof
+					.replace(/([a-z])([A-Z])/g, '$1 $2')
+					.replace(/^./, (s) => s.toUpperCase());
+			}
+			return null;
+		})
+		.filter(Boolean);
+
+	if (expiredLabels.length === 0) return null;
+
+	return `⚠️ ${expiredLabels.join(', ')} ${
+		expiredLabels.length === 1 ? 'has' : 'have'
+	} expired. Please upload valid documents to proceed further.`;
+}
 /**
  * Utility function to format a user-readable label for a document.
  *
