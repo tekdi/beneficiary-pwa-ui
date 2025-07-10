@@ -5,7 +5,6 @@ import {
 	IoCheckmarkCircle,
 	IoCloseCircle,
 	IoTimeOutline,
-	IoArrowUpCircle,
 	IoWarning,
 	IoHelpCircleOutline,
 } from 'react-icons/io5';
