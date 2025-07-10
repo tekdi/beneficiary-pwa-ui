@@ -32,6 +32,7 @@ import {
 } from '@chakra-ui/icons';
 import { getDocumentsList } from '../services/auth/auth';
 import { vcFieldMocks } from '../assets/mockdata/VCFields';
+import { updateMapping, getMapping } from '../services/admin/admin';
 const FieldMappingTab = () => {
 	const [fields, setFields] = useState([]);
 	const [documents, setDocuments] = useState([]);
@@ -48,7 +49,7 @@ const FieldMappingTab = () => {
 				},
 			],
 			isExpanded: false,
-			addMapping: '', // new field
+			addMapping: '', // always present
 		},
 	]);
 	const [loading, setLoading] = useState(false);
@@ -391,10 +392,13 @@ const FieldMappingTab = () => {
 							documentField: doc.selectedVcField,
 						})),
 					fieldValueNormalizationMapping:
-						fieldMapping.addMapping.trim(),
+						fieldMapping.addMapping.trim()
+							? JSON.parse(fieldMapping.addMapping.trim())
+							: undefined,
 				}));
 
-			await new Promise((resolve) => setTimeout(resolve, 1000)); // mock API
+			// Call the API with the correct config key
+			await updateMapping(saveData, 'profileFieldToDocumentFieldMapping');
 
 			const totalFields = saveData.length;
 			const totalDocMappings = saveData.reduce(
@@ -439,26 +443,41 @@ const FieldMappingTab = () => {
 					},
 				],
 				isExpanded: false,
+				addMapping: '', // always present
 			},
 		]);
 	};
 
 	const removeFieldMapping = (fieldIndex) => {
-		if (fieldMappings.length > 1) {
-			const newFieldMappings = fieldMappings.filter(
-				(_, i) => i !== fieldIndex
-			);
-			setFieldMappings(newFieldMappings);
-
-			// Clear related errors
-			const newErrors = { ...errors };
-			Object.keys(errors).forEach((key) => {
-				if (key.startsWith(`field_${fieldIndex}`)) {
-					delete newErrors[key];
-				}
-			});
-			setErrors(newErrors);
+		let newFieldMappings = fieldMappings.filter((_, i) => i !== fieldIndex);
+		if (newFieldMappings.length === 0) {
+			newFieldMappings = [
+				{
+					id: Date.now(),
+					fieldId: '',
+					documentMappings: [
+						{
+							id: Date.now() + 1,
+							selectedDocument: '',
+							vcFields: [],
+							selectedVcField: '',
+						},
+					],
+					isExpanded: false,
+					addMapping: '',
+				},
+			];
 		}
+		setFieldMappings(newFieldMappings);
+
+		// Clear related errors
+		const newErrors = { ...errors };
+		Object.keys(errors).forEach((key) => {
+			if (key.startsWith(`field_${fieldIndex}`)) {
+				delete newErrors[key];
+			}
+		});
+		setErrors(newErrors);
 	};
 
 	const updateFieldMapping = (fieldIndex, fieldId) => {
@@ -572,10 +591,57 @@ const FieldMappingTab = () => {
 		}, 0);
 	};
 
+	// Prefill fieldMappings from API
+	const fetchFieldMappings = async () => {
+		setLoading(true);
+		try {
+			const data = await getMapping('profileFieldToDocumentFieldMapping');
+			if (Array.isArray(data.data.value) && data.data.value.length > 0) {
+				const mapped = data.data.value.map((item, idx) => ({
+					id: Date.now() + idx,
+					fieldId: fields.find(f => f.name === item.fieldName)?.id || '',
+					documentMappings: (item.documentMappings || []).map((doc, j) => ({
+						id: Date.now() + idx * 100 + j,
+						selectedDocument: doc.document,
+						vcFields: [],
+						selectedVcField: doc.documentField,
+					})),
+					isExpanded: true,
+					addMapping: item.fieldValueNormalizationMapping
+						? (typeof item.fieldValueNormalizationMapping === 'string'
+							? item.fieldValueNormalizationMapping
+							: JSON.stringify(item.fieldValueNormalizationMapping))
+						: '',
+				}));
+				setFieldMappings(mapped);
+			}
+		} catch (error) {
+			toast({
+				title: 'Error',
+				description: 'Failed to fetch field mappings',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	useEffect(() => {
-		fetchFields();
-		fetchDocuments();
+		const init = async () => {
+			await fetchFields();
+			await fetchDocuments();
+		};
+		init();
 	}, []);
+
+	useEffect(() => {
+		if (fields.length > 0) {
+			fetchFieldMappings();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fields]);
 
 	return (
 		<VStack spacing={6} align="stretch">
