@@ -27,13 +27,13 @@ interface MappingRequest {
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // const BASE_URL = 'http://localhost:5000';
-export const updateMapping = async (mappings: Mapping[]) => {
+export const updateMapping = async (value: Mapping[], key: string) => {
 	try {
 		const response = await axios.post(
 			`${BASE_URL}/admin/config`,
 			{
-				configType: 'document-mapping',
-				mappings,
+				key,
+				value,
 			},
 			{
 				headers: {
