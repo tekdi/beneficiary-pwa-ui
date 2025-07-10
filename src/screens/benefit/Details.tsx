@@ -212,15 +212,17 @@ const BenefitsDetails: React.FC = () => {
 			// from `authUser` that are not present in `applicationData` will be included.
 			// Otherwise, use `authUser` as the formData.
 
-			const formData =
-				applicationStatus === 'application resubmit'
-					? {
-							...(authUser || {}),
-							...(applicationData?.application_data || {}),
-							external_application_id:
-								applicationData?.external_application_id,
-						}
-					: (authUser ?? undefined);
+			const isEditableStatus = ['application resubmit', 'application pending', 'submitted'].includes(
+				applicationStatus?.toLowerCase() || ''
+			  );
+			  
+			  const formData = isEditableStatus
+				? {
+					...(authUser || {}),
+					...(applicationData?.application_data || {}),
+					external_application_id: applicationData?.external_application_id,
+				  }
+				: authUser ?? undefined;
 
 			if (url) {
 				setWebFormProp({
@@ -454,7 +456,7 @@ const BenefitsDetails: React.FC = () => {
 					benefit_provider_uri: context?.bap_uri,
 					external_application_id: orderId,
 					application_name: item?.descriptor?.name,
-					status: 'submitted',
+					status: 'application pending',
 					application_data: payload?.userData,
 				};
 
@@ -532,7 +534,7 @@ const BenefitsDetails: React.FC = () => {
 	): string => {
 		if (!status) {
 			return t('BENEFIT_DETAILS_PROCEED_TO_APPLY');
-		} else if (status === 'application resubmit') {
+		} else if (status === 'application resubmit' || status === 'application pending' || status === 'submitted') {
 			return t('BENEFIT_DETAILS_RESUBMIT_APPLICATION');
 		} else {
 			return t('BENEFIT_DETAILS_APPLICATION_SUBMITTED');
@@ -683,8 +685,7 @@ const BenefitsDetails: React.FC = () => {
 							onClick={handleConfirmation}
 							label={getActionLabel(applicationStatus, t)}
 							isDisabled={
-								!!applicationStatus &&
-								applicationStatus !== 'application resubmit'
+								!!applicationStatus && !['application pending', 'submitted', 'application resubmit'].includes((applicationStatus || '').toLowerCase())
 							}
 						/>
 					) : (
