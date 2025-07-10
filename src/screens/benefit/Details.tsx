@@ -112,7 +112,7 @@ export interface DocumentItem {
 interface ApplicationData {
 	status: string;
 	application_data?: Record<string, any>;
-	internal_application_id?: string;
+	external_application_id?: string;
 }
 const BenefitsDetails: React.FC = () => {
 	const [context, setContext] = useState<FinancialSupportRequest | null>(
@@ -217,8 +217,8 @@ const BenefitsDetails: React.FC = () => {
 					? {
 							...(authUser || {}),
 							...(applicationData?.application_data || {}),
-							internal_application_id:
-								applicationData?.internal_application_id,
+							external_application_id:
+								applicationData?.external_application_id,
 						}
 					: (authUser ?? undefined);
 
