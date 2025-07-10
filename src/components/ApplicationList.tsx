@@ -40,18 +40,18 @@ const StatusIcon = ({ status }: { status: string }) => {
 		case 'application approved':
 			IconComponent = IoCheckmarkCircle;
 			iconColor = COLORS.success;
-			label = `Application ${label}`;
+			label = `${label}`;
 			break;
 		case 'application rejected':
 			IconComponent = IoCloseCircle;
 			iconColor = COLORS.error;
-			label = `Application ${label}`;
+			label = `${label}`;
 			break;
 		case 'application pending':
 		case 'submitted':
 			IconComponent = IoTimeOutline;
 			iconColor = '#CC7914';
-			label = `Application ${label}`;
+			label = `${label}`;
 			break;
 
 		case 'application resubmit':
@@ -134,9 +134,12 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 						<VStack align="stretch" spacing={0}>
 							{groupedApplications[status].map((app, i, arr) => {
 								const hasRemark = !!app.remark?.trim();
-								const isResubmit =
-									app.status.toLowerCase() ===
-									'application resubmit';
+								// Show Resubmit for Pending, Submitted, or Application Resubmit
+								const isResubmit = [
+									'application resubmit',
+									'application pending',
+									'submitted',
+								].includes(app.status.toLowerCase());
 
 								let paddingBottom = 'initial';
 
@@ -178,7 +181,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 												<Text
 													mt={2}
 													fontSize="13px"
-													color="#CC7914"
+													color="black"
 													display="flex"
 													alignItems="center"
 												>
