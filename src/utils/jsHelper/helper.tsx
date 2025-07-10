@@ -339,8 +339,8 @@ export const transformData = (userData) => {
 			userData?.haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship ??
 			' ',
 		studentId: userData?.studentId ?? ' ',
-		...(userData?.internal_application_id
-			? { internal_application_id: userData.internal_application_id }
+		...(userData?.external_application_id
+			? { external_application_id: userData.external_application_id }
 			: {}),
 	};
 };
