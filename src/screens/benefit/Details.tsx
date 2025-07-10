@@ -109,7 +109,11 @@ export interface DocumentItem {
 	proof?: string | string[];
 	label?: string;
 }
-
+interface ApplicationData {
+	status: string;
+	application_data?: Record<string, any>;
+	internal_application_id?: string;
+}
 const BenefitsDetails: React.FC = () => {
 	const [context, setContext] = useState<FinancialSupportRequest | null>(
 		null
@@ -134,7 +138,8 @@ const BenefitsDetails: React.FC = () => {
 	const { t } = useTranslation();
 	// const [isEligible, setIsEligible] = useState<any[]>();
 	const [userDocuments, setUserDocuments] = useState();
-	const [applicationData, setApplicationData] = useState<any>(null);
+	const [applicationData, setApplicationData] =
+		useState<ApplicationData | null>(null);
 	const handleConfirmation = async () => {
 		setLoading(true);
 		const expiredMessage = getExpiredRequiredDocsMessage(
@@ -202,7 +207,7 @@ const BenefitsDetails: React.FC = () => {
 			const url = (result as { data: { responses: Array<any> } }).data
 				?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
 
-			// If the application is resubmmit, merge `authUser` and `applicationData`
+			// If the application is resubmit, merge `authUser` and `applicationData`
 			// Priority is given to keys from `applicationData`, but any extra keys
 			// from `authUser` that are not present in `applicationData` will be included.
 			// Otherwise, use `authUser` as the formData.
@@ -211,12 +216,11 @@ const BenefitsDetails: React.FC = () => {
 				applicationStatus === 'application resubmit'
 					? {
 							...(authUser || {}),
-							...(applicationData.application_data || {}),
+							...(applicationData?.application_data || {}),
 							internal_application_id:
-								applicationData.internal_application_id,
+								applicationData?.internal_application_id,
 						}
 					: (authUser ?? undefined);
-			console.log('formData', formData);
 
 			if (url) {
 				setWebFormProp({
