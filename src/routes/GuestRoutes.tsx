@@ -1,11 +1,10 @@
 import { lazy } from 'react';
 import SignIn from '../screens/auth/SignIn';
-
 const Splash = lazy(() => import('../screens/auth/Splash'));
 const ExploreBenefits = lazy(() => import('../screens/benefit/Benefits'));
 const BenefitsDetails = lazy(() => import('../screens/benefit/Details'));
 const Signup = lazy(() => import('../screens/auth/SignUpWithPassword'));
-
+const AdminDashboard = lazy(() => import('../screens/admin/AdminDashboard'));
 const routes = [
 	{
 		path: '/signup',
@@ -26,6 +25,10 @@ const routes = [
 	{
 		path: '*',
 		component: Splash,
+	},
+	{
+		path: '/adminDashboard/admin123',
+		component: AdminDashboard,
 	},
 ];
 export default routes;

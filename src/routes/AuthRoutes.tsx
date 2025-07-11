@@ -14,7 +14,7 @@ const UploadDocuments = lazy(
 const Home = lazy(() => import('../screens/Home'));
 const UserProfile = lazy(() => import('../screens/UserProfile'));
 const DocumentScanner = lazy(() => import('../components/DocumentScanner'));
-
+const AdminDashboard = lazy(() => import('../screens/admin/AdminDashboard'));
 const routes = [
 	{
 		path: '/uploaddocuments',
@@ -32,7 +32,12 @@ const routes = [
 		path: '/document-scanner',
 		component: () => {
 			const { userData } = useContext(AuthContext)!;
-			return <DocumentScanner userId={userData?.user_id} userData={userData?.docs} />;
+			return (
+				<DocumentScanner
+					userId={userData?.user_id}
+					userData={userData?.docs}
+				/>
+			);
 		},
 	},
 	{
@@ -58,6 +63,10 @@ const routes = [
 	{
 		path: '*',
 		component: Home,
+	},
+	{
+		path: '/adminDashboard/admin123',
+		component: AdminDashboard,
 	},
 ];
 
