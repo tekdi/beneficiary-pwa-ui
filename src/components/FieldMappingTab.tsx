@@ -16,7 +16,6 @@ import {
 	AlertIcon,
 	AlertTitle,
 	AlertDescription,
-	Spinner,
 	Divider,
 	Badge,
 	Flex,

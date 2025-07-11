@@ -8,10 +8,7 @@ import {
 	TabPanels,
 	Tab,
 	TabPanel,
-	Alert,
-	AlertIcon,
-	AlertTitle,
-	AlertDescription,
+
 } from '@chakra-ui/react';
 
 import FieldMappingTab from '../../components/FieldMappingTab';
