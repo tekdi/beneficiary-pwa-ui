@@ -20,13 +20,12 @@ export interface Mapping {
 	fieldValueNormalizationMapping?: FieldValueNormalization;
 }
 
-
 export interface Field {
-  fieldId: string;
-  label: string;
-  name: string;
-  type: string;
-  isRequired: boolean;
+	fieldId: string;
+	label: string;
+	name: string;
+	type: string;
+	isRequired: boolean;
 }
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -70,28 +69,28 @@ export const getMapping = async (configType: string) => {
 	}
 };
 
-export const fetchFields = async (context = 'USERS', contextType = 'User'): Promise<Field[]> => {
-  try {
-    const response = await axios.get(
-      `${BASE_URL}/fields`,
-      {
-        params: { context, contextType },
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-        },
-      }
-    );
-    // Response is an array of field objects
-    return response.data.map((field: any) => ({
-      fieldId: field.fieldId,
-      label: field.label,
-      name: field.name,
-      type: field.type,
-      isRequired: field.fieldAttributes?.isRequired ?? false,
-    }));
-  } catch (error) {
-    console.error('Error fetching fields:', error);
-    throw error;
-  }
+export const fetchFields = async (
+	context = 'USERS',
+	contextType = 'User'
+): Promise<Field[]> => {
+	try {
+		const response = await axios.get(`${BASE_URL}/fields`, {
+			params: { context, contextType },
+			headers: {
+				accept: 'application/json',
+				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+			},
+		});
+		// Response is an array of field objects
+		return response.data.map((field: any) => ({
+			fieldId: field.fieldId,
+			label: field.label,
+			name: field.name,
+			type: field.type,
+			isRequired: field.fieldAttributes?.isRequired ?? false,
+		}));
+	} catch (error) {
+		console.error('Error fetching fields:', error);
+		throw error;
+	}
 };

@@ -8,7 +8,6 @@ import {
 	TabPanels,
 	Tab,
 	TabPanel,
-
 } from '@chakra-ui/react';
 
 import FieldMappingTab from '../../components/FieldMappingTab';

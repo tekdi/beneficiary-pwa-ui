@@ -22,23 +22,23 @@ import {
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { getMapping, updateMapping } from '../services/admin/admin';
 
-
 const DocumentConfigurationTab = () => {
 	const toast = useToast();
 
 	// --- State for document configurations and errors ---
 	const [documentConfigs, setDocumentConfigs] = useState([]); // List of document configurations
 	const [errors, setErrors] = useState({}); // Validation errors
-	
 
 	// --- Fetch document configurations from API ---
 	useEffect(() => {
 		const fetchConfigs = async () => {
-		
 			try {
 				const data = await getMapping('vcConfiguration');
 				// Map API response to local state structure
-				if (Array.isArray(data.data.value) && data.data.value.length > 0) {
+				if (
+					Array.isArray(data.data.value) &&
+					data.data.value.length > 0
+				) {
 					const mapped = data.data.value.map((item, idx) => {
 						let vcFieldsString = '';
 						if (typeof item.vcFields === 'string') {
@@ -78,7 +78,7 @@ const DocumentConfigurationTab = () => {
 					duration: 3000,
 					isClosable: true,
 				});
-			} 
+			}
 		};
 		fetchConfigs();
 	}, []);
@@ -88,7 +88,12 @@ const DocumentConfigurationTab = () => {
 		if (!value || value.trim() === '') return true;
 		try {
 			const parsed = JSON.parse(value);
-			if (typeof parsed !== 'object' || Array.isArray(parsed) || parsed === null) return false;
+			if (
+				typeof parsed !== 'object' ||
+				Array.isArray(parsed) ||
+				parsed === null
+			)
+				return false;
 			for (const key in parsed) {
 				if (
 					!parsed[key] ||
@@ -173,7 +178,8 @@ const DocumentConfigurationTab = () => {
 		if (hasError) {
 			toast({
 				title: 'Validation Error',
-				description: 'Please fill in all fields and ensure VC fields are valid JSON with the correct structure.',
+				description:
+					'Please fill in all fields and ensure VC fields are valid JSON with the correct structure.',
 				status: 'error',
 			});
 			return;
@@ -213,7 +219,8 @@ const DocumentConfigurationTab = () => {
 						Document Configuration
 					</Text>
 					<Text fontSize="sm" color="gray.600">
-						Add multiple document configurations used for document verification.
+						Add multiple document configurations used for document
+						verification.
 					</Text>
 				</Box>
 			</Alert>
@@ -243,90 +250,180 @@ const DocumentConfigurationTab = () => {
 											size="sm"
 											variant="ghost"
 											onClick={() => removeConfig(index)}
-											isDisabled={documentConfigs.length === 1}
+											isDisabled={
+												documentConfigs.length === 1
+											}
 										/>
 									</HStack>
 
 									<HStack spacing={4} align="start">
 										<FormControl
-											isInvalid={!!errors[`name_${index}`]}
+											isInvalid={
+												!!errors[`name_${index}`]
+											}
 											flex={1}
 										>
-											<FormLabel fontSize="sm" fontWeight="semibold" color="blue.700">Document Name</FormLabel>
+											<FormLabel
+												fontSize="sm"
+												fontWeight="semibold"
+												color="blue.700"
+											>
+												Document Name
+											</FormLabel>
 											<Input
 												value={doc.name}
-												onChange={(e) => handleChange(index, 'name', e.target.value)}
+												onChange={(e) =>
+													handleChange(
+														index,
+														'name',
+														e.target.value
+													)
+												}
 												borderColor="blue.400"
 												borderWidth="2px"
 												bg="white"
 												size="sm"
 											/>
-											<FormErrorMessage fontSize="xs">{errors[`name_${index}`]}</FormErrorMessage>
+											<FormErrorMessage fontSize="xs">
+												{errors[`name_${index}`]}
+											</FormErrorMessage>
 										</FormControl>
 
 										<FormControl
-											isInvalid={!!errors[`label_${index}`]}
+											isInvalid={
+												!!errors[`label_${index}`]
+											}
 											flex={1}
 										>
-											<FormLabel fontSize="sm" fontWeight="semibold" color="blue.700">Document Label</FormLabel>
+											<FormLabel
+												fontSize="sm"
+												fontWeight="semibold"
+												color="blue.700"
+											>
+												Document Label
+											</FormLabel>
 											<Input
 												value={doc.label}
-												onChange={(e) => handleChange(index, 'label', e.target.value)}
+												onChange={(e) =>
+													handleChange(
+														index,
+														'label',
+														e.target.value
+													)
+												}
 												borderColor="blue.400"
 												borderWidth="2px"
 												bg="white"
 												size="sm"
 											/>
-											<FormErrorMessage fontSize="xs">{errors[`label_${index}`]}</FormErrorMessage>
+											<FormErrorMessage fontSize="xs">
+												{errors[`label_${index}`]}
+											</FormErrorMessage>
 										</FormControl>
 									</HStack>
 
 									<HStack spacing={4} align="start">
 										<FormControl
-											isInvalid={!!errors[`documentSubType_${index}`]}
+											isInvalid={
+												!!errors[
+													`documentSubType_${index}`
+												]
+											}
 											flex={1}
 										>
-											<FormLabel fontSize="sm" fontWeight="semibold" color="blue.700">Document Sub Type</FormLabel>
+											<FormLabel
+												fontSize="sm"
+												fontWeight="semibold"
+												color="blue.700"
+											>
+												Document Sub Type
+											</FormLabel>
 											<Input
 												value={doc.documentSubType}
-												onChange={(e) => handleChange(index, 'documentSubType', e.target.value)}
+												onChange={(e) =>
+													handleChange(
+														index,
+														'documentSubType',
+														e.target.value
+													)
+												}
 												borderColor="blue.400"
 												borderWidth="2px"
 												bg="white"
 												size="sm"
 											/>
-											<FormErrorMessage fontSize="xs">{errors[`documentSubType_${index}`]}</FormErrorMessage>
+											<FormErrorMessage fontSize="xs">
+												{
+													errors[
+														`documentSubType_${index}`
+													]
+												}
+											</FormErrorMessage>
 										</FormControl>
 
 										<FormControl
-											isInvalid={!!errors[`docType_${index}`]}
+											isInvalid={
+												!!errors[`docType_${index}`]
+											}
 											flex={1}
 										>
-											<FormLabel fontSize="sm" fontWeight="semibold" color="blue.700">Document Type</FormLabel>
+											<FormLabel
+												fontSize="sm"
+												fontWeight="semibold"
+												color="blue.700"
+											>
+												Document Type
+											</FormLabel>
 											<Input
 												value={doc.docType}
-												onChange={(e) => handleChange(index, 'docType', e.target.value)}
+												onChange={(e) =>
+													handleChange(
+														index,
+														'docType',
+														e.target.value
+													)
+												}
 												borderColor="blue.400"
 												borderWidth="2px"
 												bg="white"
 												size="sm"
 											/>
-											<FormErrorMessage fontSize="xs">{errors[`docType_${index}`]}</FormErrorMessage>
+											<FormErrorMessage fontSize="xs">
+												{errors[`docType_${index}`]}
+											</FormErrorMessage>
 										</FormControl>
 									</HStack>
 
-									<FormControl isInvalid={!!errors[`vcFields_${index}`]}>
-										<FormLabel fontSize="sm" fontWeight="semibold" color="blue.700">VC fields (JSON)</FormLabel>
+									<FormControl
+										isInvalid={
+											!!errors[`vcFields_${index}`]
+										}
+									>
+										<FormLabel
+											fontSize="sm"
+											fontWeight="semibold"
+											color="blue.700"
+										>
+											VC fields (JSON)
+										</FormLabel>
 										<Textarea
 											value={doc.vcFields || ''}
-											onChange={(e) => handleChange(index, 'vcFields', e.target.value)}
+											onChange={(e) =>
+												handleChange(
+													index,
+													'vcFields',
+													e.target.value
+												)
+											}
 											placeholder='e.g. {"field1": {"type": "string"}, "field2": {"type": "number"}}'
-											resize='vertical'
-											minH='80px'
+											resize="vertical"
+											minH="80px"
 											bg="white"
 											size="sm"
 										/>
-										<FormErrorMessage fontSize="xs">{errors[`vcFields_${index}`]}</FormErrorMessage>
+										<FormErrorMessage fontSize="xs">
+											{errors[`vcFields_${index}`]}
+										</FormErrorMessage>
 									</FormControl>
 								</VStack>
 							</CardBody>
@@ -350,7 +447,11 @@ const DocumentConfigurationTab = () => {
 				<Divider my={6} />
 
 				<HStack justify="flex-end" spacing={4}>
-					<Button colorScheme="green" onClick={handleSaveAll} size="lg">
+					<Button
+						colorScheme="green"
+						onClick={handleSaveAll}
+						size="lg"
+					>
 						Save All Configurations
 					</Button>
 				</HStack>

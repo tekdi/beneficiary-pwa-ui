@@ -1,4 +1,4 @@
-import { lazy, useContext } from 'react';
+import React, { lazy, useContext } from 'react';
 import ScanVC from '../components/ScanVC';
 import { AuthContext } from '../utils/context/checkToken';
 
