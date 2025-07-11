@@ -20,7 +20,8 @@ import {
 	Flex,
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
-import { updateMapping, getMapping } from '../services/admin/admin';
+import { getMapping, updateMapping } from '../services/admin/admin';
+
 
 const DocumentConfigurationTab = () => {
 	const toast = useToast();
@@ -28,24 +29,32 @@ const DocumentConfigurationTab = () => {
 	// --- State for document configurations and errors ---
 	const [documentConfigs, setDocumentConfigs] = useState([]); // List of document configurations
 	const [errors, setErrors] = useState({}); // Validation errors
-	const [loading, setLoading] = useState(false); // Loading state
+	
 
 	// --- Fetch document configurations from API ---
 	useEffect(() => {
 		const fetchConfigs = async () => {
-			setLoading(true);
+		
 			try {
 				const data = await getMapping('vcConfiguration');
 				// Map API response to local state structure
 				if (Array.isArray(data.data.value) && data.data.value.length > 0) {
-					const mapped = data.data.value.map((item, idx) => ({
-						id: Date.now() + idx,
-						name: item.name || '',
-						label: item.label || '',
-						documentSubType: item.documentSubType || '',
-						docType: item.docType || '',
-						vcFields: typeof item.vcFields === 'string' ? item.vcFields : (item.vcFields ? JSON.stringify(item.vcFields) : ''),
-					}));
+					const mapped = data.data.value.map((item, idx) => {
+						let vcFieldsString = '';
+						if (typeof item.vcFields === 'string') {
+							vcFieldsString = item.vcFields;
+						} else if (item.vcFields) {
+							vcFieldsString = JSON.stringify(item.vcFields);
+						}
+						return {
+							id: Date.now() + idx,
+							name: item.name || '',
+							label: item.label || '',
+							documentSubType: item.documentSubType || '',
+							docType: item.docType || '',
+							vcFields: vcFieldsString,
+						};
+					});
 					setDocumentConfigs(mapped);
 				} else {
 					setDocumentConfigs([
@@ -60,6 +69,8 @@ const DocumentConfigurationTab = () => {
 					]);
 				}
 			} catch (error) {
+				// Log the error for debugging
+				console.error('Error fetching document configurations:', error);
 				toast({
 					title: 'Error',
 					description: 'Failed to fetch document configurations',
@@ -67,9 +78,7 @@ const DocumentConfigurationTab = () => {
 					duration: 3000,
 					isClosable: true,
 				});
-			} finally {
-				setLoading(false);
-			}
+			} 
 		};
 		fetchConfigs();
 	}, []);
@@ -185,6 +194,8 @@ const DocumentConfigurationTab = () => {
 				status: 'success',
 			});
 		} catch (error) {
+			// Log the error for debugging
+			console.error('Error in JSON parsing or mapping:', error);
 			toast({
 				title: 'Error',
 				description: 'Failed to save document configurations',
