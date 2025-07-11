@@ -25,16 +25,18 @@ import { updateMapping, getMapping } from '../services/admin/admin';
 const DocumentConfigurationTab = () => {
 	const toast = useToast();
 
-	const [documentConfigs, setDocumentConfigs] = useState([]);
-	const [errors, setErrors] = useState({});
-	const [loading, setLoading] = useState(false);
+	// --- State for document configurations and errors ---
+	const [documentConfigs, setDocumentConfigs] = useState([]); // List of document configurations
+	const [errors, setErrors] = useState({}); // Validation errors
+	const [loading, setLoading] = useState(false); // Loading state
 
+	// --- Fetch document configurations from API ---
 	useEffect(() => {
 		const fetchConfigs = async () => {
 			setLoading(true);
 			try {
 				const data = await getMapping('vcConfiguration');
-				console.log('Fetched data:', data.data.value); // 🔍 ADD THIS LINE
+				// Map API response to local state structure
 				if (Array.isArray(data.data.value) && data.data.value.length > 0) {
 					const mapped = data.data.value.map((item, idx) => ({
 						id: Date.now() + idx,
@@ -72,6 +74,30 @@ const DocumentConfigurationTab = () => {
 		fetchConfigs();
 	}, []);
 
+	// --- Validate vcFields JSON structure ---
+	const validateVcFields = (value) => {
+		if (!value || value.trim() === '') return true;
+		try {
+			const parsed = JSON.parse(value);
+			if (typeof parsed !== 'object' || Array.isArray(parsed) || parsed === null) return false;
+			for (const key in parsed) {
+				if (
+					!parsed[key] ||
+					typeof parsed[key] !== 'object' ||
+					Array.isArray(parsed[key]) ||
+					!('type' in parsed[key]) ||
+					typeof parsed[key].type !== 'string'
+				) {
+					return false;
+				}
+			}
+			return true;
+		} catch {
+			return false;
+		}
+	};
+
+	// --- Handle input changes and validate fields ---
 	const handleChange = (index: number, field: string, value: string) => {
 		const updated = [...documentConfigs];
 		updated[index][field] = value;
@@ -79,20 +105,19 @@ const DocumentConfigurationTab = () => {
 
 		const newErrors = { ...errors };
 		delete newErrors[`${field}_${index}`];
-		// If the field is 'vcFields', validate JSON
+		// If the field is 'vcFields', validate JSON and structure
 		if (field === 'vcFields') {
-			try {
-				if (value.trim() !== '') {
-					JSON.parse(value);
-				}
+			if (value.trim() !== '' && !validateVcFields(value)) {
+				newErrors[`vcFields_${index}`] =
+					'Invalid format: Must be a JSON object where each key is a field name and its value is an object with a "type" property.';
+			} else {
 				delete newErrors[`vcFields_${index}`];
-			} catch (e) {
-				newErrors[`vcFields_${index}`] = 'Invalid JSON format';
 			}
 		}
 		setErrors(newErrors);
 	};
 
+	// --- Add and remove document configuration blocks ---
 	const addConfig = () => {
 		setDocumentConfigs([
 			...documentConfigs,
@@ -113,10 +138,11 @@ const DocumentConfigurationTab = () => {
 		setDocumentConfigs(updated);
 	};
 
+	// --- Save all document configurations to the backend ---
 	const handleSaveAll = async () => {
 		let hasError = false;
 		const newErrors = {};
-
+		// Validate all required fields and vcFields structure
 		documentConfigs.forEach((doc, index) => {
 			['name', 'label', 'documentSubType', 'docType'].forEach((field) => {
 				if (!doc[field]) {
@@ -124,31 +150,27 @@ const DocumentConfigurationTab = () => {
 					hasError = true;
 				}
 			});
-			// Validate VC fields JSON if not empty
 			if (doc.vcFields && doc.vcFields.trim() !== '') {
-				try {
-					JSON.parse(doc.vcFields);
-					delete newErrors[`vcFields_${index}`];
-				} catch (e) {
-					newErrors[`vcFields_${index}`] = 'Invalid JSON format';
+				if (!validateVcFields(doc.vcFields)) {
+					newErrors[`vcFields_${index}`] =
+						'Invalid format: Must be a JSON object where each key is a field name and its value is an object with a "type" property.';
 					hasError = true;
+				} else {
+					delete newErrors[`vcFields_${index}`];
 				}
 			}
 		});
-
 		setErrors(newErrors);
-
 		if (hasError) {
 			toast({
 				title: 'Validation Error',
-				description: 'Please fill in all fields and ensure VC fields are valid JSON',
+				description: 'Please fill in all fields and ensure VC fields are valid JSON with the correct structure.',
 				status: 'error',
 			});
 			return;
 		}
-
 		try {
-			// Prepare data for submission
+			// Prepare and send the payload
 			const saveData = documentConfigs.map((doc) => ({
 				name: doc.name,
 				label: doc.label,
@@ -156,9 +178,7 @@ const DocumentConfigurationTab = () => {
 				docType: doc.docType,
 				vcFields: doc.vcFields,
 			}));
-
 			await updateMapping(saveData, 'vcConfiguration');
-
 			toast({
 				title: 'Success',
 				description: `${documentConfigs.length} document configurations saved.`,
@@ -289,7 +309,7 @@ const DocumentConfigurationTab = () => {
 										<Textarea
 											value={doc.vcFields || ''}
 											onChange={(e) => handleChange(index, 'vcFields', e.target.value)}
-											placeholder='e.g. {"field1": "value1", "field2": 2}'
+											placeholder='e.g. {"field1": {"type": "string"}, "field2": {"type": "number"}}'
 											resize='vertical'
 											minH='80px'
 											bg="white"

@@ -32,11 +32,12 @@ import {
 } from '@chakra-ui/icons';
 import { getDocumentsList } from '../services/auth/auth';
 import { vcFieldMocks } from '../assets/mockdata/VCFields';
-import { updateMapping, getMapping } from '../services/admin/admin';
+import { updateMapping, getMapping, fetchFields as fetchFieldsAPI } from '../services/admin/admin';
 const FieldMappingTab = () => {
-	const [fields, setFields] = useState([]);
-	const [documents, setDocuments] = useState([]);
+	const [fields, setFields] = useState([]); // List of available form fields from API
+	const [documents, setDocuments] = useState([]); // List of available documents from API
 	const [fieldMappings, setFieldMappings] = useState([
+		// User-configured field-to-document mappings
 		{
 			id: Date.now(),
 			fieldId: '',
@@ -49,7 +50,7 @@ const FieldMappingTab = () => {
 				},
 			],
 			isExpanded: false,
-			addMapping: '', // always present
+			addMapping: '', // Optional normalization mapping
 		},
 	]);
 	const [loading, setLoading] = useState(false);
@@ -57,225 +58,37 @@ const FieldMappingTab = () => {
 	const [errors, setErrors] = useState({});
 	const toast = useToast();
 
-	// Mock API functions - replace with actual API calls
+	// --- Fetch available form fields from API ---
 	const fetchFields = async () => {
 		setLoading(true);
 		try {
-			// Mock API response based on your example
-			const mockResponse = {
-				id: 'api.form.read',
-				ver: '1.0',
-				ts: '2025-05-28T06:41:27.764Z',
-				params: {
-					resmsgid: '0bc91d3b-7e6a-4da9-aaea-1740987bcff1',
-					status: 'successful',
-					err: null,
-					errmsg: null,
-					successmessage: 'Fields fetched successfully.',
-				},
-				responseCode: 200,
-				result: {
-					formid: '2338bd9b-3257-4040-816a-82686108fff2',
-					title: 'CREATE LEARNER',
-					fields: [
-						{
-							hint: null,
-							name: 'firstName',
-							type: 'text',
-							label: 'First Name',
-							order: '1',
-							fieldId: 'field_1',
-							options: [],
-							pattern: '/^[A-Za-z]$/',
-							coreField: 0,
-							dependsOn: null,
-							maxLength: null,
-							minLength: 3,
-							isEditable: true,
-							isPIIField: null,
-							isRequired: true,
-							validation: ['string'],
-							placeholder: 'ENTER_FIRST_NAME',
-							isMultiSelect: false,
-							maxSelections: 0,
-							sourceDetails: {},
-						},
-						{
-							hint: null,
-							name: 'lastName',
-							type: 'text',
-							label: 'Last Name',
-							order: '2',
-							fieldId: 'field_2',
-							options: [],
-							pattern: '/^[A-Za-z]$/',
-							coreField: 1,
-							dependsOn: null,
-							maxLength: null,
-							minLength: 2,
-							isEditable: true,
-							isPIIField: null,
-							isRequired: true,
-							validation: ['string'],
-							placeholder: 'ENTER_LAST_NAME',
-							isMultiSelect: false,
-							maxSelections: 0,
-							sourceDetails: {},
-						},
-						{
-							hint: null,
-							name: 'income',
-							type: 'number',
-							label: 'Income',
-							order: '3',
-							fieldId: 'field_3',
-							options: [],
-							pattern: '^[0-9]+$', // regex for numeric input
-							coreField: 3,
-							dependsOn: null,
-							maxLength: null,
-							minLength: 1,
-							isEditable: true,
-							isPIIField: null,
-							isRequired: true,
-							validation: ['number'],
-							placeholder: 'ENTER_INCOME',
-							isMultiSelect: false,
-							maxSelections: 0,
-							sourceDetails: {},
-						},
-						{
-							hint: null,
-							name: 'phoneNumber',
-							type: 'tel',
-							label: 'Phone Number',
-							order: '4',
-							fieldId: 'field_4',
-							options: [],
-							pattern: '/^[0-9]{10}$/',
-							coreField: 4,
-							dependsOn: null,
-							maxLength: 10,
-							minLength: 10,
-							isEditable: true,
-							isPIIField: true,
-							isRequired: false,
-							validation: ['phone'],
-							placeholder: 'ENTER_PHONE',
-							isMultiSelect: false,
-							maxSelections: 0,
-							sourceDetails: {},
-						},
-						{
-							hint: null,
-							name: 'dateOfBirth',
-							type: 'date',
-							label: 'Date of Birth',
-							order: '5',
-							fieldId: 'field_5',
-							options: [],
-							pattern: null,
-							coreField: 5,
-							dependsOn: null,
-							maxLength: null,
-							minLength: null,
-							isEditable: true,
-							isPIIField: true,
-							isRequired: true,
-							validation: ['date'],
-							placeholder: 'SELECT_DATE',
-							isMultiSelect: false,
-							maxSelections: 0,
-							sourceDetails: {},
-						},
-						{
-							hint: null,
-							name: 'gender',
-							type: 'select',
-							label: 'Gender',
-							order: '6',
-							fieldId: 'field_',
-							options: [
-								{ label: 'Male', value: 'male' },
-								{ label: 'Female', value: 'female' },
-								{ label: 'Other', value: 'other' },
-							],
-							pattern: null,
-							coreField: 6,
-							dependsOn: null,
-							maxLength: null,
-							minLength: null,
-							isEditable: true,
-							isPIIField: null,
-							isRequired: true,
-							validation: ['string'],
-							placeholder: 'SELECT_GENDER',
-							isMultiSelect: false,
-							maxSelections: 0,
-							sourceDetails: {},
-						},
-						{
-							hint: null,
-							name: 'class',
-							type: 'select',
-							label: 'Class',
-							order: '7',
-							fieldId: 'field_7',
-							options: [
-								{ label: '10th', value: '10' },
-								{ label: '11th', value: '11' },
-								{ label: '12th', value: '12' },
-							],
-							pattern: null,
-							coreField: 7,
-							dependsOn: null,
-							maxLength: null,
-							minLength: null,
-							isEditable: true,
-							isPIIField: null,
-							isRequired: true,
-							validation: ['number'],
-							placeholder: 'SELECT_CLASS',
-							isMultiSelect: false,
-							maxSelections: 0,
-							sourceDetails: {},
-						},
-					],
-				},
-			};
-
-			// Extract fields with label and type
-			const extractedFields = mockResponse.result.fields.map((field) => ({
-				id: field.fieldId || field.name,
-				label: field.label,
-				type: field.validation?.[0],
-				name: field.name,
-				isRequired: field.isRequired,
-			}));
-
-			setFields(extractedFields);
+			const apiFields = await fetchFieldsAPI('USERS', 'User');
+			setFields(apiFields);
 		} catch (error) {
 			toast({
-				title: 'Error',
-				description: 'Failed to fetch fields',
+				title: 'Error fetching fields',
+				description: error.message || 'Failed to fetch fields from server.',
 				status: 'error',
-				duration: 3000,
+				duration: 5000,
 				isClosable: true,
 			});
+		} finally {
+			setLoading(false);
 		}
-		setLoading(false);
 	};
 
+	// --- Fetch available documents from API (vcConfiguration) ---
 	const fetchDocuments = async () => {
 		try {
-			const data = await getDocumentsList();
+			const data = await getMapping('vcConfiguration');
 			setDocuments(
-				data.data.map((doc, i) => ({
+				(data.data.value || []).map((doc, i) => ({
 					id: `doc_${i + 1}`,
 					name: doc.name,
 					label: doc.label,
 					documentSubType: doc.documentSubType,
 					docType: doc.docType,
+					vcFieldsRaw: doc.vcFields, // Raw VC fields JSON for later parsing
 				}))
 			);
 		} catch (error) {
@@ -289,20 +102,32 @@ const FieldMappingTab = () => {
 		}
 	};
 
+	// --- Fetch VC fields for a selected document ---
 	const fetchVcFields = async (documentSubType, fieldIndex, docIndex) => {
 		if (!documentSubType) return;
-
 		try {
-			console.log('Requested VC fields for:', documentSubType);
-			console.log('Available mock keys:', Object.keys(vcFieldMocks));
-
-			const vcFields = vcFieldMocks[documentSubType] || [];
-
-			console.log('VC fields fetched:', vcFields);
-
+			// Find the document config by subtype
+			const doc = documents.find((d) => d.documentSubType === documentSubType);
+			let vcFields = [];
+			if (doc && doc.vcFieldsRaw) {
+				try {
+					const parsed = JSON.parse(doc.vcFieldsRaw);
+					// Map VC fields to dropdown options
+					vcFields = Object.entries(parsed).map(([key, value]) => {
+						const v: any = value;
+						return {
+							id: key,
+							label: key,
+							type: v.type,
+						};
+					});
+				} catch (e) {
+					vcFields = [];
+				}
+			}
+			// Update the fieldMappings state with fetched VC fields
 			const newFieldMappings = [...fieldMappings];
-			newFieldMappings[fieldIndex].documentMappings[docIndex].vcFields =
-				vcFields;
+			newFieldMappings[fieldIndex].documentMappings[docIndex].vcFields = vcFields;
 			setFieldMappings(newFieldMappings);
 		} catch (error) {
 			toast({
@@ -315,7 +140,9 @@ const FieldMappingTab = () => {
 		}
 	};
 
+	// --- Save all field mappings to the backend ---
 	const saveAllMappings = async () => {
+		// Validate all required fields except addMapping (which is optional)
 		const validationErrors = {};
 		let hasErrors = false;
 
@@ -326,25 +153,7 @@ const FieldMappingTab = () => {
 					'Form field selection is required';
 				hasErrors = true;
 			}
-
-			// ✅ Validate required and valid JSON in addMapping
-			if (
-				!fieldMapping.addMapping ||
-				fieldMapping.addMapping.trim() === ''
-			) {
-				validationErrors[`addMapping_${fieldIndex}`] =
-					'Add Mapping is required';
-				hasErrors = true;
-			} else {
-				try {
-					JSON.parse(fieldMapping.addMapping);
-				} catch (err) {
-					validationErrors[`addMapping_${fieldIndex}`] =
-						'Add Mapping must be valid JSON';
-					hasErrors = true;
-				}
-			}
-
+			// 'Add Field Mapping' (addMapping) is now optional, so skip its required validation
 			// Validate document mappings
 			fieldMapping.documentMappings.forEach((docMapping, docIndex) => {
 				if (!docMapping.selectedDocument) {
@@ -378,26 +187,29 @@ const FieldMappingTab = () => {
 
 		setSaving(true);
 		try {
-			// Prepare data for submission
+			// Prepare and send the payload
 			const saveData = fieldMappings
 				.filter((f) => f.fieldId)
-				.map((fieldMapping) => ({
-					fieldName: getFieldLabel(fieldMapping.fieldId), // Use field label instead of fieldId
-					documentMappings: fieldMapping.documentMappings
-						.filter(
-							(doc) => doc.selectedDocument && doc.selectedVcField
-						)
-						.map((doc) => ({
-							document: doc.selectedDocument,
-							documentField: doc.selectedVcField,
-						})),
-					fieldValueNormalizationMapping:
-						fieldMapping.addMapping.trim()
-							? JSON.parse(fieldMapping.addMapping.trim())
-							: undefined,
-				}));
+				.map((fieldMapping) => {
+					const fieldObj = fields.find(f => f.fieldId === fieldMapping.fieldId);
+					return {
+						fieldId: fieldObj ? fieldObj.fieldId : fieldMapping.fieldId,
+						fieldName: fieldObj ? fieldObj.name : '',
+						documentMappings: fieldMapping.documentMappings
+							.filter(
+								(doc) => doc.selectedDocument && doc.selectedVcField
+							)
+							.map((doc) => ({
+								document: doc.selectedDocument,
+								documentField: doc.selectedVcField,
+							})),
+						fieldValueNormalizationMapping:
+							fieldMapping.addMapping && fieldMapping.addMapping.trim()
+								? JSON.parse(fieldMapping.addMapping.trim())
+								: undefined,
+					};
+				});
 
-			// Call the API with the correct config key
 			await updateMapping(saveData, 'profileFieldToDocumentFieldMapping');
 
 			const totalFields = saveData.length;
@@ -527,7 +339,6 @@ const FieldMappingTab = () => {
 		}
 	};
 	const handleDocumentChange = (fieldIndex, docIndex, documentSubType) => {
-		console.log('documentSubType handleDocumentChange', documentSubType);
 
 		const newFieldMappings = [...fieldMappings];
 		newFieldMappings[fieldIndex].documentMappings[
@@ -565,6 +376,8 @@ const FieldMappingTab = () => {
 
 	// Helper functions
 	const getFieldLabel = (fieldId) => {
+		console.log('getFieldLabel', fields, fieldId);
+		
 		const field = fields.find((f) => f.id === fieldId);
 		return field ? field.name : '';
 	};
@@ -591,21 +404,44 @@ const FieldMappingTab = () => {
 		}, 0);
 	};
 
-	// Prefill fieldMappings from API
+	// --- Prefill fieldMappings from API config ---
 	const fetchFieldMappings = async () => {
 		setLoading(true);
 		try {
-			const data = await getMapping('profileFieldToDocumentFieldMapping');
-			if (Array.isArray(data.data.value) && data.data.value.length > 0) {
-				const mapped = data.data.value.map((item, idx) => ({
+			// Fetch both profile mappings and VC config in parallel
+			const [profileMappingData, vcConfigData] = await Promise.all([
+				getMapping('profileFieldToDocumentFieldMapping'),
+				getMapping('vcConfiguration'),
+			]);
+			const vcConfigDocs = (vcConfigData.data.value || []).map((doc, i) => ({
+				documentSubType: doc.documentSubType,
+				vcFieldsRaw: doc.vcFields,
+			}));
+			if (Array.isArray(profileMappingData.data.value) && profileMappingData.data.value.length > 0) {
+				const mapped = profileMappingData.data.value.map((item, idx) => ({
 					id: Date.now() + idx,
-					fieldId: fields.find(f => f.name === item.fieldName)?.id || '',
-					documentMappings: (item.documentMappings || []).map((doc, j) => ({
-						id: Date.now() + idx * 100 + j,
-						selectedDocument: doc.document,
-						vcFields: [],
-						selectedVcField: doc.documentField,
-					})),
+					fieldId: fields.find(f => f.fieldId === item.fieldId)?.fieldId || fields.find(f => f.name === item.fieldName)?.fieldId || '',
+					documentMappings: (item.documentMappings || []).map((doc, j) => {
+						// Find the corresponding document config
+						const docConfig = vcConfigDocs.find(d => d.documentSubType === doc.document);
+						let vcFields = [];
+						if (docConfig && docConfig.vcFieldsRaw) {
+							try {
+								const parsed = JSON.parse(docConfig.vcFieldsRaw);
+								vcFields = Object.entries(parsed).map(([key, value]) => ({
+									id: key,
+									label: key,
+									type: (value as any).type,
+								}));
+							} catch {}
+						}
+						return {
+							id: Date.now() + idx * 100 + j,
+							selectedDocument: doc.document,
+							vcFields,
+							selectedVcField: doc.documentField,
+						};
+					}),
 					isExpanded: true,
 					addMapping: item.fieldValueNormalizationMapping
 						? (typeof item.fieldValueNormalizationMapping === 'string'
@@ -729,13 +565,10 @@ const FieldMappingTab = () => {
 													>
 														{fields.map((field) => (
 															<option
-																key={field.id}
-																value={field.id}
+																key={field.fieldId}
+																value={field.fieldId}
 															>
-																{console.log(
-																	field.label,
-																	field.validation
-																)}
+																
 																{field.label} (
 																{field.type})
 																{field.isRequired &&
