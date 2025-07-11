@@ -32,6 +32,11 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const updateMapping = async (value: Mapping[], key: string) => {
 	try {
+		const authToken = localStorage.getItem('authToken');
+		if (!authToken) {
+			throw new Error('Authentication token not found');
+		}
+
 		const response = await axios.post(
 			`${BASE_URL}/admin/config`,
 			{
@@ -41,7 +46,7 @@ export const updateMapping = async (value: Mapping[], key: string) => {
 			{
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+					Authorization: `Bearer ${authToken}`,
 				},
 			}
 		);
@@ -54,11 +59,15 @@ export const updateMapping = async (value: Mapping[], key: string) => {
 
 export const getMapping = async (configType: string) => {
 	try {
+		const authToken = localStorage.getItem('authToken');
+		if (!authToken) {
+			throw new Error('Authentication token not found');
+		}
 		const response = await axios.get(
 			`${BASE_URL}/admin/config/${configType}`,
 			{
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+					Authorization:  `Bearer ${authToken}`,
 				},
 			}
 		);
@@ -74,11 +83,15 @@ export const fetchFields = async (
 	contextType = 'User'
 ): Promise<Field[]> => {
 	try {
+		const authToken = localStorage.getItem('authToken');
+		if (!authToken) {
+			throw new Error('Authentication token not found');
+		}
 		const response = await axios.get(`${BASE_URL}/fields`, {
 			params: { context, contextType },
 			headers: {
 				accept: 'application/json',
-				Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+				Authorization: `Bearer ${authToken}`,
 			},
 		});
 		// Response is an array of field objects
