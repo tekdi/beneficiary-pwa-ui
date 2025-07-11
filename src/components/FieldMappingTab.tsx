@@ -20,7 +20,6 @@ import {
 	Divider,
 	Badge,
 	Flex,
-	Collapse,
 	useToast,
 	Textarea,
 } from '@chakra-ui/react';
@@ -30,7 +29,6 @@ import {
 	ChevronDownIcon,
 	ChevronUpIcon,
 } from '@chakra-ui/icons';
-import { getDocumentsList } from '../services/auth/auth';
 import { updateMapping, getMapping, fetchFields as fetchFieldsAPI } from '../services/admin/admin';
 const FieldMappingTab = () => {
 	const [fields, setFields] = useState([]); // List of available form fields from API
@@ -52,18 +50,17 @@ const FieldMappingTab = () => {
 			addMapping: '', // Optional normalization mapping
 		},
 	]);
-	const [loading, setLoading] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [errors, setErrors] = useState({});
 	const toast = useToast();
 
 	// --- Fetch available form fields from API ---
 	const fetchFields = async () => {
-		setLoading(true);
 		try {
 			const apiFields = await fetchFieldsAPI('USERS', 'User');
 			setFields(apiFields);
 		} catch (error) {
+			console.error('Error fetching fields:', error);
 			toast({
 				title: 'Error fetching fields',
 				description: error.message || 'Failed to fetch fields from server.',
@@ -71,8 +68,6 @@ const FieldMappingTab = () => {
 				duration: 5000,
 				isClosable: true,
 			});
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -91,6 +86,7 @@ const FieldMappingTab = () => {
 				}))
 			);
 		} catch (error) {
+			console.error('Error fetching documents:', error);
 			toast({
 				title: 'Error',
 				description: 'Failed to fetch documents',
@@ -101,34 +97,53 @@ const FieldMappingTab = () => {
 		}
 	};
 
+	// --- Helper to parse VC fields from document config ---
+	function parseVcFields(vcFieldsRaw) {
+		if (!vcFieldsRaw) return [];
+		try {
+			const parsed = JSON.parse(vcFieldsRaw);
+			return Object.entries(parsed).map(([key, value]) => {
+				const v = value as any;
+				return {
+					id: key,
+					label: key,
+					type: v.type,
+				};
+			});
+		} catch (e) {
+			console.error('Error parsing VC fields JSON:', e);
+			return [];
+		}
+	}
+
+	// --- Helper to map documentMappings from API config ---
+	function mapDocumentMappings(documentMappings, vcConfigDocs, idx) {
+		return (documentMappings || []).map((doc, j) => {
+			// Find the corresponding document config
+			const docConfig = vcConfigDocs.find(d => d.documentSubType === doc.document);
+			const vcFields = docConfig ? parseVcFields(docConfig.vcFieldsRaw) : [];
+			return {
+				id: Date.now() + idx * 100 + j,
+				selectedDocument: doc.document,
+				vcFields,
+				selectedVcField: doc.documentField,
+			};
+		});
+	}
+
 	// --- Fetch VC fields for a selected document ---
 	const fetchVcFields = async (documentSubType, fieldIndex, docIndex) => {
 		if (!documentSubType) return;
 		try {
 			// Find the document config by subtype
 			const doc = documents.find((d) => d.documentSubType === documentSubType);
-			let vcFields = [];
-			if (doc && doc.vcFieldsRaw) {
-				try {
-					const parsed = JSON.parse(doc.vcFieldsRaw);
-					// Map VC fields to dropdown options
-					vcFields = Object.entries(parsed).map(([key, value]) => {
-						const v: any = value;
-						return {
-							id: key,
-							label: key,
-							type: v.type,
-						};
-					});
-				} catch (e) {
-					vcFields = [];
-				}
-			}
+			const vcFields = doc ? parseVcFields(doc.vcFieldsRaw) : [];
 			// Update the fieldMappings state with fetched VC fields
 			const newFieldMappings = [...fieldMappings];
 			newFieldMappings[fieldIndex].documentMappings[docIndex].vcFields = vcFields;
 			setFieldMappings(newFieldMappings);
 		} catch (error) {
+			console.error('Error fetching VC fields:', error);
 			toast({
 				title: 'Error',
 				description: 'Failed to fetch VC fields',
@@ -202,10 +217,11 @@ const FieldMappingTab = () => {
 								document: doc.selectedDocument,
 								documentField: doc.selectedVcField,
 							})),
-						fieldValueNormalizationMapping:
-							fieldMapping.addMapping && fieldMapping.addMapping.trim()
-								? JSON.parse(fieldMapping.addMapping.trim())
-								: undefined,
+                            fieldValueNormalizationMapping:
+                            fieldMapping?.addMapping?.trim()
+                                ? JSON.parse(fieldMapping.addMapping.trim())
+                                : undefined,
+                        
 					};
 				});
 
@@ -227,6 +243,7 @@ const FieldMappingTab = () => {
 
 			console.log('Saved data:', saveData);
 		} catch (error) {
+			console.error('Error saving mappings:', error);
 			toast({
 				title: 'Error',
 				description: 'Failed to save mappings',
@@ -374,12 +391,7 @@ const FieldMappingTab = () => {
 	};
 
 	// Helper functions
-	const getFieldLabel = (fieldId) => {
-		console.log('getFieldLabel', fields, fieldId);
-		
-		const field = fields.find((f) => f.id === fieldId);
-		return field ? field.name : '';
-	};
+
 
 	const getDocumentName = (docId) => {
 		const doc = documents.find((d) => d.id === docId);
@@ -405,7 +417,6 @@ const FieldMappingTab = () => {
 
 	// --- Prefill fieldMappings from API config ---
 	const fetchFieldMappings = async () => {
-		setLoading(true);
 		try {
 			// Fetch both profile mappings and VC config in parallel
 			const [profileMappingData, vcConfigData] = await Promise.all([
@@ -417,40 +428,27 @@ const FieldMappingTab = () => {
 				vcFieldsRaw: doc.vcFields,
 			}));
 			if (Array.isArray(profileMappingData.data.value) && profileMappingData.data.value.length > 0) {
-				const mapped = profileMappingData.data.value.map((item, idx) => ({
-					id: Date.now() + idx,
-					fieldId: fields.find(f => f.fieldId === item.fieldId)?.fieldId || fields.find(f => f.name === item.fieldName)?.fieldId || '',
-					documentMappings: (item.documentMappings || []).map((doc, j) => {
-						// Find the corresponding document config
-						const docConfig = vcConfigDocs.find(d => d.documentSubType === doc.document);
-						let vcFields = [];
-						if (docConfig && docConfig.vcFieldsRaw) {
-							try {
-								const parsed = JSON.parse(docConfig.vcFieldsRaw);
-								vcFields = Object.entries(parsed).map(([key, value]) => ({
-									id: key,
-									label: key,
-									type: (value as any).type,
-								}));
-							} catch {}
+				const mapped = profileMappingData.data.value.map((item, idx) => {
+					let addMappingValue = '';
+					if (item.fieldValueNormalizationMapping) {
+						if (typeof item.fieldValueNormalizationMapping === 'string') {
+							addMappingValue = item.fieldValueNormalizationMapping;
+						} else {
+							addMappingValue = JSON.stringify(item.fieldValueNormalizationMapping);
 						}
-						return {
-							id: Date.now() + idx * 100 + j,
-							selectedDocument: doc.document,
-							vcFields,
-							selectedVcField: doc.documentField,
-						};
-					}),
-					isExpanded: true,
-					addMapping: item.fieldValueNormalizationMapping
-						? (typeof item.fieldValueNormalizationMapping === 'string'
-							? item.fieldValueNormalizationMapping
-							: JSON.stringify(item.fieldValueNormalizationMapping))
-						: '',
-				}));
+					}
+					return {
+						id: Date.now() + idx,
+						fieldId: fields.find(f => f.fieldId === item.fieldId)?.fieldId || fields.find(f => f.name === item.fieldName)?.fieldId || '',
+						documentMappings: mapDocumentMappings(item.documentMappings, vcConfigDocs, idx),
+						isExpanded: true,
+						addMapping: addMappingValue,
+					};
+				});
 				setFieldMappings(mapped);
 			}
 		} catch (error) {
+			console.error('Error fetching field mappings:', error);
 			toast({
 				title: 'Error',
 				description: 'Failed to fetch field mappings',
@@ -458,8 +456,6 @@ const FieldMappingTab = () => {
 				duration: 3000,
 				isClosable: true,
 			});
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -491,12 +487,7 @@ const FieldMappingTab = () => {
 				</Box>
 			</Alert>
 
-			{loading ? (
-				<Flex justify="center" align="center" h="200px">
-					<Spinner size="lg" />
-					<Text ml={4}>Loading fields...</Text>
-				</Flex>
-			) : (
+			
 				<VStack spacing={6} align="stretch">
 					{/* Field Mappings Section */}
 					<Box>
@@ -624,28 +615,6 @@ const FieldMappingTab = () => {
 												</HStack>
 											</HStack>
 
-											{/* {fieldMapping.fieldId && (
-												<Box
-													p={3}
-													borderRadius="md"
-													borderWidth="1px"
-													borderColor="blue.300"
-												>
-													<Text
-														fontSize="sm"
-														color="blue.800"
-													>
-														<strong>
-															Selected Field:
-														</strong>{' '}
-														{getFieldLabel(
-															fieldMapping.fieldId
-														)}
-													</Text>
-												</Box>
-											)} */}
-
-											{/* Document Mappings Subsection */}
 
 											<Box
 												mt={4}
@@ -1023,29 +992,7 @@ const FieldMappingTab = () => {
 					<Divider />
 
 					<HStack justify="flex-end" spacing={4}>
-						{/* <Button
-							variant="outline"
-							onClick={() => {
-								setFieldMappings([
-									{
-										id: Date.now(),
-										fieldId: '',
-										documentMappings: [
-											{
-												id: Date.now() + 1,
-												selectedDocument: '',
-												vcFields: [],
-												selectedVcField: '',
-											},
-										],
-										isExpanded: false,
-									},
-								]);
-								setErrors({});
-							}}
-						>
-							Reset All
-						</Button> */}
+						
 						<Button
 							colorScheme="green"
 							onClick={saveAllMappings}
@@ -1057,7 +1004,7 @@ const FieldMappingTab = () => {
 						</Button>
 					</HStack>
 				</VStack>
-			)}
+			{/* ) */}
 		</VStack>
 	);
 };
