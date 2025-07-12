@@ -1,6 +1,5 @@
 import { lazy } from 'react';
 import SignIn from '../screens/auth/SignIn';
-
 const Splash = lazy(() => import('../screens/auth/Splash'));
 const ExploreBenefits = lazy(() => import('../screens/benefit/Benefits'));
 const BenefitsDetails = lazy(() => import('../screens/benefit/Details'));

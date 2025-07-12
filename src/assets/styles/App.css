@@ -2,6 +2,8 @@
   --input-color: #767680;
   --theme-color: #144bb9;
   --menu-background: #FBF8FF;
+  --header-height: 80px;
+  --titlebar-height: 70px;
 }
 
 .purple-bg {
