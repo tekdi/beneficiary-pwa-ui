@@ -67,7 +67,7 @@ export const getMapping = async (configType: string) => {
 			`${BASE_URL}/admin/config/${configType}`,
 			{
 				headers: {
-					Authorization:  `Bearer ${authToken}`,
+					Authorization: `Bearer ${authToken}`,
 				},
 			}
 		);
@@ -95,13 +95,16 @@ export const fetchFields = async (
 			},
 		});
 		// Response is an array of field objects
-		return response.data.map((field: any) => ({
-			fieldId: field.fieldId,
-			label: field.label,
-			name: field.name,
-			type: field.type,
-			isRequired: field.fieldAttributes?.isRequired ?? false,
-		}));
+		return response.data.map((field: unknown) => {
+			const fieldObj = field as Record<string, any>;
+			return {
+				fieldId: fieldObj.fieldId,
+				label: fieldObj.label,
+				name: fieldObj.name,
+				type: fieldObj.type,
+				isRequired: fieldObj.fieldAttributes?.isRequired ?? false,
+			};
+		});
 	} catch (error) {
 		console.error('Error fetching fields:', error);
 		throw error;
