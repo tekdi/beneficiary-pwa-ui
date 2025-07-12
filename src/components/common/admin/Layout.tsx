@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Box } from '@chakra-ui/react';
 import Header from './Header';
@@ -29,16 +28,12 @@ const Layout: React.FC<LayoutProps> = ({
 	return (
 		<Box>
 			{/* Header */}
-			<Header
-				showMenu={showMenu}
-			/>
+			<Header showMenu={showMenu} />
 			{(title || subTitle || _titleBar) && (
 				<TitleBar
 					{...(_titleBar || {})}
-					title={title || ( _titleBar?.title) || ''}
-					subTitle={
-						subTitle || (_titleBar?.subTitle) || ''
-					}
+					title={title || _titleBar?.title || ''}
+					subTitle={subTitle || _titleBar?.subTitle || ''}
 				/>
 			)}
 			{/* Content */}

@@ -31,56 +31,54 @@ interface FieldMappingConfigProps {
 	refreshTrigger?: number;
 }
 interface VcFieldValue {
-						type: string;
-						[key: string]: any;
-					}
-					interface Field {
-						fieldId: string;
-						label: string;
-						name: string;
-						type: string;
-						isRequired: boolean;
-					  }
-					  
-					  interface Document {
-						id: string;
-						name: string;
-						label: string;
-						documentSubType: string;
-						docType: string;
-						vcFieldsRaw: string;
-					  }
-					  
-					  interface DocumentMapping {
-						id: number;
-						selectedDocument: string;
-						vcFields: VcField[];
-						selectedVcField: string;
-					  }
-					  
-					  interface VcField {
-						id: string;
-						label: string;
-						type: string;
-					  }
-					  
-					  interface FieldMapping {
-						id: number;
-						fieldId: string;
-						documentMappings: DocumentMapping[];
-						isExpanded: boolean;
-						addMapping: string;
-					  }
-					  
+	type: string;
+	[key: string]: any;
+}
+interface Field {
+	fieldId: string;
+	label: string;
+	name: string;
+	type: string;
+	isRequired: boolean;
+}
+
+interface Document {
+	id: string;
+	name: string;
+	label: string;
+	documentSubType: string;
+	docType: string;
+	vcFieldsRaw: string;
+}
+
+interface DocumentMapping {
+	id: number;
+	selectedDocument: string;
+	vcFields: VcField[];
+	selectedVcField: string;
+}
+
+interface VcField {
+	id: string;
+	label: string;
+	type: string;
+}
+
+interface FieldMapping {
+	id: number;
+	fieldId: string;
+	documentMappings: DocumentMapping[];
+	isExpanded: boolean;
+	addMapping: string;
+}
+
 const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	refreshTrigger = 0,
 }) => {
 	const [fields, setFields] = useState<Field[]>([]);
-const [documents, setDocuments] = useState<Document[]>([]);
-const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([
-  
-]);
-const [errors, setErrors] = useState<Record<string, string>>({});
+	const [documents, setDocuments] = useState<Document[]>([]);
+	const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([]);
+	const [errors, setErrors] = useState<Record<string, string>>({});
 	const toast = useToast();
 
 	// --- Fetch available form fields from API ---
@@ -129,7 +127,6 @@ const [errors, setErrors] = useState<Record<string, string>>({});
 
 	// --- Helper to parse VC fields from document config ---
 	function parseVcFields(vcFieldsRaw: string): VcField[] {
-
 		if (!vcFieldsRaw) return [];
 		try {
 			const parsed = JSON.parse(vcFieldsRaw);
@@ -149,11 +146,10 @@ const [errors, setErrors] = useState<Record<string, string>>({});
 
 	// --- Helper to map documentMappings from API config ---
 	function mapDocumentMappings(
-		 documentMappings: any[],
-		  vcConfigDocs: Array<{ documentSubType: string; vcFieldsRaw: string }>,
-		  idx: number
-		): DocumentMapping[] {
-		
+		documentMappings: any[],
+		vcConfigDocs: Array<{ documentSubType: string; vcFieldsRaw: string }>,
+		idx: number
+	): DocumentMapping[] {
 		return (documentMappings || []).map((doc, j) => {
 			// Find the corresponding document config
 			const docConfig = vcConfigDocs.find(
@@ -173,11 +169,10 @@ const [errors, setErrors] = useState<Record<string, string>>({});
 
 	// --- Fetch VC fields for a selected document ---
 	const fetchVcFields = async (
-		  documentSubType: string,
-		  fieldIndex: number,
-		  docIndex: number
-		) => {
-		
+		documentSubType: string,
+		fieldIndex: number,
+		docIndex: number
+	) => {
 		if (!documentSubType) return;
 		try {
 			// Find the document config by subtype
@@ -326,7 +321,7 @@ const [errors, setErrors] = useState<Record<string, string>>({});
 		]);
 	};
 
-	const removeFieldMapping = (fieldIndex:number) => {
+	const removeFieldMapping = (fieldIndex: number) => {
 		let newFieldMappings = fieldMappings.filter((_, i) => i !== fieldIndex);
 		if (newFieldMappings.length === 0) {
 			newFieldMappings = [
@@ -568,7 +563,11 @@ const [errors, setErrors] = useState<Record<string, string>>({});
 										>
 											<FormControl
 												flex="1"
-												isInvalid={!!errors[`field_${fieldIndex}`]}
+												isInvalid={
+													!!errors[
+														`field_${fieldIndex}`
+													]
+												}
 											>
 												<FormLabel
 													fontSize="sm"
@@ -724,7 +723,11 @@ const [errors, setErrors] = useState<Record<string, string>>({});
 																>
 																	<FormControl
 																		flex="1"
-																		isInvalid={!!errors[`field_${fieldIndex}_doc_${docIndex}`]}
+																		isInvalid={
+																			!!errors[
+																				`field_${fieldIndex}_doc_${docIndex}`
+																			]
+																		}
 																	>
 																		<FormLabel fontSize="xs">
 																			Document
@@ -789,7 +792,11 @@ const [errors, setErrors] = useState<Record<string, string>>({});
 
 																	<FormControl
 																		flex="1"
-																		isInvalid={!!errors[`field_${fieldIndex}_vc_${docIndex}`]}
+																		isInvalid={
+																			!!errors[
+																				`field_${fieldIndex}_vc_${docIndex}`
+																			]
+																		}
 																	>
 																		<FormLabel fontSize="xs">
 																			VC

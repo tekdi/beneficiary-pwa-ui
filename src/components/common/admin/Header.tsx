@@ -15,8 +15,8 @@ interface MenuItemConfig {
 const ADMIN_ROUTES = {
 	DOCUMENT_CONFIG: '/vcConfig',
 	FIELD_CONFIG: '/fieldConfig',
-	HOME: '/'
-  } as const;
+	HOME: '/',
+} as const;
 
 const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 	const navigate = useNavigate();
@@ -25,23 +25,23 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 
 	const menuNames = [
 		{
-		  label: 'Document Configuration',
-		  onClick: () => {
-			navigate(ADMIN_ROUTES.DOCUMENT_CONFIG);
-		  },
+			label: 'Document Configuration',
+			onClick: () => {
+				navigate(ADMIN_ROUTES.DOCUMENT_CONFIG);
+			},
 		},
 		{
-		  label: 'Field Mapping Configuration', 
-		  onClick: () => {
-			navigate(ADMIN_ROUTES.FIELD_CONFIG);
-		  },
+			label: 'Field Mapping Configuration',
+			onClick: () => {
+				navigate(ADMIN_ROUTES.FIELD_CONFIG);
+			},
 		},
 		{
 			label: 'Log out',
 			onClick: () => handleLogout(),
 		},
-	  ];
-	  const handleLogout = async () => {
+	];
+	const handleLogout = async () => {
 		try {
 			const response = await logoutUser();
 			if (response) {
@@ -99,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 
 interface HeaderRightSectionProps {
 	showMenu?: boolean;
-	menuNames: MenuItemConfig[]; 
+	menuNames: MenuItemConfig[];
 }
 
 const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
@@ -109,10 +109,12 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 	const location = useLocation();
 
 	const getMenuPath = (label: string): string => {
-		if (label === 'Document Configuration') return ADMIN_ROUTES.DOCUMENT_CONFIG;
-		if (label === 'Field Mapping Configuration') return ADMIN_ROUTES.FIELD_CONFIG;
+		if (label === 'Document Configuration')
+			return ADMIN_ROUTES.DOCUMENT_CONFIG;
+		if (label === 'Field Mapping Configuration')
+			return ADMIN_ROUTES.FIELD_CONFIG;
 		return '';
-	  };
+	};
 
 	return (
 		<HStack align="center" spacing={6}>

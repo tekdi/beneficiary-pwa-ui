@@ -18,21 +18,23 @@ import { getMapping, updateMapping } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
 
 interface DocumentConfig {
-			id: number;
-			name: string;
-			label: string;
-			documentSubType: string;
-			docType: string;
-			vcFields: string;
-		}
-		interface ValidationErrors {
-					[key: string]: string;
-				}
+	id: number;
+	name: string;
+	label: string;
+	documentSubType: string;
+	docType: string;
+	vcFields: string;
+}
+interface ValidationErrors {
+	[key: string]: string;
+}
 const DocumentConfig = () => {
 	const toast = useToast();
 
 	// --- State for document configurations and errors ---
-	const [documentConfigs, setDocumentConfigs] = useState<DocumentConfig[]>([]);
+	const [documentConfigs, setDocumentConfigs] = useState<DocumentConfig[]>(
+		[]
+	);
 	const [errors, setErrors] = useState<ValidationErrors>({});
 
 	// --- Fetch document configurations from API ---
@@ -118,8 +120,11 @@ const DocumentConfig = () => {
 	};
 
 	// --- Handle input changes and validate fields ---
-	const handleChange = (index: number, field: keyof DocumentConfig, value: string) => {
-
+	const handleChange = (
+		index: number,
+		field: keyof DocumentConfig,
+		value: string
+	) => {
 		const updated = [...documentConfigs];
 		(updated[index] as any)[field] = value;
 		setDocumentConfigs(updated);
