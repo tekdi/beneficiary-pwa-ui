@@ -29,7 +29,13 @@ import {
 	ChevronUpIcon,
 } from '@chakra-ui/icons';
 import { updateMapping, getMapping, fetchFields as fetchFieldsAPI } from '../services/admin/admin';
-const FieldMappingTab = () => {
+
+// Props interface for FieldMappingTab
+interface FieldMappingTabProps {
+	refreshTrigger?: number;
+}
+
+const FieldMappingTab: React.FC<FieldMappingTabProps> = ({ refreshTrigger = 0 }) => {
 	const [fields, setFields] = useState([]); // List of available form fields from API
 	const [documents, setDocuments] = useState([]); // List of available documents from API
 	const [fieldMappings, setFieldMappings] = useState([
@@ -64,7 +70,7 @@ const FieldMappingTab = () => {
 				title: 'Error fetching fields',
 				description: error.message || 'Failed to fetch fields from server.',
 				status: 'error',
-				duration: 5000,
+				duration: 2000,
 				isClosable: true,
 			});
 		}
@@ -90,7 +96,7 @@ const FieldMappingTab = () => {
 				title: 'Error',
 				description: 'Failed to fetch documents',
 				status: 'error',
-				duration: 3000,
+				duration: 2000,
 				isClosable: true,
 			});
 		}
@@ -147,7 +153,7 @@ const FieldMappingTab = () => {
 				title: 'Error',
 				description: 'Failed to fetch VC fields',
 				status: 'error',
-				duration: 3000,
+				duration: 2000,
 				isClosable: true,
 			});
 		}
@@ -192,7 +198,7 @@ const FieldMappingTab = () => {
 				title: 'Validation Error',
 				description: 'Please fill in all required fields correctly.',
 				status: 'error',
-				duration: 3000,
+				duration: 2000,
 				isClosable: true,
 			});
 			return;
@@ -236,7 +242,7 @@ const FieldMappingTab = () => {
 				title: 'Success',
 				description: `Mappings saved! ${totalFields} fields with ${totalDocMappings} document mappings.`,
 				status: 'success',
-				duration: 3000,
+				duration: 2000,
 				isClosable: true,
 			});
 
@@ -247,7 +253,7 @@ const FieldMappingTab = () => {
 				title: 'Error',
 				description: 'Failed to save mappings',
 				status: 'error',
-				duration: 3000,
+				duration: 2000,
 				isClosable: true,
 			});
 		}
@@ -452,12 +458,13 @@ const FieldMappingTab = () => {
 				title: 'Error',
 				description: 'Failed to fetch field mappings',
 				status: 'error',
-				duration: 3000,
+				duration: 2000,
 				isClosable: true,
 			});
 		}
 	};
 
+	// Initial data fetch on component mount
 	useEffect(() => {
 		const init = async () => {
 			await fetchFields();
@@ -466,6 +473,14 @@ const FieldMappingTab = () => {
 		init();
 	}, []);
 
+	// Refresh documents when tab becomes active (refreshTrigger changes)
+	useEffect(() => {
+		if (refreshTrigger > 0) {
+			fetchDocuments();
+		}
+	}, [refreshTrigger]);
+
+	// Fetch field mappings when fields are loaded
 	useEffect(() => {
 		if (fields.length > 0) {
 			fetchFieldMappings();
@@ -700,7 +715,7 @@ const FieldMappingTab = () => {
 																				fieldMapping
 																					.documentMappings
 																					.length ===
-																				1
+																					1
 																			}
 																		/>
 																	</HStack>

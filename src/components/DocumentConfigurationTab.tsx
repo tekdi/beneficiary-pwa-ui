@@ -75,7 +75,7 @@ const DocumentConfigurationTab = () => {
 					title: 'Error',
 					description: 'Failed to fetch document configurations',
 					status: 'error',
-					duration: 3000,
+					duration: 2000,
 					isClosable: true,
 				});
 			}
@@ -181,6 +181,7 @@ const DocumentConfigurationTab = () => {
 				description:
 					'Please fill in all fields and ensure VC fields are valid JSON with the correct structure.',
 				status: 'error',
+				duration: 2000,
 			});
 			return;
 		}
@@ -198,6 +199,7 @@ const DocumentConfigurationTab = () => {
 				title: 'Success',
 				description: `${documentConfigs.length} document configurations saved.`,
 				status: 'success',
+				duration: 2000,
 			});
 		} catch (error) {
 			// Log the error for debugging
@@ -206,6 +208,7 @@ const DocumentConfigurationTab = () => {
 				title: 'Error',
 				description: 'Failed to save document configurations',
 				status: 'error',
+				duration: 2000,
 			});
 		}
 	};
