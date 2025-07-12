@@ -92,7 +92,7 @@ const DocumentConfig = () => {
 	}, []);
 
 	// --- Validate vcFields JSON structure ---
-	const validateVcFields = (value) => {
+	const validateVcFields = (value:string) => {
 		if (!value || value.trim() === '') return true;
 		try {
 			const parsed = JSON.parse(value);
