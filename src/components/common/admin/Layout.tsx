@@ -23,8 +23,6 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({
 	children,
 	showMenu,
-	showSearchBar,
-	showLanguage,
 	title,
 	subTitle,
 	_titleBar,
@@ -34,15 +32,13 @@ const Layout: React.FC<LayoutProps> = ({
 			{/* Header */}
 			<Header
 				showMenu={showMenu}
-				showSearchBar={showSearchBar}
-				showLanguage={showLanguage}
 			/>
 			{(title || subTitle || _titleBar) && (
 				<TitleBar
 					{...(_titleBar || {})}
-					title={title || (_titleBar && _titleBar.title) || ''}
+					title={title || ( _titleBar?.title) || ''}
 					subTitle={
-						subTitle || (_titleBar && _titleBar.subTitle) || ''
+						subTitle || (_titleBar?.subTitle) || ''
 					}
 				/>
 			)}

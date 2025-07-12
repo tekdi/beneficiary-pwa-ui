@@ -5,8 +5,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 interface HeaderProps {
 	showMenu?: boolean;
-	showSearchBar?: boolean;
-	showLanguage?: boolean;
 }
 
 interface MenuOption {

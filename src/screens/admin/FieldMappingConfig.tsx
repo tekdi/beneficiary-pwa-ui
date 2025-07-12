@@ -333,13 +333,6 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		setErrors(newErrors);
 	};
 
-	const toggleFieldExpansion = (fieldIndex) => {
-		const newFieldMappings = [...fieldMappings];
-		newFieldMappings[fieldIndex].isExpanded =
-			!newFieldMappings[fieldIndex].isExpanded;
-		setFieldMappings(newFieldMappings);
-	};
-
 	// Document Mapping Management
 	const addDocumentMapping = (fieldIndex) => {
 		const newFieldMappings = [...fieldMappings];
@@ -412,18 +405,6 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	const getVcFieldLabel = (vcFields, vcFieldId) => {
 		const vcField = vcFields.find((f) => f.id === vcFieldId);
 		return vcField ? vcField.label : '';
-	};
-
-	const getTotalConfiguredMappings = () => {
-		return fieldMappings.reduce((total, fieldMapping) => {
-			if (!fieldMapping.fieldId) return total;
-			return (
-				total +
-				fieldMapping.documentMappings.filter(
-					(doc) => doc.selectedDocument && doc.selectedVcField
-				).length
-			);
-		}, 0);
 	};
 
 	// --- Prefill fieldMappings from API config ---
