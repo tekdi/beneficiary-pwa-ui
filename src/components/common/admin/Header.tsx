@@ -1,53 +1,64 @@
 import React from 'react';
-import { Box, HStack, MenuItem, Text } from '@chakra-ui/react';
+import { Box, HStack, MenuItem, Text, Toast } from '@chakra-ui/react';
 import Logo from '../../../assets/images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { logoutUser } from '../../../services/auth/auth';
 
 interface HeaderProps {
 	showMenu?: boolean;
 }
 
-interface MenuOption {
-	name: string;
-	icon?: React.ReactElement; // icon can be a React node
-	onClick?: () => void; // optional click handler
-}
-
-interface MenuItem {
+interface MenuItemConfig {
 	label: string;
-	option?: MenuOption[];
 	onClick?: () => void;
 }
+const ADMIN_ROUTES = {
+	DOCUMENT_CONFIG: '/vcConfig',
+	FIELD_CONFIG: '/fieldConfig',
+	HOME: '/'
+  } as const;
 
 const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 	const navigate = useNavigate();
 
 	// Get user role from local storage
 
-	// Array of menu names
 	const menuNames = [
 		{
-			label: 'Document Configuration',
-			onClick: () => {
-				navigate('/vcConfig');
-			},
+		  label: 'Document Configuration',
+		  onClick: () => {
+			navigate(ADMIN_ROUTES.DOCUMENT_CONFIG);
+		  },
 		},
 		{
-			label: 'Field Mapping Configuration',
-			onClick: () => {
-				navigate('/fieldConfig');
-			},
+		  label: 'Field Mapping Configuration', 
+		  onClick: () => {
+			navigate(ADMIN_ROUTES.FIELD_CONFIG);
+		  },
 		},
 		{
 			label: 'Log out',
-			onClick: () => {
-				localStorage.removeItem('token');
-				navigate('/');
-				window.location.reload();
-			},
+			onClick: () => handleLogout(),
 		},
-	];
-
+	  ];
+	  const handleLogout = async () => {
+		try {
+			const response = await logoutUser();
+			if (response) {
+				navigate(ADMIN_ROUTES.HOME);
+				navigate(0);
+			}
+		} catch (error) {
+			console.log(error);
+			Toast({
+				title: 'Logout failed',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+				description: 'Try Again',
+			});
+		}
+	};
 	return (
 		<Box
 			w="100vw"
@@ -88,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 
 interface HeaderRightSectionProps {
 	showMenu?: boolean;
-	menuNames: MenuItem[]; // add new
+	menuNames: MenuItemConfig[]; 
 }
 
 const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
@@ -98,10 +109,10 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 	const location = useLocation();
 
 	const getMenuPath = (label: string): string => {
-		if (label === 'Document Configuration') return '/vcConfig';
-		if (label === 'Field Mapping Configuration') return '/fieldConfig';
+		if (label === 'Document Configuration') return ADMIN_ROUTES.DOCUMENT_CONFIG;
+		if (label === 'Field Mapping Configuration') return ADMIN_ROUTES.FIELD_CONFIG;
 		return '';
-	};
+	  };
 
 	return (
 		<HStack align="center" spacing={6}>
