@@ -42,7 +42,9 @@ const Layout: React.FC<LayoutProps> = ({
 				/>
 			)}
 			{/* Content */}
-			<Box pt="180px">{children}</Box>
+			<Box pt="calc(var(--header-height) + var(--titlebar-height))">
+				{children}
+			</Box>
 		</Box>
 	);
 };
