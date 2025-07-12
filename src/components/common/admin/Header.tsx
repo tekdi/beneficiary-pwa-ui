@@ -88,8 +88,6 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 
 interface HeaderRightSectionProps {
 	showMenu?: boolean;
-	showSearchBar?: boolean; //NOSONAR
-	showLanguage?: boolean;
 	menuNames: MenuItem[]; // add new
 }
 
