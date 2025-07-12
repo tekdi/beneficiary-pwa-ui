@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, HStack, MenuItem, Text, Toast } from '@chakra-ui/react';
+import { Box, HStack, Text, Toast } from '@chakra-ui/react';
 import Logo from '../../../assets/images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { logoutUser } from '../../../services/auth/auth';
