@@ -30,31 +30,57 @@ import Layout from '../../components/common/admin/Layout';
 interface FieldMappingConfigProps {
 	refreshTrigger?: number;
 }
-
+interface VcFieldValue {
+						type: string;
+						[key: string]: any;
+					}
+					interface Field {
+						fieldId: string;
+						label: string;
+						name: string;
+						type: string;
+						isRequired: boolean;
+					  }
+					  
+					  interface Document {
+						id: string;
+						name: string;
+						label: string;
+						documentSubType: string;
+						docType: string;
+						vcFieldsRaw: string;
+					  }
+					  
+					  interface DocumentMapping {
+						id: number;
+						selectedDocument: string;
+						vcFields: VcField[];
+						selectedVcField: string;
+					  }
+					  
+					  interface VcField {
+						id: string;
+						label: string;
+						type: string;
+					  }
+					  
+					  interface FieldMapping {
+						id: number;
+						fieldId: string;
+						documentMappings: DocumentMapping[];
+						isExpanded: boolean;
+						addMapping: string;
+					  }
+					  
 const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	refreshTrigger = 0,
 }) => {
-	const [fields, setFields] = useState([]); // List of available form fields from API
-	const [documents, setDocuments] = useState([]); // List of available documents from API
-	const [fieldMappings, setFieldMappings] = useState([
-		// User-configured field-to-document mappings
-		{
-			id: Date.now(),
-			fieldId: '',
-			documentMappings: [
-				{
-					id: Date.now() + 1,
-					selectedDocument: '',
-					vcFields: [],
-					selectedVcField: '',
-				},
-			],
-			isExpanded: false,
-			addMapping: '', // Optional normalization mapping
-		},
-	]);
-
-	const [errors, setErrors] = useState({});
+	const [fields, setFields] = useState<Field[]>([]);
+const [documents, setDocuments] = useState<Document[]>([]);
+const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([
+  
+]);
+const [errors, setErrors] = useState<Record<string, string>>({});
 	const toast = useToast();
 
 	// --- Fetch available form fields from API ---
@@ -102,12 +128,13 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	};
 
 	// --- Helper to parse VC fields from document config ---
-	function parseVcFields(vcFieldsRaw) {
+	function parseVcFields(vcFieldsRaw: string): VcField[] {
+
 		if (!vcFieldsRaw) return [];
 		try {
 			const parsed = JSON.parse(vcFieldsRaw);
 			return Object.entries(parsed).map(([key, value]) => {
-				const v = value as any;
+				const v = value as VcFieldValue;
 				return {
 					id: key,
 					label: key,
@@ -121,7 +148,12 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	}
 
 	// --- Helper to map documentMappings from API config ---
-	function mapDocumentMappings(documentMappings, vcConfigDocs, idx) {
+	function mapDocumentMappings(
+		 documentMappings: any[],
+		  vcConfigDocs: Array<{ documentSubType: string; vcFieldsRaw: string }>,
+		  idx: number
+		): DocumentMapping[] {
+		
 		return (documentMappings || []).map((doc, j) => {
 			// Find the corresponding document config
 			const docConfig = vcConfigDocs.find(
@@ -140,7 +172,12 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	}
 
 	// --- Fetch VC fields for a selected document ---
-	const fetchVcFields = async (documentSubType, fieldIndex, docIndex) => {
+	const fetchVcFields = async (
+		  documentSubType: string,
+		  fieldIndex: number,
+		  docIndex: number
+		) => {
+		
 		if (!documentSubType) return;
 		try {
 			// Find the document config by subtype
@@ -289,7 +326,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		]);
 	};
 
-	const removeFieldMapping = (fieldIndex) => {
+	const removeFieldMapping = (fieldIndex:number) => {
 		let newFieldMappings = fieldMappings.filter((_, i) => i !== fieldIndex);
 		if (newFieldMappings.length === 0) {
 			newFieldMappings = [
@@ -531,11 +568,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 										>
 											<FormControl
 												flex="1"
-												isInvalid={
-													errors[
-														`field_${fieldIndex}`
-													]
-												}
+												isInvalid={!!errors[`field_${fieldIndex}`]}
 											>
 												<FormLabel
 													fontSize="sm"
@@ -691,11 +724,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																>
 																	<FormControl
 																		flex="1"
-																		isInvalid={
-																			errors[
-																				`field_${fieldIndex}_doc_${docIndex}`
-																			]
-																		}
+																		isInvalid={!!errors[`field_${fieldIndex}_doc_${docIndex}`]}
 																	>
 																		<FormLabel fontSize="xs">
 																			Document
@@ -760,11 +789,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 
 																	<FormControl
 																		flex="1"
-																		isInvalid={
-																			errors[
-																				`field_${fieldIndex}_vc_${docIndex}`
-																			]
-																		}
+																		isInvalid={!!errors[`field_${fieldIndex}_vc_${docIndex}`]}
 																	>
 																		<FormLabel fontSize="xs">
 																			VC
@@ -792,7 +817,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																			size="sm"
 																			_focus={{
 																				boxShadow:
-																					'0 0 0 1x #06164B, 0 0 0 1px #06164B',
+																					'0 0 0 1px #06164B, 0 0 0 1px #06164B',
 																			}}
 																		>
 																			{docMapping.vcFields.map(
