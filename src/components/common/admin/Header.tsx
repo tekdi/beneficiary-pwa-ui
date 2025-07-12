@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, HStack, Text, Toast } from '@chakra-ui/react';
+import { Box, HStack, Text, useToast } from '@chakra-ui/react';
 import Logo from '../../../assets/images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { logoutUser } from '../../../services/auth/auth';
@@ -20,7 +20,7 @@ const ADMIN_ROUTES = {
 
 const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 	const navigate = useNavigate();
-
+	const toast = useToast();
 	// Get user role from local storage
 
 	const menuNames = [
@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 			}
 		} catch (error) {
 			console.log(error);
-			Toast({
+			toast({
 				title: 'Logout failed',
 				status: 'error',
 				duration: 3000,
