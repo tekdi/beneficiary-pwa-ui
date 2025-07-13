@@ -1,6 +1,8 @@
-import { lazy, useContext } from 'react';
+import React, { lazy, useContext } from 'react';
 import ScanVC from '../components/ScanVC';
 import { AuthContext } from '../utils/context/checkToken';
+import FieldMappingConfig from '../screens/admin/FieldMappingConfig';
+import DocumentConfig from '../screens/admin/DocumentConfig';
 
 const ExploreBenefits = lazy(() => import('../screens/benefit/Benefits'));
 const BenefitsDetails = lazy(() => import('../screens/benefit/Details'));
@@ -14,7 +16,12 @@ const UploadDocuments = lazy(
 const Home = lazy(() => import('../screens/Home'));
 const UserProfile = lazy(() => import('../screens/UserProfile'));
 const DocumentScanner = lazy(() => import('../components/DocumentScanner'));
-
+const DocumentScannerRoute = () => {
+	const { userData } = useContext(AuthContext)!;
+	return (
+		<DocumentScanner userId={userData?.user_id} userData={userData?.docs} />
+	);
+};
 const routes = [
 	{
 		path: '/uploaddocuments',
@@ -30,10 +37,7 @@ const routes = [
 	},
 	{
 		path: '/document-scanner',
-		component: () => {
-			const { userData } = useContext(AuthContext)!;
-			return <DocumentScanner userId={userData?.user_id} userData={userData?.docs} />;
-		},
+		component: DocumentScannerRoute,
 	},
 	{
 		path: '/benefits/:id',
@@ -58,6 +62,14 @@ const routes = [
 	{
 		path: '*',
 		component: Home,
+	},
+	{
+		path: '/vcConfig',
+		component: DocumentConfig,
+	},
+	{
+		path: '/fieldConfig',
+		component: FieldMappingConfig,
 	},
 ];
 
