@@ -102,7 +102,15 @@ const UserProfile: React.FC = () => {
 					</Text>
 				</Flex>
 
-				<UserDetails userData={{ ...userData }} />
+				<UserDetails
+					userData={{
+						firstName: userData?.firstName,
+						middleName: userData?.middleName,
+						lastName: userData?.lastName,
+						dob: userData?.dob,
+						customFields: userData?.customFields || [],
+					}}
+				/>
 				<Box
 					p={5}
 					shadow="md"
@@ -116,7 +124,7 @@ const UserProfile: React.FC = () => {
 							userDocuments={userData?.docs}
 						/>
 						{showIframe ? (
-							<UploadDocumentEwallet/>
+							<UploadDocumentEwallet />
 						) : (
 							<CommonButton
 								onClick={() => setShowIframe(true)}
