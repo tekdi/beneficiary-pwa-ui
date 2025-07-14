@@ -12,7 +12,6 @@ const TitleBar: React.FC<{ title: string; subTitle?: string }> = ({
 			height="var(--titlebar-height)"
 			py={0}
 			pl={'23px'}
-		
 			position="fixed"
 			top="var(--header-height)"
 			left={0}
