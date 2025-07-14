@@ -938,7 +938,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 												fontSize="sm"
 												color="#06164B"
 											>
-												Add Mapping (JSON)
+												Transformation Value (JSON)
 											</FormLabel>
 											<Textarea
 												placeholder='e.g. { "original": "m" , "mapped":"male"}'
