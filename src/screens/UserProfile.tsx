@@ -108,7 +108,7 @@ const UserProfile: React.FC = () => {
 						middleName: userData?.middleName,
 						lastName: userData?.lastName,
 						dob: userData?.dob,
-						customFields: userData.customFields || [],
+						customFields: userData?.customFields || [],
 					}}
 				/>
 				<Box
