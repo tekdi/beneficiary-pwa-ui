@@ -51,6 +51,11 @@ interface UserData {
 	email?: string;
 	phone?: string;
 	middleName?: string;
+	dob?: string;
+	customFields?: {
+		label: string;
+		value: string | number | null;
+	}[];
 	// Add any other fields that your user data object might have
 }
 

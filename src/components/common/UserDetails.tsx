@@ -19,47 +19,17 @@ const valueStyles = {
 	lineHeight: '14px',
 };
 
+interface CustomField {
+	label: string;
+	value: string | number | null;
+}
+
 interface UserData {
 	firstName?: string;
 	middleName?: string | null;
 	lastName?: string;
-	fatherName?: string;
-	motherName?: string;
 	dob?: string | null;
-	gender?: string;
-	// Contact Information
-	email?: string;
-	phoneNumber?: string;
-	state?: string;
-	// Educational Information
-	class?: string;
-	currentSchoolName?: string | null;
-	currentSchoolAddress?: string | null;
-	currentSchoolDistrict?: string | null;
-	previousYearMarks?: string;
-
-	// Demographic Information
-	caste?: string;
-	disabilityStatus?: string | null;
-	udid?: string | null;
-	disabilityType?: string | null;
-	disabilityRange?: string | null;
-	annualIncome?: string;
-	studentType?: string;
-	nspOtr?: string;
-	tuitionAndAdminFeePaid?: string;
-	miscFeePaid?: string;
-
-	// System Information
-	user_id?: string;
-	sso_id?: string;
-	sso_provider?: string;
-	samagraId?: string;
-	aadhaar?: string;
-	status?: string;
-	created_at?: string;
-	updated_at?: string;
-	image?: string | null;
+	customFields?: CustomField[];
 }
 
 interface UserDetailsProps {
@@ -79,10 +49,24 @@ const Field: React.FC<FieldProps> = ({ label, value, defaultValue = '-' }) => (
 	</Box>
 );
 
-const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
-	const { t } = useTranslation();
+// Helper to chunk an array into pairs
+function chunkArray<T>(arr: T[], size: number): T[][] {
+	return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+		arr.slice(i * size, i * size + size)
+	);
+}
 
-	const formattedDate = formatDate(userData?.dob);
+const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
+	// Prepare base fields as an array
+	const baseFields = [
+		{ label: 'First Name', value: userData?.firstName ?? '-' },
+		{ label: 'Middle Name', value: userData?.middleName ?? '-' },
+		{ label: 'Last Name', value: userData?.lastName ?? '-' },
+		{
+			label: 'Date of Birth',
+			value: userData?.dob ? formatDate(userData?.dob) : '-',
+		},
+	];
 
 	return (
 		<Box
@@ -93,124 +77,39 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 			borderWidth={1}
 			p={6}
 		>
-			{/* <VStack spacing={6} align="stretch" mb={6}>
-        <Field
-          label={t("USER_DETAILS_FATHER_NAME")}
-          value={userData?.fatherName}
-        />
-        <Field
-          label={t("USER_DETAILS_MOTHER_NAME")}
-          value={userData?.motherName}
-        />
-        <Field label={t("USER_DETAILS_LAST_NAME")} value={userData?.lastName} />
-      </VStack> */}
-
 			<VStack spacing={6} align="stretch">
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_FIRST_NAME')}
-						value={userData?.firstName}
-					/>{' '}
-					<Field
-						label={t('USER_DETAILS_MIDDLE_NAME')}
-						value={userData?.middleName}
-					/>{' '}
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_LAST_NAME')}
-						value={userData?.lastName}
-					/>{' '}
-					<Field
-						label={t('USER_DETAILS_FATHER_NAME')}
-						value={userData?.fatherName}
-					/>{' '}
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_GENDER')}
-						value={userData?.gender}
-					/>
-					<Field
-						label={t('USER_DETAILS_DOB')}
-						value={formattedDate}
-					/>{' '}
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_AADHAAR')}
-						value={userData?.aadhaar}
-					/>
-					<Field
-						label={t('USER_DETAILS_STATE')}
-						value={userData?.state}
-					/>
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_CLASS')}
-						value={userData?.class}
-					/>
-					<Field
-						label={t('USER_DETAILS_PREVIOUS_YEAR_MARKS')}
-						value={userData?.previousYearMarks}
-					/>
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_ANNUAL_INCOME')}
-						value={
-							userData?.annualIncome &&
-							`INR ${userData?.annualIncome}`
-						}
-					/>
-					<Field
-						label={t('USER_DETAILS_NSP_OTR')}
-						value={userData?.nspOtr}
-					/>
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_DISABILITY')}
-						value={userData?.disabilityStatus}
-					/>
-					<Field
-						label={t('USER_DETAILS_UDID')}
-						value={userData?.udid}
-					/>
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_DISABILITY_Type')}
-						value={userData?.disabilityType
-							?.split('_')
-							.map(
-								(word) =>
-									word.charAt(0).toUpperCase() + word.slice(1)
-							)
-							.join(' ')}
-					/>
-					<Field
-						label={t('USER_DETAILS_DISABILITY_RANGE')}
-						value={userData?.disabilityRange}
-					/>
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_TUTION_ADMIN_FEE_PAID')}
-						value={userData?.tuitionAndAdminFeePaid}
-					/>
-					<Field
-						label={t('USER_DETAILS_MISC_FEE_PAID')}
-						value={userData?.miscFeePaid}
-					/>
-				</HStack>
-				<HStack spacing={4}>
-					<Field
-						label={t('USER_DETAILS_AGE')}
-						value={calculateAge(userData?.dob)}
-					/>
-				</HStack>
+				{/* Base fields, 2 per row */}
+				{chunkArray(baseFields, 2).map((row, rowIdx) => (
+					<HStack key={rowIdx} spacing={4}>
+						{row.map((field, idx) => (
+							<Field
+							label={field.label}
+							value={field.value}
+							key={idx}
+						/>
+						))}
+					</HStack>
+				))}
+				{/* Custom fields, 2 per row */}
+				{userData?.customFields && userData.customFields.length > 0 && (
+					<Box>
+						<VStack spacing={2} align="stretch">
+							{chunkArray(userData.customFields, 2).map(
+								(row, rowIdx) => (
+									<HStack key={rowIdx} spacing={4}>
+										{row.map((field, idx) => (
+											<Field
+												label={field.label}
+												value={field.value}
+												key={idx}
+											/>
+										))}
+									</HStack>
+								)
+							)}
+						</VStack>
+					</Box>
+				)}
 			</VStack>
 		</Box>
 	);
