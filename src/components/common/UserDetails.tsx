@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Text, HStack, VStack } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
-import { calculateAge, formatDate } from '../../utils/jsHelper/helper';
+import { formatDate } from '../../utils/jsHelper/helper';
 
 // Define common styles for Text and Input components
 const labelStyles = {
@@ -79,14 +78,14 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 		>
 			<VStack spacing={6} align="stretch">
 				{/* Base fields, 2 per row */}
-				{chunkArray(baseFields, 2).map((row, rowIdx) => (
-					<HStack key={rowIdx} spacing={4}>
-						{row.map((field, idx) => (
+				{chunkArray(baseFields, 2).map((row) => (
+					<HStack key={row.map((f) => f.label).join('_')} spacing={4}>
+						{row.map((field) => (
 							<Field
-							label={field.label}
-							value={field.value}
-							key={idx}
-						/>
+								label={field.label}
+								value={field.value}
+								key={field.label}
+							/>
 						))}
 					</HStack>
 				))}
@@ -94,19 +93,20 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 				{userData?.customFields && userData.customFields.length > 0 && (
 					<Box>
 						<VStack spacing={2} align="stretch">
-							{chunkArray(userData.customFields, 2).map(
-								(row, rowIdx) => (
-									<HStack key={rowIdx} spacing={4}>
-										{row.map((field, idx) => (
-											<Field
-												label={field.label}
-												value={field.value}
-												key={idx}
-											/>
-										))}
-									</HStack>
-								)
-							)}
+							{chunkArray(userData.customFields, 2).map((row) => (
+								<HStack
+									key={row.map((f) => f.label).join('_')}
+									spacing={4}
+								>
+									{row.map((field, idx) => (
+										<Field
+											label={field.label}
+											value={field.value}
+											key={field.label}
+										/>
+									))}
+								</HStack>
+							))}
 						</VStack>
 					</Box>
 				)}
