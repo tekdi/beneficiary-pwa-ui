@@ -98,7 +98,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 									key={row.map((f) => f.label).join('_')}
 									spacing={4}
 								>
-									{row.map((field, idx) => (
+									{row.map((field) => (
 										<Field
 											label={field.label}
 											value={field.value}
