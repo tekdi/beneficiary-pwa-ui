@@ -255,6 +255,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 							? fieldObj.fieldId
 							: fieldMapping.fieldId,
 						fieldName: fieldObj ? fieldObj.name : '',
+						fieldType: fieldObj ? fieldObj.type : '',
 						documentMappings: fieldMapping.documentMappings
 							.filter(
 								(doc) =>
@@ -938,7 +939,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 												fontSize="sm"
 												color="#06164B"
 											>
-												Add Mapping (JSON)
+												Transformation Value (JSON)
 											</FormLabel>
 											<Textarea
 												placeholder='e.g. { "original": "m" , "mapped":"male"}'
