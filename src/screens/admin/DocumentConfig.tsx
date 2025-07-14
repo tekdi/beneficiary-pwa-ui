@@ -93,7 +93,7 @@ const DocumentConfig = () => {
 	}, []);
 
 	// --- Validate vcFields JSON structure ---
-	const validateVcFields = (value:string) => {
+	const validateVcFields = (value: string) => {
 		if (!value || value.trim() === '') return true;
 		try {
 			const parsed = JSON.parse(value);
@@ -171,14 +171,14 @@ const DocumentConfig = () => {
 		const newErrors = {};
 		// Validate all required fields and vcFields structure
 		documentConfigs.forEach((doc, index) => {
-		
-			['name', 'label', 'documentSubType', 'docType','vcFields'].forEach((field) => {
-			
-				if (!doc[field]) {
-					newErrors[`${field}_${index}`] = `${field} is required`;
-					hasError = true;
+			['name', 'label', 'documentSubType', 'docType', 'vcFields'].forEach(
+				(field) => {
+					if (!doc[field]) {
+						newErrors[`${field}_${index}`] = `${field} is required`;
+						hasError = true;
+					}
 				}
-			});
+			);
 			if (doc.vcFields && doc.vcFields.trim() !== '') {
 				if (!validateVcFields(doc.vcFields)) {
 					newErrors[`vcFields_${index}`] =
@@ -292,9 +292,13 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Name<Text as="span" color="red.500">
-		*
-	</Text>
+													Document Name
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
 												</FormLabel>
 												<Input
 													value={doc.name}
@@ -330,9 +334,13 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Label<Text as="span" color="red.500">
-		*
-	</Text>
+													Document Label
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
 												</FormLabel>
 												<Input
 													value={doc.label}
@@ -369,7 +377,6 @@ const DocumentConfig = () => {
 												md: 'row',
 											}}
 										>
-										
 											<FormControl
 												isInvalid={
 													!!errors[`docType_${index}`]
@@ -381,9 +388,13 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Type<Text as="span" color="red.500">
-		*
-	</Text>
+													Document Type
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
 												</FormLabel>
 												<Input
 													value={doc.docType}
@@ -421,9 +432,13 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Sub Type<Text as="span" color="red.500">
-		*
-	</Text>
+													Document Sub Type
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
 												</FormLabel>
 												<Input
 													value={doc.documentSubType}
@@ -463,11 +478,19 @@ const DocumentConfig = () => {
 												fontWeight="bold"
 												color="#06164B"
 											>
-												VC fields (JSON)<Text as="span" color="red.500">
-		*
-	</Text>   <Text  color="#06164B" fontSize={12}>
-	These fields are the same as those defined in the schema published on the issuance platform.
-	</Text>
+												VC fields (JSON)
+												<Text as="span" color="red.500">
+													*
+												</Text>{' '}
+												<Text
+													color="#06164B"
+													fontSize={12}
+												>
+													These fields are the same as
+													those defined in the schema
+													published on the issuance
+													platform.
+												</Text>
 											</FormLabel>
 											<Textarea
 												value={doc.vcFields || ''}
