@@ -29,6 +29,7 @@ export interface Field {
 }
 
 export interface FieldOption {
+	id: string;
 	name: string;
 	value: string;
 }
