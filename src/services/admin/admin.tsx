@@ -28,6 +28,24 @@ export interface Field {
 	isRequired: boolean;
 }
 
+export interface FieldOption {
+	name: string;
+	value: string;
+}
+
+export interface AddFieldPayload {
+	name: string;
+	label: string;
+	context?: string;
+	contextType?: string;
+	type: string;
+	ordering?: number;
+	fieldParams?: { options?: FieldOption[] } | null;
+	fieldAttributes?: { isEditable: boolean; isRequired: boolean };
+	sourceDetails?: any;
+	dependsOn?: Record<string, any>;
+}
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const updateMapping = async (value: Mapping[], key: string) => {
@@ -103,10 +121,80 @@ export const fetchFields = async (
 				name: fieldObj.name,
 				type: fieldObj.type,
 				isRequired: fieldObj.fieldAttributes?.isRequired ?? false,
+				isEditable: fieldObj.fieldAttributes?.isEditable ?? false,
 			};
 		});
 	} catch (error) {
 		console.error('Error fetching fields:', error);
+		throw error;
+	}
+};
+
+export const addField = async (payload: AddFieldPayload) => {
+	try {
+		const authToken = localStorage.getItem('authToken');
+		if (!authToken) {
+			throw new Error('Authentication token not found');
+		}
+		const response = await axios.post(
+			`${BASE_URL}/fields`,
+			{
+				name: payload.name,
+				label: payload.label,
+				context: payload.context || 'USERS',
+				contextType: payload.contextType || 'User',
+				type: payload.type,
+				ordering: payload.ordering,
+				fieldParams: payload.fieldParams ?? null,
+				fieldAttributes: payload.fieldAttributes,
+				sourceDetails: payload.sourceDetails ?? null,
+				dependsOn: payload.dependsOn ?? {},
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					accept: 'application/json',
+					Authorization: `Bearer ${authToken}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error) {
+		console.error('Error adding field:', error);
+		throw error;
+	}
+};
+
+export const updateField = async (fieldId: string, payload: AddFieldPayload) => {
+	try {
+		const authToken = localStorage.getItem('authToken');
+		if (!authToken) {
+			throw new Error('Authentication token not found');
+		}
+		const response = await axios.put(
+			`${BASE_URL}/fields/${fieldId}`,
+			{
+				name: payload.name,
+				label: payload.label,
+				type: payload.type,
+				ordering: payload.ordering,
+				fieldParams: payload.fieldParams ?? null,
+				fieldAttributes: payload.fieldAttributes,
+				sourceDetails: payload.sourceDetails ?? null,
+				dependsOn: payload.dependsOn ?? {},
+				isRequired:payload.fieldAttributes.isRequired
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					accept: 'application/json',
+					Authorization: `Bearer ${authToken}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error) {
+		console.error('Error updating field:', error);
 		throw error;
 	}
 };
