@@ -15,6 +15,7 @@ interface MenuItemConfig {
 const ADMIN_ROUTES = {
 	DOCUMENT_CONFIG: '/vcConfig',
 	FIELD_CONFIG: '/fieldConfig',
+	ADD_FIELD:'/fields',
 	HOME: '/',
 } as const;
 
@@ -24,6 +25,12 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 	// Get user role from local storage
 
 	const menuNames = [
+		{
+			label: 'Add Field',
+			onClick: () => {
+				navigate(ADMIN_ROUTES.ADD_FIELD);
+			},
+		},
 		{
 			label: 'Document Configuration',
 			onClick: () => {
