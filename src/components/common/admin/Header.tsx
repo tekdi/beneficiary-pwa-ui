@@ -120,6 +120,8 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 			return ADMIN_ROUTES.DOCUMENT_CONFIG;
 		if (label === 'Field Mapping Configuration')
 			return ADMIN_ROUTES.FIELD_CONFIG;
+		if (label === 'Add Field')
+			return ADMIN_ROUTES.ADD_FIELD;
 		return '';
 	};
 
