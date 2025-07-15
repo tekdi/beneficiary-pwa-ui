@@ -2,27 +2,65 @@ import { ChakraProvider } from '@chakra-ui/react';
 import theme from './theme';
 import authRoutes from './routes/AuthRoutes';
 import guestRoutes from './routes/GuestRoutes';
+import adminRoutes from './routes/AdminRoutes';
 import React, { Suspense, useEffect, useState } from 'react';
 import Loader from './components/common/Loader';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './utils/context/checkToken';
 import './assets/styles/App.css';
 import Layout from './components/common/layout/Layout';
+import { jwtDecode } from 'jwt-decode';
 
+interface DecodedToken {
+	resource_access?: {
+		[key: string]: {
+			roles: string[];
+		};
+	};
+	// add other fields if needed
+}
 function App() {
 	const [loading, setLoading] = useState(true);
 	const [routes, setRoutes] = useState<
 		{ path: string; component: React.ElementType }[]
 	>([]);
+
 	const token = localStorage.getItem('authToken');
 
 	useEffect(() => {
 		if (token) {
-			setRoutes(authRoutes);
-			const redirectUrl = localStorage.getItem('redirectUrl');
-			if (redirectUrl) {
-				window.location.href = redirectUrl;
-				localStorage.removeItem('redirectUrl');
+			const decoded = jwtDecode(token) as DecodedToken;
+			// Check for roles in resource_access
+			const resourceAccess = decoded.resource_access || {};
+			// const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles || [
+			// 	"Benefit Manager",
+			// 	"Benefit Admin"
+			//   ];
+			const beneficiaryRoles = ['admin'];
+			const isAdmin = beneficiaryRoles.includes('admin');
+			const isBeneficiary =
+				beneficiaryRoles.includes('beneficiary') ||
+				beneficiaryRoles.includes('Benefit Manager');
+			if (isAdmin) {
+				setRoutes(adminRoutes);
+				const redirectUrl = localStorage.getItem('redirectUrl');
+				if (redirectUrl) {
+					window.location.href = redirectUrl;
+					localStorage.removeItem('redirectUrl');
+				}
+			} else if (isBeneficiary) {
+				setRoutes(authRoutes);
+				const redirectUrl = localStorage.getItem('redirectUrl');
+				if (redirectUrl) {
+					window.location.href = redirectUrl;
+					localStorage.removeItem('redirectUrl');
+				}
+			} else {
+				// Role not recognized (not admin or beneficiary)
+				setRoutes(guestRoutes);
+				console.warn(
+					'Unauthorized role, falling back to guest routes.'
+				);
 			}
 		} else {
 			setRoutes(guestRoutes);
