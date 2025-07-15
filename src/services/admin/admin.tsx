@@ -122,6 +122,8 @@ export const fetchFields = async (
 				type: fieldObj.type,
 				isRequired: fieldObj.fieldAttributes?.isRequired ?? false,
 				isEditable: fieldObj.fieldAttributes?.isEditable ?? false,
+				ordering: fieldObj.ordering,
+				fieldParams: fieldObj.fieldParams ?? undefined,
 			};
 		});
 	} catch (error) {
@@ -165,7 +167,10 @@ export const addField = async (payload: AddFieldPayload) => {
 	}
 };
 
-export const updateField = async (fieldId: string, payload: AddFieldPayload) => {
+export const updateField = async (
+	fieldId: string,
+	payload: AddFieldPayload
+) => {
 	try {
 		const authToken = localStorage.getItem('authToken');
 		if (!authToken) {
@@ -182,7 +187,7 @@ export const updateField = async (fieldId: string, payload: AddFieldPayload) => 
 				fieldAttributes: payload.fieldAttributes,
 				sourceDetails: payload.sourceDetails ?? null,
 				dependsOn: payload.dependsOn ?? {},
-				isRequired:payload.fieldAttributes.isRequired
+				isRequired: payload.fieldAttributes?.isRequired,
 			},
 			{
 				headers: {
@@ -193,7 +198,7 @@ export const updateField = async (fieldId: string, payload: AddFieldPayload) => 
 			}
 		);
 		return response.data;
-	} catch (error) {
+	} catch (error: unknown) {
 		console.error('Error updating field:', error);
 		throw error;
 	}
