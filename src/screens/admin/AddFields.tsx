@@ -65,6 +65,14 @@ const initialForm: FieldForm = {
 	options: [],
 };
 
+// Helper function to get editable text
+function getEditableText(isEditable: boolean | undefined) {
+	if (typeof isEditable === 'boolean') {
+		return isEditable ? 'Yes' : 'No';
+	}
+	return 'No';
+}
+
 const AddFields: React.FC = () => {
 	const [fields, setFields] = useState<Field[]>([]);
 	const [form, setForm] = useState<FieldForm>(initialForm);
@@ -353,12 +361,7 @@ const AddFields: React.FC = () => {
 							</Thead>
 							<Tbody>
 								{fields.map((field, idx) => {
-									const editableText =
-										typeof field.isEditable === 'boolean'
-											? field.isEditable
-												? 'Yes'
-												: 'No'
-											: 'No';
+									const editableText = getEditableText(field.isEditable);
 									return (
 										<Tr
 											key={field.fieldId}
