@@ -107,31 +107,30 @@ const AddFields: React.FC = () => {
 		setErrors((prev) => ({ ...prev, [name]: '' }));
 	};
 
-	const handleOptionChange = (
-		idx: number,
-		key: 'name' | 'value',
-		value: string
-	) => {
-		setForm((prev) => {
-			const options = [...prev.options];
-			options[idx] = { ...options[idx], [key]: value };
-			return { ...prev, options };
-		});
+	const handleOptionChange = (id: string, key: 'name' | 'value', value: string) => {
+		setForm((prev) => ({
+			...prev,
+			options: prev.options.map(opt =>
+				opt.id === id ? { ...opt, [key]: value } : opt
+			),
+		}));
 	};
 
 	const addOption = () => {
 		setForm((prev) => ({
 			...prev,
-			options: [...prev.options, { name: '', value: '' }],
+			options: [
+				...prev.options,
+				{ id: Date.now().toString(), name: '', value: '' }
+			],
 		}));
 	};
 
-	const removeOption = (idx: number) => {
-		setForm((prev) => {
-			const options = [...prev.options];
-			options.splice(idx, 1);
-			return { ...prev, options };
-		});
+	const removeOption = (id: string) => {
+		setForm((prev) => ({
+			...prev,
+			options: prev.options.filter(opt => opt.id !== id),
+		}));
 	};
 
 	const validateForm = () => {
@@ -288,7 +287,7 @@ const AddFields: React.FC = () => {
 			<Layout
 				showMenu={true}
 				title="Add Fields"
-				subTitle="Add, edit, and remove user fields."
+				subTitle="Add and edit fields."
 			>
 				<VStack
 					spacing={10}
@@ -479,13 +478,13 @@ const AddFields: React.FC = () => {
 												Dropdown Options
 											</FormLabel>
 											{form.options.map((opt, idx) => (
-												<HStack key={opt.value} mb={2}>
+												<HStack key={opt.id} mb={2}>
 													<Input
 														placeholder="Name"
 														value={opt.name}
 														onChange={(e) =>
 															handleOptionChange(
-																idx,
+																opt.id,
 																'name',
 																e.target.value
 															)
@@ -497,7 +496,7 @@ const AddFields: React.FC = () => {
 														value={opt.value}
 														onChange={(e) =>
 															handleOptionChange(
-																idx,
+																opt.id,
 																'value',
 																e.target.value
 															)
@@ -510,7 +509,7 @@ const AddFields: React.FC = () => {
 														size="sm"
 														colorScheme="red"
 														onClick={() =>
-															removeOption(idx)
+															removeOption(opt.id)
 														}
 													/>
 													<FormErrorMessage>
