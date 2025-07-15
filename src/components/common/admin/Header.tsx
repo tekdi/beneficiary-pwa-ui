@@ -26,19 +26,19 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 
 	const menuNames = [
 		{
-			label: 'Add Field',
+			label: 'Fields',
 			onClick: () => {
 				navigate(ADMIN_ROUTES.ADD_FIELD);
 			},
 		},
 		{
-			label: 'Document Configuration',
+			label: 'Documents Master',
 			onClick: () => {
 				navigate(ADMIN_ROUTES.DOCUMENT_CONFIG);
 			},
 		},
 		{
-			label: 'Field Mapping Configuration',
+			label: 'Fields to VC Field Mapping',
 			onClick: () => {
 				navigate(ADMIN_ROUTES.FIELD_CONFIG);
 			},
