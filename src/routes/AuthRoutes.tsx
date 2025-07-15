@@ -3,6 +3,7 @@ import ScanVC from '../components/ScanVC';
 import { AuthContext } from '../utils/context/checkToken';
 import FieldMappingConfig from '../screens/admin/FieldMappingConfig';
 import DocumentConfig from '../screens/admin/DocumentConfig';
+import AddFields from '../screens/admin/AddFields';
 
 const ExploreBenefits = lazy(() => import('../screens/benefit/Benefits'));
 const BenefitsDetails = lazy(() => import('../screens/benefit/Details'));
@@ -70,6 +71,10 @@ const routes = [
 	{
 		path: '/fieldConfig',
 		component: FieldMappingConfig,
+	},
+	{
+		path: '/fields',
+		component: AddFields,
 	},
 ];
 
