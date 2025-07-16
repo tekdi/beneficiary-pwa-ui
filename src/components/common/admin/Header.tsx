@@ -116,11 +116,11 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 	const location = useLocation();
 
 	const getMenuPath = (label: string): string => {
-		if (label === 'Document Configuration')
+		if (label === 'Documents Master')
 			return ADMIN_ROUTES.DOCUMENT_CONFIG;
-		if (label === 'Field Mapping Configuration')
+		if (label === 'Fields to VC Field Mapping')
 			return ADMIN_ROUTES.FIELD_CONFIG;
-		if (label === 'Add Field')
+		if (label === 'Fields')
 			return ADMIN_ROUTES.ADD_FIELD;
 		return '';
 	};
