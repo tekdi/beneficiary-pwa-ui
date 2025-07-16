@@ -210,7 +210,7 @@ export const getDocumentsList = async () => {
 	try {
 		const token = localStorage.getItem('authToken');
 		const response = await axios.get(
-			`${apiBaseUrl}/content/documents_list`,
+			`${apiBaseUrl}/admin/config/vcConfiguration`,
 			{
 				headers: {
 					Accept: '*/*',
@@ -220,7 +220,8 @@ export const getDocumentsList = async () => {
 		);
 
 		// Return the documents list data
-		return response.data;
+		console.log("response",response.data.data.value);
+		return response.data;	
 	} catch (error) {
 		handleError(error);
 	}
