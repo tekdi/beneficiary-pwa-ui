@@ -32,7 +32,10 @@ function App() {
 			// Check for roles in resource_access
 			const resourceAccess = decoded.resource_access || {};
 			const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles;
-
+			if (!beneficiaryRoles) {
+				setRoutes(guestRoutes);
+				return;
+			}
 			const isAdmin = beneficiaryRoles.includes('admin');
 			const isBeneficiary = beneficiaryRoles.includes('beneficiary');
 			if (isAdmin) {
