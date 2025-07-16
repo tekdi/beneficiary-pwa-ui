@@ -175,16 +175,20 @@ const ExploreBenefits: React.FC = () => {
 				if (token) {
 					setIsAuthenticated(true);
 					const user = await getUser();
-					const income = getIncomeRangeValue(
-						user?.data?.annualIncome
-					);
+					const customFields = user?.data?.customFields || [];
+
+					const incomeField = customFields.find(field => field.name === "annualIncome");
+					const casteField = customFields.find(field => field.name === "caste");
+					const genderField = customFields.find(field => field.name === "gender");
+
+					const income = getIncomeRangeValue(incomeField?.value);
 
 					const userFilters: Filter = {
-						caste: user?.data?.caste,
-						annualIncome: income,
-						gender: user?.data?.gender,
+ 						caste: casteField?.value || "",
+  						annualIncome: income,
+  						gender: genderField?.gender || "",
 					};
-
+					
 					const newUserFilter: Filter = {};
 					Object.keys(userFilters).forEach((key) => {
 						if (
