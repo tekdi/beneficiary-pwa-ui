@@ -332,7 +332,17 @@ const BenefitsDetails: React.FC = () => {
 		}
 		/* const eligibilityArr = checkEligibility(resultItem, user);
 		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */
-		setAuthUser(user?.data || {});
+		const customFields = user?.data?.customFields || [];
+		const customFieldValues = customFields.reduce((acc, field) => {
+			acc[field.name] = field.value;
+			return acc;
+		  }, {} as Record<string, any>);
+		  const combinedData = {
+			...user.data,
+			...customFieldValues,
+		  };
+		  console.log("combinedData",combinedData);
+		setAuthUser(combinedData|| {});
 
 		const appResult = await getApplication({
 			user_id: user?.data?.user_id,
