@@ -39,7 +39,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 		try {
 			const result = await getUser();
 			const data = await getDocumentsList();
-			updateUserData(result?.data, data?.data);
+			updateUserData(result?.data, data?.data?.value);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
