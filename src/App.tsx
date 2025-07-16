@@ -31,11 +31,10 @@ function App() {
 			const decoded = jwtDecode(token) as DecodedToken;
 			// Check for roles in resource_access
 			const resourceAccess = decoded.resource_access || {};
-			const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles
-			
+			const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles;
+
 			const isAdmin = beneficiaryRoles.includes('admin');
-			const isBeneficiary =
-				beneficiaryRoles.includes('beneficiary');
+			const isBeneficiary = beneficiaryRoles.includes('beneficiary');
 			if (isAdmin) {
 				setRoutes(adminRoutes);
 				const redirectUrl = localStorage.getItem('redirectUrl');
