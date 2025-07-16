@@ -53,6 +53,7 @@ interface FieldForm {
 	type: string;
 	isRequired: boolean;
 	isEditable: boolean;
+	ordering: number | '';
 	options: FieldOption[];
 }
 
@@ -62,6 +63,7 @@ const initialForm: FieldForm = {
 	type: 'text',
 	isRequired: false,
 	isEditable: true,
+	ordering: '',
 	options: [],
 };
 
@@ -146,6 +148,7 @@ const AddFields: React.FC = () => {
 		if (!form.label.trim()) newErrors.label = 'Label is required';
 		if (!form.name.trim()) newErrors.name = 'Name is required';
 		if (!form.type) newErrors.type = 'Type is required';
+		if (form.ordering === '' || isNaN(Number(form.ordering))) newErrors.ordering = 'Ordering is required and must be a number';
 		if (form.type === 'drop_down' && form.options.length === 0)
 			newErrors.options = 'At least one option is required';
 		if (form.type === 'drop_down') {
@@ -168,7 +171,7 @@ const AddFields: React.FC = () => {
 				name: form.name,
 				label: form.label,
 				type: form.type,
-				ordering: fields.length + 1,
+				ordering: Number(form.ordering),
 				fieldParams:
 					form.type === 'drop_down'
 						? { options: form.options }
@@ -216,6 +219,7 @@ const AddFields: React.FC = () => {
 			type: field.type,
 			isRequired: field.isRequired,
 			isEditable: field.isEditable,
+			ordering: field.ordering ?? '',
 			options:
 				field.type === 'drop_down' && field.fieldParams?.options
 					? field.fieldParams.options
@@ -238,7 +242,7 @@ const AddFields: React.FC = () => {
 					name: form.name,
 					label: form.label,
 					type: form.type,
-					ordering: fields[editingIndex].ordering || editingIndex + 1,
+					ordering: Number(form.ordering),
 					fieldParams:
 						form.type === 'drop_down'
 							? { options: form.options }
@@ -420,59 +424,37 @@ const AddFields: React.FC = () => {
 							<ModalCloseButton />
 							<ModalBody>
 								<VStack spacing={4} align="stretch">
-									<FormControl
-										isInvalid={!!errors.label}
-										isRequired
-									>
-										<FormLabel>Label</FormLabel>
-										<Input
-											name="label"
-											value={form.label}
-											onChange={handleInputChange}
-										/>
-										<FormErrorMessage>
-											{errors.label}
-										</FormErrorMessage>
+									<FormControl isInvalid={!!errors.label} isRequired>
+										<FormLabel>Label </FormLabel>
+										<Input name="label" value={form.label} onChange={handleInputChange} />
+										<FormErrorMessage>{errors.label}</FormErrorMessage>
 									</FormControl>
-									<FormControl
-										isInvalid={!!errors.name}
-										isRequired
-									>
-										<FormLabel>Name</FormLabel>
-										<Input
-											name="name"
-											value={form.name}
-											onChange={handleInputChange}
-										/>
-										<FormErrorMessage>
-											{errors.name}
-										</FormErrorMessage>
+									<FormControl isInvalid={!!errors.name} isRequired>
+										<FormLabel>Name </FormLabel>
+										<Input name="name" value={form.name} onChange={handleInputChange} />
+										<FormErrorMessage>{errors.name}</FormErrorMessage>
 									</FormControl>
-									<FormControl
-										isInvalid={!!errors.type}
-										isRequired
-									>
+									<FormControl isInvalid={!!errors.type} isRequired>
 										<FormLabel>Type </FormLabel>
-										<Select
-											name="type"
-											value={form.type}
-											onChange={handleInputChange}
-										>
+										<Select name="type" value={form.type} onChange={handleInputChange}>
 											<option value="text">Text</option>
-											<option value="numeric">
-												Numeric
-											</option>
+											<option value="numeric">Numeric</option>
 											<option value="date">Date</option>
-											<option value="boolean">
-												Boolean
-											</option>
-											<option value="drop_down">
-												Dropdown
-											</option>
+											<option value="boolean">Boolean</option>
+											<option value="drop_down">Dropdown</option>
 										</Select>
-										<FormErrorMessage>
-											{errors.type}
-										</FormErrorMessage>
+										<FormErrorMessage>{errors.type}</FormErrorMessage>
+									</FormControl>
+									<FormControl isInvalid={!!errors.ordering} isRequired>
+										<FormLabel>Ordering </FormLabel>
+										<Input
+											type="number"
+											name="ordering"
+											value={form.ordering}
+											onChange={handleInputChange}
+											min={1}
+										/>
+										<FormErrorMessage>{errors.ordering}</FormErrorMessage>
 									</FormControl>
 
 									{form.type === 'drop_down' && (
