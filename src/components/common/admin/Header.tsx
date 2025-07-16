@@ -15,6 +15,7 @@ interface MenuItemConfig {
 const ADMIN_ROUTES = {
 	DOCUMENT_CONFIG: '/vcConfig',
 	FIELD_CONFIG: '/fieldConfig',
+	ADD_FIELD:'/fields',
 	HOME: '/',
 } as const;
 
@@ -25,13 +26,19 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 
 	const menuNames = [
 		{
-			label: 'Document Configuration',
+			label: 'Fields',
+			onClick: () => {
+				navigate(ADMIN_ROUTES.ADD_FIELD);
+			},
+		},
+		{
+			label: 'Documents Master',
 			onClick: () => {
 				navigate(ADMIN_ROUTES.DOCUMENT_CONFIG);
 			},
 		},
 		{
-			label: 'Field Mapping Configuration',
+			label: 'Fields to VC Field Mapping',
 			onClick: () => {
 				navigate(ADMIN_ROUTES.FIELD_CONFIG);
 			},
@@ -113,6 +120,8 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 			return ADMIN_ROUTES.DOCUMENT_CONFIG;
 		if (label === 'Field Mapping Configuration')
 			return ADMIN_ROUTES.FIELD_CONFIG;
+		if (label === 'Add Field')
+			return ADMIN_ROUTES.ADD_FIELD;
 		return '';
 	};
 
