@@ -80,7 +80,7 @@ const UploadDocumentEwallet = () => {
 			const result = await getUser();
 
 			const data = await getDocumentsList();
-			updateUserData(result.data, data.data.value);
+			updateUserData(result?.data, data?.data?.value);
 			setError('');
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);

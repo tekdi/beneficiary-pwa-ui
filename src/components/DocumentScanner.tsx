@@ -134,7 +134,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			try {
 				const userResult = await getUser();
 				const docsResult = await getDocumentsList();
-				updateUserData(userResult.data, docsResult.data.value);
+				updateUserData(userResult?.data, docsResult.data.value);
 			} catch (error) {
 				console.error('Failed to fetch user data', error);
 			}
