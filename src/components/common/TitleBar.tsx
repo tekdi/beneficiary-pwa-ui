@@ -9,11 +9,11 @@ const TitleBar: React.FC<{ title: string; subTitle?: string }> = ({
 	return (
 		<HStack
 			bg="#06164B"
-			pt="35px"
-			pb={'35px'}
+			height="var(--titlebar-height)"
+			py={0}
 			pl={'23px'}
 			position="fixed"
-			top="80px"
+			top="var(--header-height)"
 			left={0}
 			zIndex={1100}
 			w="100vw"

@@ -12,6 +12,7 @@ import {
 	useToast,
 	Divider,
 	Textarea,
+	Text,
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { getMapping, updateMapping } from '../../services/admin/admin';
@@ -92,7 +93,7 @@ const DocumentConfig = () => {
 	}, []);
 
 	// --- Validate vcFields JSON structure ---
-	const validateVcFields = (value:string) => {
+	const validateVcFields = (value: string) => {
 		if (!value || value.trim() === '') return true;
 		try {
 			const parsed = JSON.parse(value);
@@ -170,12 +171,14 @@ const DocumentConfig = () => {
 		const newErrors = {};
 		// Validate all required fields and vcFields structure
 		documentConfigs.forEach((doc, index) => {
-			['name', 'label', 'documentSubType', 'docType'].forEach((field) => {
-				if (!doc[field]) {
-					newErrors[`${field}_${index}`] = `${field} is required`;
-					hasError = true;
+			['name', 'label', 'documentSubType', 'docType', 'vcFields'].forEach(
+				(field) => {
+					if (!doc[field]) {
+						newErrors[`${field}_${index}`] = `${field} is required`;
+						hasError = true;
+					}
 				}
-			});
+			);
 			if (doc.vcFields && doc.vcFields.trim() !== '') {
 				if (!validateVcFields(doc.vcFields)) {
 					newErrors[`vcFields_${index}`] =
@@ -290,6 +293,12 @@ const DocumentConfig = () => {
 													color="#06164B"
 												>
 													Document Name
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
 												</FormLabel>
 												<Input
 													value={doc.name}
@@ -326,6 +335,12 @@ const DocumentConfig = () => {
 													color="#06164B"
 												>
 													Document Label
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
 												</FormLabel>
 												<Input
 													value={doc.label}
@@ -364,6 +379,48 @@ const DocumentConfig = () => {
 										>
 											<FormControl
 												isInvalid={
+													!!errors[`docType_${index}`]
+												}
+												flex={1}
+											>
+												<FormLabel
+													fontSize="md"
+													fontWeight="bold"
+													color="#06164B"
+												>
+													Document Type
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
+												</FormLabel>
+												<Input
+													value={doc.docType}
+													onChange={(e) =>
+														handleChange(
+															index,
+															'docType',
+															e.target.value
+														)
+													}
+													borderWidth="2px"
+													bg="white"
+													size="lg"
+													borderRadius="md"
+													_focus={{
+														borderColor: 'blue.400',
+														boxShadow:
+															'0 0 0 2px #06164B33',
+													}}
+												/>
+												<FormErrorMessage fontSize="xs">
+													{errors[`docType_${index}`]}
+												</FormErrorMessage>
+											</FormControl>
+											<FormControl
+												isInvalid={
 													!!errors[
 														`documentSubType_${index}`
 													]
@@ -376,6 +433,12 @@ const DocumentConfig = () => {
 													color="#06164B"
 												>
 													Document Sub Type
+													<Text
+														as="span"
+														color="red.500"
+													>
+														*
+													</Text>
 												</FormLabel>
 												<Input
 													value={doc.documentSubType}
@@ -404,42 +467,6 @@ const DocumentConfig = () => {
 													}
 												</FormErrorMessage>
 											</FormControl>
-											<FormControl
-												isInvalid={
-													!!errors[`docType_${index}`]
-												}
-												flex={1}
-											>
-												<FormLabel
-													fontSize="md"
-													fontWeight="bold"
-													color="#06164B"
-												>
-													Document Type
-												</FormLabel>
-												<Input
-													value={doc.docType}
-													onChange={(e) =>
-														handleChange(
-															index,
-															'docType',
-															e.target.value
-														)
-													}
-													borderWidth="2px"
-													bg="white"
-													size="lg"
-													borderRadius="md"
-													_focus={{
-														borderColor: 'blue.400',
-														boxShadow:
-															'0 0 0 2px #06164B33',
-													}}
-												/>
-												<FormErrorMessage fontSize="xs">
-													{errors[`docType_${index}`]}
-												</FormErrorMessage>
-											</FormControl>
 										</HStack>
 										<FormControl
 											isInvalid={
@@ -452,6 +479,18 @@ const DocumentConfig = () => {
 												color="#06164B"
 											>
 												VC fields (JSON)
+												<Text as="span" color="red.500">
+													*
+												</Text>{' '}
+												<Text
+													color="#06164B"
+													fontSize={12}
+												>
+													These fields are the same as
+													those defined in the schema
+													published on the issuance
+													platform.
+												</Text>
 											</FormLabel>
 											<Textarea
 												value={doc.vcFields || ''}
