@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 const FieldMappingConfig = lazy(
 	() => import('../screens/admin/FieldMappingConfig')
 );
