@@ -5,12 +5,12 @@ const FieldMappingConfig = lazy(
 const DocumentConfig = lazy(() => import('../screens/admin/DocumentConfig'));
 const routes = [
 	{
-		path: '*',
-		component: DocumentConfig,
-	},
-	{
 		path: '/fieldConfig',
 		component: FieldMappingConfig,
+	},
+	{
+		path: '*',
+		component: DocumentConfig,
 	},
 ];
 
