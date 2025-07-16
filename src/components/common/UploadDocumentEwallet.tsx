@@ -80,7 +80,7 @@ const UploadDocumentEwallet = () => {
 			const result = await getUser();
 
 			const data = await getDocumentsList();
-			updateUserData(result.data, data.data);
+			updateUserData(result.data, data.data.value);
 			setError('');
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
@@ -187,8 +187,8 @@ const UploadDocumentEwallet = () => {
 		let documents: DocumentType[] = [];
 		if (Array.isArray(documentsResponse)) {
 			documents = documentsResponse;
-		} else if (Array.isArray(documentsResponse.data)) {
-			documents = documentsResponse.data;
+		} else if (Array.isArray(documentsResponse.data.value)) {
+			documents = documentsResponse.data.value;
 		}
 
 		console.log('Available documents:', documents);
