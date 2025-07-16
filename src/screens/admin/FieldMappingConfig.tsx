@@ -882,14 +882,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																				<strong>
 																					Mapping:
 																				</strong>{' '}
-																				{getDocumentName(
-																					docMapping.selectedDocument
-																				)}{' '}
-																				→{' '}
-																				{getVcFieldLabel(
-																					docMapping.vcFields,
-																					docMapping.selectedVcField
-																				)}
+																				{fields.find(f => f.fieldId === mapping.fieldId)?.name || ''} {'→ '}
+																				{getVcFieldLabel(docMapping.vcFields, docMapping.selectedVcField)}
 																			</Text>
 																		</Box>
 																	)}
