@@ -17,7 +17,6 @@ interface DecodedToken {
 			roles: string[];
 		};
 	};
-	// add other fields if needed
 }
 function App() {
 	const [loading, setLoading] = useState(true);
@@ -32,15 +31,11 @@ function App() {
 			const decoded = jwtDecode(token) as DecodedToken;
 			// Check for roles in resource_access
 			const resourceAccess = decoded.resource_access || {};
-			// const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles || [
-			// 	"Benefit Manager",
-			// 	"Benefit Admin"
-			//   ];
-			const beneficiaryRoles = ['admin'];
+			const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles
+			
 			const isAdmin = beneficiaryRoles.includes('admin');
 			const isBeneficiary =
-				beneficiaryRoles.includes('beneficiary') ||
-				beneficiaryRoles.includes('Benefit Manager');
+				beneficiaryRoles.includes('beneficiary');
 			if (isAdmin) {
 				setRoutes(adminRoutes);
 				const redirectUrl = localStorage.getItem('redirectUrl');
