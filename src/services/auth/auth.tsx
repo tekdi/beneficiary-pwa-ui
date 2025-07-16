@@ -220,7 +220,6 @@ export const getDocumentsList = async () => {
 		);
 
 		// Return the documents list data
-		console.log("response",response.data.data.value);
 		return response.data;	
 	} catch (error) {
 		handleError(error);
