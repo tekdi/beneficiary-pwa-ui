@@ -10,7 +10,6 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import {
 	getApplicationDetails,
-	getDocumentsList,
 } from '../../services/auth/auth';
 import Layout from '../../components/common/layout/Layout';
 import {
