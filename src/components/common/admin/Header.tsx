@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 			},
 		},
 		{
-			label: 'Fields to VC Field Mapping',
+			label: 'Field Mapping Configuration',
 			onClick: () => {
 				navigate(ADMIN_ROUTES.FIELD_CONFIG);
 			},
@@ -122,6 +122,7 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 			return ADMIN_ROUTES.FIELD_CONFIG;
 		if (label === 'Add Field')
 			return ADMIN_ROUTES.ADD_FIELD;
+
 		return '';
 	};
 
