@@ -147,8 +147,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 		const fetchDocuments = async () => {
 			try {
 				const response = await getDocumentsList();
-				console.log('Documents List:', response.data);
-				const formattedDocuments = response.data.value
+				const formattedDocuments = response?.data?.value
 					.filter((doc: any) => doc.documentSubType !== 'aadhaar')
 					.map((doc: any) => ({
 						name: doc.name,
@@ -224,8 +223,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			// Refresh user data to update the UI
 			const userResult = await getUser();
 			const docsResult = await getDocumentsList();
-			updateUserData(userResult.data, docsResult.data.value);
-
+			updateUserData(userResult?.data, docsResult?.data?.value);
 			toast({
 				title: 'Success',
 				description: 'Document uploaded successfully',

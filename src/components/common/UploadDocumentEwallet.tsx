@@ -185,10 +185,8 @@ const UploadDocumentEwallet = () => {
 		const documentsResponse = await getDocumentsList();
 		// Ensure we have an array of documents, assuming documents are in data property
 		let documents: DocumentType[] = [];
-		if (Array.isArray(documentsResponse)) {
-			documents = documentsResponse;
-		} else if (Array.isArray(documentsResponse.data.value)) {
-			documents = documentsResponse.data.value;
+		if (Array.isArray(documentsResponse?.data?.value)) {
+			documents = documentsResponse?.data?.value;
 		}
 
 		console.log('Available documents:', documents);
