@@ -133,8 +133,8 @@ export const logoutUser = async () => {
 			}
 		);
 		if (response) {
-			localStorage.removeItem('authToken');
-			localStorage.removeItem('refreshToken');
+			localStorage.clear();
+
 		}
 
 		return response.data as { success: boolean; message: string };
