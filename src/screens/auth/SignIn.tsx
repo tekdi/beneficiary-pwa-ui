@@ -14,7 +14,15 @@ import FloatingInput from '../../components/common/input/Input';
 import FloatingPasswordInput from '../../components/common/input/PasswordInput';
 import { loginUser } from '../../services/auth/auth';
 import { useTranslation } from 'react-i18next';
+import { jwtDecode } from 'jwt-decode';
 
+interface DecodedToken {
+	resource_access?: {
+		[key: string]: {
+			roles: string[];
+		};
+	};
+}
 const SignIn: React.FC = () => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
@@ -51,7 +59,21 @@ const SignIn: React.FC = () => {
 					// Store wallet token if available
 					localStorage.setItem('walletToken', response.data.walletToken);
 				}
-
+				const decoded = jwtDecode(response.data.access_token) as DecodedToken;
+				// Check for roles in resource_access
+				const resourceAccess = decoded.resource_access || {};
+				const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles;
+				if (!beneficiaryRoles) {
+					navigate('/');
+					toast({
+						title: t('SIGNIN_FAILED'),
+						status: 'error',
+						duration: 2000,
+						isClosable: true,
+						description: 'Unauthorized user',
+					});
+					return;
+				}
 				// Create user object with data from API response
 				const userData = {
 					accountId: response.data.username,
