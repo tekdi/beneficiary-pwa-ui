@@ -133,8 +133,8 @@ export const logoutUser = async () => {
 			}
 		);
 		if (response) {
-			localStorage.removeItem('authToken');
-			localStorage.removeItem('refreshToken');
+			localStorage.clear();
+
 		}
 
 		return response.data as { success: boolean; message: string };
@@ -210,7 +210,7 @@ export const getDocumentsList = async () => {
 	try {
 		const token = localStorage.getItem('authToken');
 		const response = await axios.get(
-			`${apiBaseUrl}/content/documents_list`,
+			`${apiBaseUrl}/admin/config/vcConfiguration`,
 			{
 				headers: {
 					Accept: '*/*',
@@ -220,7 +220,7 @@ export const getDocumentsList = async () => {
 		);
 
 		// Return the documents list data
-		return response.data;
+		return response.data;	
 	} catch (error) {
 		handleError(error);
 	}
