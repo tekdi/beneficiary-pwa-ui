@@ -53,6 +53,7 @@ interface FieldForm {
 	type: string;
 	isRequired: boolean;
 	isEditable: boolean;
+	ordering: number | '';
 	options: FieldOption[];
 }
 
@@ -62,6 +63,7 @@ const initialForm: FieldForm = {
 	type: 'text',
 	isRequired: false,
 	isEditable: true,
+	ordering: '',
 	options: [],
 };
 
@@ -115,10 +117,14 @@ const AddFields: React.FC = () => {
 		setErrors((prev) => ({ ...prev, [name]: '' }));
 	};
 
-	const handleOptionChange = (id: string, key: 'name' | 'value', value: string) => {
+	const handleOptionChange = (
+		id: string,
+		key: 'name' | 'value',
+		value: string
+	) => {
 		setForm((prev) => ({
 			...prev,
-			options: prev.options.map(opt =>
+			options: prev.options.map((opt) =>
 				opt.id === id ? { ...opt, [key]: value } : opt
 			),
 		}));
@@ -129,7 +135,7 @@ const AddFields: React.FC = () => {
 			...prev,
 			options: [
 				...prev.options,
-				{ id: Date.now().toString(), name: '', value: '' }
+				{ id: Date.now().toString(), name: '', value: '' },
 			],
 		}));
 	};
@@ -137,7 +143,7 @@ const AddFields: React.FC = () => {
 	const removeOption = (id: string) => {
 		setForm((prev) => ({
 			...prev,
-			options: prev.options.filter(opt => opt.id !== id),
+			options: prev.options.filter((opt) => opt.id !== id),
 		}));
 	};
 
@@ -146,6 +152,8 @@ const AddFields: React.FC = () => {
 		if (!form.label.trim()) newErrors.label = 'Label is required';
 		if (!form.name.trim()) newErrors.name = 'Name is required';
 		if (!form.type) newErrors.type = 'Type is required';
+		if (form.ordering === '' || isNaN(Number(form.ordering)))
+			newErrors.ordering = 'Ordering is required and must be a number';
 		if (form.type === 'drop_down' && form.options.length === 0)
 			newErrors.options = 'At least one option is required';
 		if (form.type === 'drop_down') {
@@ -168,7 +176,7 @@ const AddFields: React.FC = () => {
 				name: form.name,
 				label: form.label,
 				type: form.type,
-				ordering: fields.length + 1,
+				ordering: Number(form.ordering),
 				fieldParams:
 					form.type === 'drop_down'
 						? { options: form.options }
@@ -216,6 +224,7 @@ const AddFields: React.FC = () => {
 			type: field.type,
 			isRequired: field.isRequired,
 			isEditable: field.isEditable,
+			ordering: field.ordering ?? '',
 			options:
 				field.type === 'drop_down' && field.fieldParams?.options
 					? field.fieldParams.options
@@ -238,7 +247,7 @@ const AddFields: React.FC = () => {
 					name: form.name,
 					label: form.label,
 					type: form.type,
-					ordering: fields[editingIndex].ordering || editingIndex + 1,
+					ordering: Number(form.ordering),
 					fieldParams:
 						form.type === 'drop_down'
 							? { options: form.options }
@@ -361,7 +370,9 @@ const AddFields: React.FC = () => {
 							</Thead>
 							<Tbody>
 								{fields.map((field, idx) => {
-									const editableText = getEditableText(field.isEditable);
+									const editableText = getEditableText(
+										field.isEditable
+									);
 									return (
 										<Tr
 											key={field.fieldId}
@@ -424,7 +435,7 @@ const AddFields: React.FC = () => {
 										isInvalid={!!errors.label}
 										isRequired
 									>
-										<FormLabel>Label</FormLabel>
+										<FormLabel>Label </FormLabel>
 										<Input
 											name="label"
 											value={form.label}
@@ -438,7 +449,7 @@ const AddFields: React.FC = () => {
 										isInvalid={!!errors.name}
 										isRequired
 									>
-										<FormLabel>Name</FormLabel>
+										<FormLabel>Name </FormLabel>
 										<Input
 											name="name"
 											value={form.name}
@@ -472,6 +483,22 @@ const AddFields: React.FC = () => {
 										</Select>
 										<FormErrorMessage>
 											{errors.type}
+										</FormErrorMessage>
+									</FormControl>
+									<FormControl
+										isInvalid={!!errors.ordering}
+										isRequired
+									>
+										<FormLabel>Ordering </FormLabel>
+										<Input
+											type="number"
+											name="ordering"
+											value={form.ordering}
+											onChange={handleInputChange}
+											min={1}
+										/>
+										<FormErrorMessage>
+											{errors.ordering}
 										</FormErrorMessage>
 									</FormControl>
 

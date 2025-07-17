@@ -430,11 +430,6 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 
 	// Helper functions
 
-	const getDocumentName = (docId) => {
-		const doc = documents.find((d) => d.id === docId);
-		return doc ? doc.name : '';
-	};
-
 	const getVcFieldLabel = (vcFields, vcFieldId) => {
 		const vcField = vcFields.find((f) => f.id === vcFieldId);
 		return vcField ? vcField.label : '';
@@ -882,10 +877,18 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																				<strong>
 																					Mapping:
 																				</strong>{' '}
-																				{getDocumentName(
-																					docMapping.selectedDocument
-																				)}{' '}
-																				→{' '}
+																				{fields.find(
+																					(
+																						f
+																					) =>
+																						f.fieldId ===
+																						mapping.fieldId
+																				)
+																					?.name ||
+																					''}{' '}
+																				{
+																					'→ '
+																				}
 																				{getVcFieldLabel(
 																					docMapping.vcFields,
 																					docMapping.selectedVcField
