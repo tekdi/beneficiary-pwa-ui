@@ -112,8 +112,10 @@ const ExploreBenefits: React.FC = () => {
 	// Debounce search to avoid excessive API calls
 	const [debouncedSearch, setDebouncedSearch] = useState<string>('');
 
-	const [showSearchBarMyBenefits, setShowSearchBarMyBenefits] = useState(false);
-	const [showSearchBarAllBenefits, setShowSearchBarAllBenefits] = useState(false);
+	const [showSearchBarMyBenefits, setShowSearchBarMyBenefits] =
+		useState(false);
+	const [showSearchBarAllBenefits, setShowSearchBarAllBenefits] =
+		useState(false);
 	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
@@ -177,18 +179,24 @@ const ExploreBenefits: React.FC = () => {
 					const user = await getUser();
 					const customFields = user?.data?.customFields || [];
 
-					const incomeField = customFields.find(field => field.name === "annualIncome");
-					const casteField = customFields.find(field => field.name === "caste");
-					const genderField = customFields.find(field => field.name === "gender");
+					const incomeField = customFields.find(
+						(field) => field.name === 'annualIncome'
+					);
+					const casteField = customFields.find(
+						(field) => field.name === 'caste'
+					);
+					const genderField = customFields.find(
+						(field) => field.name === 'gender'
+					);
 
 					const income = getIncomeRangeValue(incomeField?.value);
 
 					const userFilters: Filter = {
- 						caste: casteField?.value || "",
-  						annualIncome: income,
-  						gender: genderField?.gender || "",
+						caste: casteField?.value || '',
+						annualIncome: income,
+						gender: genderField?.gender || '',
 					};
-					
+
 					const newUserFilter: Filter = {};
 					Object.keys(userFilters).forEach((key) => {
 						if (
@@ -524,7 +532,8 @@ const ExploreBenefits: React.FC = () => {
 							onClick={handleShowSearchBar}
 						/>
 						{/* Only show filter for All Benefits tab (when "All Benefits" is active) */}
-						{((isAuthenticated && activeTab === 1) || (!isAuthenticated && activeTab === 0)) && (
+						{((isAuthenticated && activeTab === 1) ||
+							(!isAuthenticated && activeTab === 0)) && (
 							<FilterDialog
 								inputs={filterInputs}
 								setFilter={setAllBenefitsFilter}
