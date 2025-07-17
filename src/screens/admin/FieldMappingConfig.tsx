@@ -25,7 +25,6 @@ import {
 	fetchFields as fetchFieldsAPI,
 } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
-import { t } from 'i18next';
 
 // Props interface for FieldMappingConfig
 interface FieldMappingConfigProps {
