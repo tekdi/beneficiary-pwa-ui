@@ -225,7 +225,7 @@ const BenefitsDetails: React.FC = () => {
 						...(applicationData?.application_data || {}),
 						external_application_id:
 							applicationData?.external_application_id,
-							remark:applicationData?.remark
+						remark: applicationData?.remark,
 					}
 				: (authUser ?? undefined);
 
