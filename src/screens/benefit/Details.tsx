@@ -212,17 +212,20 @@ const BenefitsDetails: React.FC = () => {
 			// from `authUser` that are not present in `applicationData` will be included.
 			// Otherwise, use `authUser` as the formData.
 
-			const isEditableStatus = ['application resubmit', 'application pending', 'submitted'].includes(
-				applicationStatus?.toLowerCase() || ''
-			  );
-			  
-			  const formData = isEditableStatus
+			const isEditableStatus = [
+				'application resubmit',
+				'application pending',
+				'submitted',
+			].includes(applicationStatus?.toLowerCase() || '');
+
+			const formData = isEditableStatus
 				? {
-					...(authUser || {}),
-					...(applicationData?.application_data || {}),
-					external_application_id: applicationData?.external_application_id,
-				  }
-				: authUser ?? undefined;
+						...(authUser || {}),
+						...(applicationData?.application_data || {}),
+						external_application_id:
+							applicationData?.external_application_id,
+					}
+				: (authUser ?? undefined);
 
 			if (url) {
 				setWebFormProp({
@@ -332,7 +335,19 @@ const BenefitsDetails: React.FC = () => {
 		}
 		/* const eligibilityArr = checkEligibility(resultItem, user);
 		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */
-		setAuthUser(user?.data || {});
+		const customFields = user?.data?.customFields || [];
+		const customFieldValues = customFields.reduce(
+			(acc, field) => {
+				acc[field.name] = field.value;
+				return acc;
+			},
+			{} as Record<string, any>
+		);
+		const combinedData = {
+			...user.data,
+			...customFieldValues,
+		};
+		setAuthUser(combinedData || {});
 
 		const appResult = await getApplication({
 			user_id: user?.data?.user_id,
@@ -534,7 +549,11 @@ const BenefitsDetails: React.FC = () => {
 	): string => {
 		if (!status) {
 			return t('BENEFIT_DETAILS_PROCEED_TO_APPLY');
-		} else if (status === 'application resubmit' || status === 'application pending' || status === 'submitted') {
+		} else if (
+			status === 'application resubmit' ||
+			status === 'application pending' ||
+			status === 'submitted'
+		) {
 			return t('BENEFIT_DETAILS_RESUBMIT_APPLICATION');
 		} else {
 			return t('BENEFIT_DETAILS_APPLICATION_SUBMITTED');
@@ -685,7 +704,14 @@ const BenefitsDetails: React.FC = () => {
 							onClick={handleConfirmation}
 							label={getActionLabel(applicationStatus, t)}
 							isDisabled={
-								!!applicationStatus && !['application pending', 'submitted', 'application resubmit'].includes((applicationStatus || '').toLowerCase())
+								!!applicationStatus &&
+								![
+									'application pending',
+									'submitted',
+									'application resubmit',
+								].includes(
+									(applicationStatus || '').toLowerCase()
+								)
 							}
 						/>
 					) : (
