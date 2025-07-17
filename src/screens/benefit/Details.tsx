@@ -341,7 +341,6 @@ const BenefitsDetails: React.FC = () => {
 			...user.data,
 			...customFieldValues,
 		  };
-		  console.log("combinedData",combinedData);
 		setAuthUser(combinedData|| {});
 
 		const appResult = await getApplication({
