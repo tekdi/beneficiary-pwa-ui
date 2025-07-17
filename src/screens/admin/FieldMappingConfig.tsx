@@ -25,6 +25,7 @@ import {
 	fetchFields as fetchFieldsAPI,
 } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
+import { t } from 'i18next';
 
 // Props interface for FieldMappingConfig
 interface FieldMappingConfigProps {
@@ -85,7 +86,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	const fetchFields = async () => {
 		try {
 			const apiFields = await fetchFieldsAPI('USERS', 'User');
-			
+
 			// Add hardcoded fields
 			const coreFields = [
 				{
@@ -93,34 +94,33 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 					label: 'First Name',
 					name: 'firstName',
 					type: 'text',
-					isRequired: false,
+					isRequired: true,
 				},
 				{
 					fieldId: 'coreField-middleName',
 					label: 'Middle Name',
 					name: 'middleName',
 					type: 'text',
-					isRequired: false,
+					isRequired: true,
 				},
 				{
 					fieldId: 'coreField-lastName',
 					label: 'Last Name',
 					name: 'lastName',
 					type: 'text',
-					isRequired: false,
+					isRequired: true,
 				},
 				{
 					fieldId: 'coreField-dob',
 					label: 'Date of Birth',
 					name: 'dob',
 					type: 'date',
-					isRequired: false,
+					isRequired: true,
 				},
-				
 			];
-			
+
 			// Combine API fields with hardcoded fields
-			setFields([...coreFields,...apiFields]);
+			setFields([...coreFields, ...apiFields]);
 		} catch (error) {
 			console.error('Error fetching fields:', error);
 			toast({
