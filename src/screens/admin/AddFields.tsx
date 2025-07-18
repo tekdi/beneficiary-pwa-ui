@@ -86,8 +86,10 @@ const AddFields: React.FC = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-	const [fieldToDelete, setFieldToDelete] = useState<{ idx: number; fieldId: string } | null>(null);
-
+	const [fieldToDelete, setFieldToDelete] = useState<{
+		idx: number;
+		fieldId: string;
+	} | null>(null);
 
 	// Fetch fields on mount
 	useEffect(() => {
@@ -311,7 +313,7 @@ const AddFields: React.FC = () => {
 
 	const confirmDelete = async () => {
 		if (!fieldToDelete) return;
-		
+
 		setIsAdding(true);
 		try {
 			await deleteField(fieldToDelete.fieldId);
@@ -323,13 +325,13 @@ const AddFields: React.FC = () => {
 			});
 			fetchAllFields(); // Refresh the fields list
 		} catch (error: any) {
-			
 			// Handle different error response structures
-			const errorMessage = error?.data?.message || 
-							    error?.response?.data?.message || 
-							    error?.message || 
-							    'Failed to delete field';
-			
+			const errorMessage =
+				error?.data?.message ||
+				error?.response?.data?.message ||
+				error?.message ||
+				'Failed to delete field';
+
 			toast({
 				title: 'Error',
 				description: errorMessage,
@@ -711,21 +713,33 @@ const AddFields: React.FC = () => {
 					</Modal>
 
 					{/* Delete Confirmation Modal */}
-					<Modal isOpen={deleteModalOpen} onClose={cancelDelete} size="md">
+					<Modal
+						isOpen={deleteModalOpen}
+						onClose={cancelDelete}
+						size="md"
+					>
 						<ModalOverlay />
 						<ModalContent>
 							<ModalHeader>Confirm Delete</ModalHeader>
 							<ModalCloseButton />
 							<ModalBody>
 								<Text mb={4}>
-									Are you sure you want to delete the field "{fieldToDelete ? fields[fieldToDelete.idx]?.label : ''}"?
+									Are you sure you want to delete the field "
+									{fieldToDelete
+										? fields[fieldToDelete.idx]?.label
+										: ''}
+									"?
 								</Text>
 								<Text color="gray.600" fontSize="sm">
 									This action cannot be undone.
 								</Text>
 							</ModalBody>
 							<ModalFooter>
-								<Button onClick={cancelDelete} variant="outline" mr={3}>
+								<Button
+									onClick={cancelDelete}
+									variant="outline"
+									mr={3}
+								>
 									Cancel
 								</Button>
 								<Button
