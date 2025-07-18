@@ -112,8 +112,10 @@ const ExploreBenefits: React.FC = () => {
 	// Debounce search to avoid excessive API calls
 	const [debouncedSearch, setDebouncedSearch] = useState<string>('');
 
-	const [showSearchBarMyBenefits, setShowSearchBarMyBenefits] = useState(false);
-	const [showSearchBarAllBenefits, setShowSearchBarAllBenefits] = useState(false);
+	const [showSearchBarMyBenefits, setShowSearchBarMyBenefits] =
+		useState(false);
+	const [showSearchBarAllBenefits, setShowSearchBarAllBenefits] =
+		useState(false);
 	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
@@ -175,14 +177,24 @@ const ExploreBenefits: React.FC = () => {
 				if (token) {
 					setIsAuthenticated(true);
 					const user = await getUser();
-					const income = getIncomeRangeValue(
-						user?.data?.annualIncome
+					const customFields = user?.data?.customFields || [];
+
+					const incomeField = customFields.find(
+						(field) => field.name === 'annualIncome'
+					);
+					const casteField = customFields.find(
+						(field) => field.name === 'caste'
+					);
+					const genderField = customFields.find(
+						(field) => field.name === 'gender'
 					);
 
+					const income = getIncomeRangeValue(incomeField?.value);
+
 					const userFilters: Filter = {
-						caste: user?.data?.caste,
+						caste: casteField?.value || '',
 						annualIncome: income,
-						gender: user?.data?.gender,
+						gender: genderField?.gender || '',
 					};
 
 					const newUserFilter: Filter = {};
@@ -520,7 +532,8 @@ const ExploreBenefits: React.FC = () => {
 							onClick={handleShowSearchBar}
 						/>
 						{/* Only show filter for All Benefits tab (when "All Benefits" is active) */}
-						{((isAuthenticated && activeTab === 1) || (!isAuthenticated && activeTab === 0)) && (
+						{((isAuthenticated && activeTab === 1) ||
+							(!isAuthenticated && activeTab === 0)) && (
 							<FilterDialog
 								inputs={filterInputs}
 								setFilter={setAllBenefitsFilter}
