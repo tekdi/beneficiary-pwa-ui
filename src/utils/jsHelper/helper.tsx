@@ -342,16 +342,23 @@ export const transformData = (userData) => {
 		...(userData?.external_application_id
 			? { external_application_id: userData.external_application_id }
 			: {}),
+		...(userData?.remark ? { remark: userData.remark } : {}),
 	};
 };
 
 export const formatDate = (dateString) => {
 	if (dateString === null) return '-';
+	// Return as-is if input is in 'YYYY/MM/DD' format
+
+	const ddmmyyyyFormat = /^\d{2}\/\d{2}\/\d{4}$/;
+	if (ddmmyyyyFormat.test(dateString)) {
+		const [day, month, year] = dateString.split('/');
+		return `${day}/${month}/${year}`; // Return as-is or convert if needed
+	}
 	const date = new Date(dateString);
 	const day = String(date.getUTCDate()).padStart(2, '0');
 	const month = String(date.getUTCMonth() + 1).padStart(2, '0');
 	const year = date.getUTCFullYear();
-
 	return `${day}/${month}/${year}`;
 };
 interface UserData {
