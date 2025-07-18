@@ -85,7 +85,41 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	const fetchFields = async () => {
 		try {
 			const apiFields = await fetchFieldsAPI('USERS', 'User');
-			setFields(apiFields);
+
+			// Add hardcoded fields
+			const coreFields = [
+				{
+					fieldId: 'coreField-firstName',
+					label: 'First Name',
+					name: 'firstName',
+					type: 'text',
+					isRequired: true,
+				},
+				{
+					fieldId: 'coreField-middleName',
+					label: 'Middle Name',
+					name: 'middleName',
+					type: 'text',
+					isRequired: true,
+				},
+				{
+					fieldId: 'coreField-lastName',
+					label: 'Last Name',
+					name: 'lastName',
+					type: 'text',
+					isRequired: true,
+				},
+				{
+					fieldId: 'coreField-dob',
+					label: 'Date of Birth',
+					name: 'dob',
+					type: 'date',
+					isRequired: true,
+				},
+			];
+
+			// Combine API fields with hardcoded fields
+			setFields([...coreFields, ...apiFields]);
 		} catch (error) {
 			console.error('Error fetching fields:', error);
 			toast({
@@ -429,11 +463,6 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	};
 
 	// Helper functions
-
-	const getDocumentName = (docId) => {
-		const doc = documents.find((d) => d.id === docId);
-		return doc ? doc.name : '';
-	};
 
 	const getVcFieldLabel = (vcFields, vcFieldId) => {
 		const vcField = vcFields.find((f) => f.id === vcFieldId);
@@ -882,10 +911,18 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																				<strong>
 																					Mapping:
 																				</strong>{' '}
-																				{getDocumentName(
-																					docMapping.selectedDocument
-																				)}{' '}
-																				→{' '}
+																				{fields.find(
+																					(
+																						f
+																					) =>
+																						f.fieldId ===
+																						mapping.fieldId
+																				)
+																					?.name ||
+																					''}{' '}
+																				{
+																					'→ '
+																				}
 																				{getVcFieldLabel(
 																					docMapping.vcFields,
 																					docMapping.selectedVcField
