@@ -228,23 +228,3 @@ export const deleteField = async (fieldId: string) => {
 	}
 };
 
-export const checkFieldUsage = async (fieldId: string) => {
-	try {
-		// Reuse existing getMapping function
-		const response = await getMapping('profileFieldToDocumentFieldMapping');
-		
-		const mappings = response.data?.value || [];
-		const usedInMappings = mappings.filter((mapping: any) => 
-			mapping.fieldId === fieldId
-		);
-		
-		return {
-			isUsed: usedInMappings.length > 0,
-			usageCount: usedInMappings.length,
-			mappings: usedInMappings,
-		};
-	} catch (error) {
-		console.error('Error checking field usage:', error);
-		throw error;
-	}
-};
