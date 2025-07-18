@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, HStack, Text, useToast } from '@chakra-ui/react';
 import Logo from '../../../assets/images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,7 +15,7 @@ interface MenuItemConfig {
 const ADMIN_ROUTES = {
 	DOCUMENT_CONFIG: '/vcConfig',
 	FIELD_CONFIG: '/fieldConfig',
-	ADD_FIELD:'/fields',
+	ADD_FIELD: '/fields',
 	HOME: '/',
 } as const;
 
@@ -116,22 +116,24 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 	const location = useLocation();
 
 	const getMenuPath = (label: string): string | undefined => {
-		if (label === 'Documents Master') return ADMIN_ROUTES.DOCUMENT_CONFIG;
-		if (label === 'Fields to VC Field Mapping') return ADMIN_ROUTES.FIELD_CONFIG;
+		if (label === 'Document Configuration')
+			return ADMIN_ROUTES.DOCUMENT_CONFIG;
+		if (label === 'Fields to VC Field Mapping')
+			return ADMIN_ROUTES.FIELD_CONFIG;
 		if (label === 'Fields') return ADMIN_ROUTES.ADD_FIELD;
 		return undefined;
 	};
 
-	// Find active label based on current route
-	let activeLabel = menuNames.find((menu) => {
-		const path = getMenuPath(menu.label);
-		return path && location.pathname === path;
-	})?.label;
+	// Optimize with useMemo - only recalculate when location.pathname or menuNames change
+	const activeLabel = useMemo(() => {
+		const foundMenu = menuNames.find((menu) => {
+			const path = getMenuPath(menu.label);
+			return path && location.pathname === path;
+		});
 
-	// If no match, fallback to "Documents Master"
-	if (!activeLabel) {
-		activeLabel = 'Documents Master';
-	}
+		// If no match, fallback to "Documents Master"
+		return foundMenu?.label || 'Documents Master';
+	}, [location.pathname, menuNames]);
 
 	return (
 		<HStack align="center" spacing={6}>
