@@ -35,6 +35,7 @@ import {
 	AddFieldPayload,
 	FieldOption,
 	updateField,
+	deleteField,
 } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
 
@@ -84,6 +85,11 @@ const AddFields: React.FC = () => {
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [fieldToDelete, setFieldToDelete] = useState<{
+		idx: number;
+		fieldId: string;
+	} | null>(null);
 
 	// Fetch fields on mount
 	useEffect(() => {
@@ -299,6 +305,52 @@ const AddFields: React.FC = () => {
 		setErrors({});
 	};
 
+	const handleRemove = async (idx: number) => {
+		const field = fields[idx];
+		setFieldToDelete({ idx, fieldId: field.fieldId });
+		setDeleteModalOpen(true);
+	};
+
+	const confirmDelete = async () => {
+		if (!fieldToDelete) return;
+
+		setIsAdding(true);
+		try {
+			await deleteField(fieldToDelete.fieldId);
+			toast({
+				title: 'Field deleted',
+				status: 'success',
+				duration: 2000,
+				isClosable: true,
+			});
+			fetchAllFields(); // Refresh the fields list
+		} catch (error: any) {
+			// Handle different error response structures
+			const errorMessage =
+				error?.data?.message ||
+				error?.response?.data?.message ||
+				error?.message ||
+				'Failed to delete field';
+
+			toast({
+				title: 'Error',
+				description: errorMessage,
+				status: 'error',
+				duration: 4000, // Longer duration for important error messages
+				isClosable: true,
+			});
+		} finally {
+			setIsAdding(false);
+			setDeleteModalOpen(false);
+			setFieldToDelete(null);
+		}
+	};
+
+	const cancelDelete = () => {
+		setDeleteModalOpen(false);
+		setFieldToDelete(null);
+	};
+
 	return (
 		<Box bg="gray.50" minH="100vh" py={{ base: 4, md: 8 }}>
 			<Layout
@@ -404,6 +456,16 @@ const AddFields: React.FC = () => {
 														onClick={() =>
 															handleEdit(idx)
 														}
+														variant="ghost"
+													/>
+													<IconButton
+														icon={<DeleteIcon />}
+														aria-label="Remove"
+														size="sm"
+														onClick={() =>
+															handleRemove(idx)
+														}
+														colorScheme="red"
 														variant="ghost"
 													/>
 												</HStack>
@@ -645,6 +707,47 @@ const AddFields: React.FC = () => {
 									isLoading={isAdding}
 								>
 									{modalMode === 'add' ? 'Add Field' : 'Save'}
+								</Button>
+							</ModalFooter>
+						</ModalContent>
+					</Modal>
+
+					{/* Delete Confirmation Modal */}
+					<Modal
+						isOpen={deleteModalOpen}
+						onClose={cancelDelete}
+						size="md"
+					>
+						<ModalOverlay />
+						<ModalContent>
+							<ModalHeader>Confirm Delete</ModalHeader>
+							<ModalCloseButton />
+							<ModalBody>
+								<Text mb={4}>
+									Are you sure you want to delete the field "
+									{fieldToDelete
+										? fields[fieldToDelete.idx]?.label
+										: ''}
+									"?
+								</Text>
+								<Text color="gray.600" fontSize="sm">
+									This action cannot be undone.
+								</Text>
+							</ModalBody>
+							<ModalFooter>
+								<Button
+									onClick={cancelDelete}
+									variant="outline"
+									mr={3}
+								>
+									Cancel
+								</Button>
+								<Button
+									colorScheme="red"
+									onClick={confirmDelete}
+									isLoading={isAdding}
+								>
+									Delete
 								</Button>
 							</ModalFooter>
 						</ModalContent>

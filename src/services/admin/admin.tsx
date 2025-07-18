@@ -204,3 +204,27 @@ export const updateField = async (
 		throw error;
 	}
 };
+
+export const deleteField = async (fieldId: string) => {
+	try {
+		const authToken = localStorage.getItem('authToken');
+		if (!authToken) {
+			throw new Error('Authentication token not found');
+		}
+		const response = await axios.delete(
+			`${BASE_URL}/fields/${fieldId}`,
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					accept: 'application/json',
+					Authorization: `Bearer ${authToken}`,
+				},
+			}
+		);
+		return response.data;
+	} catch (error: unknown) {
+		console.error('Error deleting field:', error);
+		throw error;
+	}
+};
+
