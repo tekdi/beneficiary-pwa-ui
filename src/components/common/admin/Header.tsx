@@ -115,22 +115,29 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 }) => {
 	const location = useLocation();
 
-	const getMenuPath = (label: string): string => {
-		if (label === 'Documents Master')
-			return ADMIN_ROUTES.DOCUMENT_CONFIG;
-		if (label === 'Fields to VC Field Mapping')
-			return ADMIN_ROUTES.FIELD_CONFIG;
-		if (label === 'Fields')
-			return ADMIN_ROUTES.ADD_FIELD;
-		return '';
+	const getMenuPath = (label: string): string | undefined => {
+		if (label === 'Documents Master') return ADMIN_ROUTES.DOCUMENT_CONFIG;
+		if (label === 'Fields to VC Field Mapping') return ADMIN_ROUTES.FIELD_CONFIG;
+		if (label === 'Fields') return ADMIN_ROUTES.ADD_FIELD;
+		return undefined;
 	};
+
+	// Find active label based on current route
+	let activeLabel = menuNames.find((menu) => {
+		const path = getMenuPath(menu.label);
+		return path && location.pathname === path;
+	})?.label;
+
+	// If no match, fallback to "Documents Master"
+	if (!activeLabel) {
+		activeLabel = 'Documents Master';
+	}
 
 	return (
 		<HStack align="center" spacing={6}>
 			{showMenu &&
 				menuNames.map((menu, index) => {
-					const path = getMenuPath(menu.label);
-					const isActive = location.pathname === path;
+					const isActive = menu.label === activeLabel;
 
 					return (
 						<HStack key={menu?.label || index} align="center">
