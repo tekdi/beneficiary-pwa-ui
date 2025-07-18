@@ -85,7 +85,7 @@ const SignIn: React.FC = () => {
 			toast({
 				title: t('SIGNIN_FAILED'),
 				status: 'error',
-				duration: 10000,
+				duration: 2000,
 				isClosable: true,
 				description: error?.message ?? t('UNKNOWN_ERROR'),
 			});
