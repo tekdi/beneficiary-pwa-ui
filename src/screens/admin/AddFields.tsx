@@ -35,6 +35,9 @@ import {
 	AddFieldPayload,
 	FieldOption,
 	updateField,
+	deleteField,
+	getMapping,
+	checkFieldUsage,
 } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
 
@@ -84,6 +87,13 @@ const AddFields: React.FC = () => {
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [fieldToDelete, setFieldToDelete] = useState<{ idx: number; fieldId: string } | null>(null);
+	const [impactData, setImpactData] = useState<{
+		isUsed: boolean;
+		usageCount: number;
+		mappings: any[];
+	} | null>(null);
 
 	// Fetch fields on mount
 	useEffect(() => {
@@ -299,6 +309,55 @@ const AddFields: React.FC = () => {
 		setErrors({});
 	};
 
+	const handleRemove = async (idx: number) => {
+		const field = fields[idx];
+		setFieldToDelete({ idx, fieldId: field.fieldId });
+		
+		// Check impact before showing modal
+		try {
+			const usage = await checkFieldUsage(field.fieldId);
+			setImpactData(usage);
+		} catch (error) {
+			console.error('Error checking field usage:', error);
+			setImpactData(null);
+		}
+		
+		setDeleteModalOpen(true);
+	};
+
+	const confirmDelete = async () => {
+		if (!fieldToDelete) return;
+		
+		setIsAdding(true);
+		try {
+			await deleteField(fieldToDelete.fieldId);
+			toast({
+				title: 'Field deleted',
+				status: 'success',
+				duration: 2000,
+				isClosable: true,
+			});
+			fetchAllFields(); // Refresh the fields list
+		} catch (error: any) {
+			toast({
+				title: 'Error',
+				description: error.message || 'Failed to delete field',
+				status: 'error',
+				duration: 2000,
+				isClosable: true,
+			});
+		} finally {
+			setIsAdding(false);
+			setDeleteModalOpen(false);
+			setFieldToDelete(null);
+		}
+	};
+
+	const cancelDelete = () => {
+		setDeleteModalOpen(false);
+		setFieldToDelete(null);
+	};
+
 	return (
 		<Box bg="gray.50" minH="100vh" py={{ base: 4, md: 8 }}>
 			<Layout
@@ -404,6 +463,16 @@ const AddFields: React.FC = () => {
 														onClick={() =>
 															handleEdit(idx)
 														}
+														variant="ghost"
+													/>
+													<IconButton
+														icon={<DeleteIcon />}
+														aria-label="Remove"
+														size="sm"
+														onClick={() =>
+															handleRemove(idx)
+														}
+														colorScheme="red"
 														variant="ghost"
 													/>
 												</HStack>
@@ -645,6 +714,52 @@ const AddFields: React.FC = () => {
 									isLoading={isAdding}
 								>
 									{modalMode === 'add' ? 'Add Field' : 'Save'}
+								</Button>
+							</ModalFooter>
+						</ModalContent>
+					</Modal>
+
+					{/* Delete Confirmation Modal */}
+					<Modal isOpen={deleteModalOpen} onClose={cancelDelete} size="md">
+						<ModalOverlay />
+						<ModalContent>
+							<ModalHeader>Confirm Delete</ModalHeader>
+							<ModalCloseButton />
+							<ModalBody>
+								<Text mb={4}>
+									Are you sure you want to delete the field "{fieldToDelete ? fields[fieldToDelete.idx]?.label : ''}"?
+								</Text>
+								
+								{impactData?.isUsed ? (
+									<Box bg="red.50" p={4} borderRadius="md" border="1px solid" borderColor="red.200">
+										<Text color="red.600" fontWeight="bold" mb={2}>
+											⚠️ Warning: This field is currently in use!
+										</Text>
+										<Text color="red.600" fontSize="sm">
+											This field is used in {impactData.usageCount} field mapping(s). 
+											Deleting this field will break existing mappings.
+										</Text>
+										<Text color="red.600" fontSize="sm" mt={2}>
+											Please remove the field from all mappings before deleting.
+										</Text>
+									</Box>
+								) : (
+									<Text color="gray.600" fontSize="sm">
+										This action cannot be undone.
+									</Text>
+								)}
+							</ModalBody>
+							<ModalFooter>
+								<Button onClick={cancelDelete} variant="outline" mr={3}>
+									Cancel
+								</Button>
+								<Button
+									colorScheme="red"
+									onClick={confirmDelete}
+									isLoading={isAdding}
+									isDisabled={impactData?.isUsed} // Disable if field is in use
+								>
+									{impactData?.isUsed ? 'Cannot Delete' : 'Delete'}
 								</Button>
 							</ModalFooter>
 						</ModalContent>
