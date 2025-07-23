@@ -63,7 +63,7 @@ interface GetOneParams {
 export const getOne = async ({ id }: GetOneParams) => {
 	const loginData = {
 		context: {
-			domain: 'ubi:financial-support',
+			domain: DOMAIN_FINANCIAL_SUPPORT,
 			action: 'select',
 			timestamp: '2023-08-02T07:21:58.448Z',
 			ttl: 'PT10M',
