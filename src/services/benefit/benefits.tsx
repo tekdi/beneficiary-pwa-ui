@@ -74,6 +74,16 @@ export const getOne = async ({ id }: GetOneParams) => {
 			bpp_uri,
 			transaction_id: generateUUID(),
 			message_id: generateUUID(),
+			location: {
+				country: {
+					name: 'India',
+					code: 'IND',
+				},
+				city: {
+					name: 'Bangalore',
+					code: 'std:080',
+				},
+			},
 		},
 		message: {
 			order: {
