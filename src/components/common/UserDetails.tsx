@@ -1,56 +1,44 @@
 import React from 'react';
-import { Box, Text, VStack, HStack } from '@chakra-ui/react';
+import { Box, Text, HStack, VStack } from '@chakra-ui/react';
+import { formatDate } from '../../utils/jsHelper/helper';
 import { useTranslation } from 'react-i18next';
+
+// Define common styles for Text and Input components
+const labelStyles = {
+	fontSize: '12px',
+	fontWeight: '600',
+	mb: 1,
+	color: '#06164B',
+	lineHeight: '16px',
+};
+
+const valueStyles = {
+	fontSize: '14px',
+	fontWeight: '400',
+	color: '#1F1B13',
+	lineHeight: '14px',
+};
+
+interface CustomField {
+	label: string;
+	value: string | number | null;
+}
 
 interface UserData {
 	firstName?: string;
-	middleName?: string;
+	middleName?: string | null;
 	lastName?: string;
-	dob?: string;
-	customFields?: { label: string; value: string }[];
+	dob?: string | null;
+	customFields?: CustomField[];
 }
 
 interface UserDetailsProps {
 	userData: UserData;
 }
-
-// Helper function to chunk array into groups
-const chunkArray = <T,>(array: T[], size: number): T[][] => {
-	const chunks: T[][] = [];
-	for (let i = 0; i < array.length; i += size) {
-		chunks.push(array.slice(i, i + size));
-	}
-	return chunks;
-};
-
-// Format date to DD/MM/YYYY
-const formatDate = (dateString: string): string => {
-	const date = new Date(dateString);
-	const day = date.getDate().toString().padStart(2, '0');
-	const month = (date.getMonth() + 1).toString().padStart(2, '0');
-	const year = date.getFullYear();
-	return `${day}/${month}/${year}`;
-};
-
-// Define the styles as objects
-const labelStyles = {
-	fontSize: '12px',
-	fontWeight: '500',
-	lineHeight: '16px',
-	color: '#433E3F',
-	marginBottom: '4px',
-} as const;
-
-const valueStyles = {
-	fontSize: '14px',
-	fontWeight: '400',
-	lineHeight: '18px',
-	color: '#1F1B13',
-} as const;
-
+type FieldValue = string | number | null | undefined;
 interface FieldProps {
 	label: string;
-	value: string;
+	value?: FieldValue;
 	defaultValue?: string;
 }
 
@@ -60,6 +48,13 @@ const Field: React.FC<FieldProps> = ({ label, value, defaultValue = '-' }) => (
 		<Text {...valueStyles}>{value ?? defaultValue}</Text>
 	</Box>
 );
+
+// Helper to chunk an array into pairs
+function chunkArray<T>(arr: T[], size: number): T[][] {
+	return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+		arr.slice(i * size, i * size + size)
+	);
+}
 
 const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 	const { t } = useTranslation();
@@ -122,5 +117,4 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 		</Box>
 	);
 };
-
 export default UserDetails;
