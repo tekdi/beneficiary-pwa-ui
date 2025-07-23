@@ -116,13 +116,13 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 	menuNames,
 }) => {
 	const location = useLocation();
-
+	const { t } = useTranslation();
 	const getMenuPath = (label: string): string | undefined => {
-		if (label === 'Document Configuration')
+		if (label === t('ADMIN_HEADER_DOCUMENTS_MASTER_MENU'))
 			return ADMIN_ROUTES.DOCUMENT_CONFIG;
-		if (label === 'Fields to VC Field Mapping')
+		if (label === t('ADMIN_HEADER_FIELD_MAPPING_MENU'))
 			return ADMIN_ROUTES.FIELD_CONFIG;
-		if (label === 'Fields') return ADMIN_ROUTES.ADD_FIELD;
+		if (label === t('ADMIN_HEADER_FIELDS_MENU')) return ADMIN_ROUTES.ADD_FIELD;
 		return undefined;
 	};
 
@@ -134,7 +134,7 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 		});
 
 		// If no match, fallback to "Documents Master"
-		return foundMenu?.label || 'Documents Master';
+		return foundMenu?.label || t('ADMIN_HEADER_DOCUMENTS_MASTER_MENU');
 	}, [location.pathname, menuNames]);
 
 	return (
