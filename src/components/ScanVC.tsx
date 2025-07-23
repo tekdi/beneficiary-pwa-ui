@@ -11,12 +11,14 @@ import {
 import Layout from './common/layout/Layout';
 import jsQR from 'jsqr';
 import { Html5Qrcode } from 'html5-qrcode';
+import { useTranslation } from 'react-i18next';
 
 interface ScanVCProps {
 	onScanResult?: (result: string) => void;
 }
 
 const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
+	const { t } = useTranslation();
 	const theme = useTheme();
 	const toast = useToast();
 	const [scanning, setScanning] = useState(false);
@@ -172,7 +174,7 @@ const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 	return (
 		<Layout
 			_heading={{
-				heading: 'Scan Documents',
+				heading: t('SCAN_DOCUMENTS_TITLE'),
 				handleBack: () => window.history.back(),
 			}}
 		>
@@ -183,7 +185,7 @@ const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 						fontWeight="medium"
 						color={theme.colors.text}
 					>
-						QR Code Scanner
+						{t('SCAN_QR_CODE_SCANNER_TITLE')}
 					</Text>
 
 					<HStack spacing={4}>
@@ -191,9 +193,9 @@ const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 							colorScheme="blue"
 							onClick={scanning ? stopCamera : startCamera}
 							isLoading={isCameraStarting}
-							loadingText="Starting Camera..."
+							loadingText={t('SCAN_STARTING_CAMERA_LOADING')}
 						>
-							{scanning ? 'Stop Scanning' : 'Start Camera Scan'}
+							{scanning ? t('SCAN_STOP_SCANNING_BUTTON') : t('SCAN_START_CAMERA_BUTTON')}
 						</Button>
 
 						{/* <Button as="label" colorScheme="teal">
