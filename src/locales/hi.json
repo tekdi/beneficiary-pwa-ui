@@ -320,7 +320,9 @@
   "FIELDMAPPING_VC_FIELD_SELECTION_REQUIRED": "VC फील्ड चयन आवश्यक है",
   "FIELDMAPPING_INVALID_JSON_FORMAT": "अमान्य JSON प्रारूप",
   "FIELDMAPPING_FETCH_VC_FIELDS_ERROR": "VC फील्ड लाने में विफल",
+  "FIELDMAPPING_VALIDATION_ERROR_TITLE": "सत्यापन त्रुटि",
   "FIELDMAPPING_VALIDATION_ERROR_MESSAGE": "कृपया सभी आवश्यक फील्ड सही तरीके से भरें।",
+  "FIELDMAPPING_SUCCESS_TITLE": "सफलता",
   "FIELDMAPPING_SUCCESS_MESSAGE": "मैपिंग सहेजे गए! ${totalFields} फील्ड के साथ ${totalDocMappings} दस्तावेज़ मैपिंग।",
   "FIELDMAPPING_SAVE_ERROR": "मैपिंग सहेजने में विफल",
   "FIELDMAPPING_FETCH_MAPPINGS_ERROR": "फील्ड मैपिंग लाने में विफल"

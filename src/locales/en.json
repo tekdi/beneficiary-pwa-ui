@@ -324,7 +324,9 @@
   "FIELDMAPPING_VC_FIELD_SELECTION_REQUIRED": "VC Field selection is required",
   "FIELDMAPPING_INVALID_JSON_FORMAT": "Invalid JSON format",
   "FIELDMAPPING_FETCH_VC_FIELDS_ERROR": "Failed to fetch VC fields",
+  "FIELDMAPPING_VALIDATION_ERROR_TITLE": "Validation Error",
   "FIELDMAPPING_VALIDATION_ERROR_MESSAGE": "Please fill in all required fields correctly.",
+  "FIELDMAPPING_SUCCESS_TITLE": "Success",
   "FIELDMAPPING_SUCCESS_MESSAGE": "Mappings saved! ${totalFields} fields with ${totalDocMappings} document mappings.",
   "FIELDMAPPING_SAVE_ERROR": "Failed to save mappings",
   "FIELDMAPPING_FETCH_MAPPINGS_ERROR": "Failed to fetch field mappings"
