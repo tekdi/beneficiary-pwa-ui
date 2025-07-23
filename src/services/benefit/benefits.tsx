@@ -5,7 +5,7 @@ const bap_id = import.meta.env.VITE_API_BASE_ID;
 const bap_uri = import.meta.env.VITE_BAP_URL;
 const bpp_id = import.meta.env.VITE_BPP_ID;
 const bpp_uri = import.meta.env.VITE_BPP_URL;
-
+const DOMAIN_FINANCIAL_SUPPORT = 'ubi:financial-support';
 function handleError(error: any) {
 	throw error.response ? error.response.data : new Error('Network Error');
 }
@@ -150,7 +150,7 @@ export const confirmApplication = async ({
 }: ConfirmApplicationParams) => {
 	const data = {
 		context: {
-			domain: 'ubi:financial-support',
+			domain: DOMAIN_FINANCIAL_SUPPORT,
 			location: {
 				country: {
 					name: 'India',
