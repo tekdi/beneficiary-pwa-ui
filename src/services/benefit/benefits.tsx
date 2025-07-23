@@ -63,7 +63,7 @@ interface GetOneParams {
 export const getOne = async ({ id }: GetOneParams) => {
 	const loginData = {
 		context: {
-			domain: 'onest:financial-support',
+			domain: 'ubi:financial-support',
 			action: 'select',
 			timestamp: '2023-08-02T07:21:58.448Z',
 			ttl: 'PT10M',
@@ -150,7 +150,7 @@ export const confirmApplication = async ({
 }: ConfirmApplicationParams) => {
 	const data = {
 		context: {
-			domain: 'onest:financial-support',
+			domain: 'ubi:financial-support',
 			location: {
 				country: {
 					name: 'India',
