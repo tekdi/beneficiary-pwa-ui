@@ -27,8 +27,12 @@ import {
 	ModalFooter,
 	ModalCloseButton,
 	useDisclosure,
+	Alert,
+	AlertIcon,
+	AlertTitle,
+	AlertDescription,
 } from '@chakra-ui/react';
-import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import { AddIcon, DeleteIcon, EditIcon, InfoIcon } from '@chakra-ui/icons';
 import {
 	fetchFields,
 	addField,
@@ -43,37 +47,48 @@ import Layout from '../../components/common/admin/Layout';
 import type { Field as BaseField } from '../../services/admin/admin';
 
 interface Field extends BaseField {
-	isEditable?: boolean;
-	ordering?: number;
-	fieldParams?: { options?: FieldOption[] };
+    isEditable?: boolean;
+    isEncrypted?: boolean; // Add this line
+    ordering?: number;
+    fieldParams?: { options?: FieldOption[] };
 }
 
 interface FieldForm {
-	label: string;
-	name: string;
-	type: string;
-	isRequired: boolean;
-	isEditable: boolean;
-	ordering: number | '';
-	options: FieldOption[];
+    label: string;
+    name: string;
+    type: string;
+    isRequired: boolean;
+    isEditable: boolean;
+    isEncrypted: boolean; // Add this line
+    ordering: number | '';
+    options: FieldOption[];
 }
 
 const initialForm: FieldForm = {
-	label: '',
-	name: '',
-	type: 'text',
-	isRequired: false,
-	isEditable: true,
-	ordering: '',
-	options: [],
+    label: '',
+    name: '',
+    type: 'text',
+    isRequired: false,
+    isEditable: true,
+    isEncrypted: false, // Add this line
+    ordering: '',
+    options: [],
 };
+
+// Helper function to get encrypted text
+function getEncryptedText(isEncrypted: boolean | undefined) {
+    if (typeof isEncrypted === 'boolean') {
+        return isEncrypted ? 'Yes' : 'No';
+    }
+    return 'No';
+}
 
 // Helper function to get editable text
 function getEditableText(isEditable: boolean | undefined) {
-	if (typeof isEditable === 'boolean') {
-		return isEditable ? 'Yes' : 'No';
-	}
-	return 'No';
+    if (typeof isEditable === 'boolean') {
+        return isEditable ? 'Yes' : 'No';
+    }
+    return 'Yes';
 }
 
 const AddFields: React.FC = () => {
@@ -84,6 +99,7 @@ const AddFields: React.FC = () => {
 	const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { isOpen: isInfoModalOpen, onOpen: onInfoModalOpen, onClose: onInfoModalClose } = useDisclosure();
 	const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [fieldToDelete, setFieldToDelete] = useState<{
@@ -190,6 +206,7 @@ const AddFields: React.FC = () => {
 				fieldAttributes: {
 					isEditable: form.isEditable,
 					isRequired: form.isRequired,
+					isEncrypted: form.isEncrypted, // Add this line
 				},
 			};
 			await addField(payload);
@@ -230,6 +247,7 @@ const AddFields: React.FC = () => {
 			type: field.type,
 			isRequired: field.isRequired,
 			isEditable: field.isEditable,
+			isEncrypted: field.isEncrypted || false, // Add this line
 			ordering: field.ordering ?? '',
 			options:
 				field.type === 'drop_down' && field.fieldParams?.options
@@ -261,6 +279,7 @@ const AddFields: React.FC = () => {
 					fieldAttributes: {
 						isEditable: form.isEditable,
 						isRequired: form.isRequired,
+						isEncrypted: form.isEncrypted, // Add this line
 					},
 				};
 				await updateField(fieldId, payload);
@@ -417,6 +436,7 @@ const AddFields: React.FC = () => {
 									<Th borderColor="#E2E8F0">Type</Th>
 									<Th borderColor="#E2E8F0">Required</Th>
 									<Th borderColor="#E2E8F0">Editable</Th>
+									<Th borderColor="#E2E8F0">Encrypted</Th>
 									<Th borderColor="#E2E8F0">Actions</Th>
 								</Tr>
 							</Thead>
@@ -424,6 +444,9 @@ const AddFields: React.FC = () => {
 								{fields.map((field, idx) => {
 									const editableText = getEditableText(
 										field.isEditable
+									);
+									const encryptedText = getEncryptedText(
+										field.isEncrypted
 									);
 									return (
 										<Tr
@@ -446,6 +469,9 @@ const AddFields: React.FC = () => {
 											</Td>
 											<Td borderColor="#E2E8F0">
 												{editableText}
+											</Td>
+											<Td borderColor="#E2E8F0">
+												{encryptedText}
 											</Td>
 											<Td borderColor="#E2E8F0">
 												<HStack>
@@ -676,6 +702,42 @@ const AddFields: React.FC = () => {
 											</FormErrorMessage>
 										</FormControl>
 									</HStack>
+
+                                    <HStack mb={2}>
+                                        <FormControl
+                                            display="flex"
+                                            alignItems="center"
+                                            isInvalid={!!errors.isEncrypted}
+                                            isRequired
+                                        >
+                                            <FormLabel mb="0">
+                                                Encrypted?{' '}
+                                            </FormLabel>
+											<IconButton
+												icon={<InfoIcon />}
+												aria-label="Encryption Information"
+												size="xs"
+												variant="ghost"
+												color="blue.500"
+												onClick={onInfoModalOpen}
+												mr={3}
+											/>
+                                            <Switch
+                                                name="isEncrypted"
+                                                isChecked={form.isEncrypted}
+                                                onChange={(e) =>
+                                                    setForm((prev) => ({
+                                                        ...prev,
+                                                        isEncrypted:
+                                                            e.target.checked,
+                                                    }))
+                                                }
+                                            />
+                                            <FormErrorMessage>
+                                                {errors.isEncrypted}
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    </HStack>
 								</VStack>
 							</ModalBody>
 							<ModalFooter>
@@ -750,6 +812,42 @@ const AddFields: React.FC = () => {
 									Delete
 								</Button>
 							</ModalFooter>
+						</ModalContent>
+					</Modal>
+
+					{/* Encryption Information Modal */}
+					<Modal isOpen={isInfoModalOpen} onClose={onInfoModalClose} size="md">
+						<ModalOverlay />
+						<ModalContent>
+							<ModalHeader>
+								<HStack>
+									<InfoIcon color="blue.500" />
+									<Text fontSize="lg">Field Encryption</Text>
+								</HStack>
+							</ModalHeader>
+							<ModalCloseButton />
+							<ModalBody pb={6}>
+								<VStack spacing={3} align="stretch">
+									<Text fontSize="sm" color="gray.700">
+										Encrypts sensitive data like SSN, phone numbers, and addresses before storing in the database.
+									</Text>
+
+									<Alert status="warning" borderRadius="md">
+										<AlertIcon />
+										<Box>
+											<AlertTitle fontSize="sm">Important:</AlertTitle>
+											<AlertDescription fontSize="sm">
+												• Once enabled, encryption <strong>cannot be disabled</strong><br/>
+												• Cannot encrypt fields with existing data<br/>
+											</AlertDescription>
+										</Box>
+									</Alert>
+
+									<Text fontSize="xs" color="gray.500">
+										💡 Only enable for truly sensitive information
+									</Text>
+								</VStack>
+							</ModalBody>
 						</ModalContent>
 					</Modal>
 				</VStack>
