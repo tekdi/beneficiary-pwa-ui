@@ -16,6 +16,7 @@ import ApplicationList from '../../components/ApplicationList';
 
 import { getApplicationList, getUser } from '../../services/auth/auth';
 import CommonButton from '../../components/common/button/Button';
+import { useTranslation } from 'react-i18next';
 
 // Define a type for your application object if you have specific fields
 type ApplicationType = {
@@ -32,6 +33,7 @@ type ApplicationType = {
 };
 
 const ApplicationStatus: React.FC = () => {
+	const { t } = useTranslation();
 	// Explicitly type applicationList as an array of ApplicationType
 	const [applicationList, setApplicationList] = useState<ApplicationType[]>(
 		[]
@@ -68,14 +70,14 @@ const ApplicationStatus: React.FC = () => {
 			<Modal isOpen={true} onClose={() => setError(null)}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Error</ModalHeader>
+					<ModalHeader>{t('APPLICATION_STATUS_ERROR_MODAL')}</ModalHeader>
 					<ModalBody>
 						<Text>{error}</Text>
 					</ModalBody>
 					<ModalFooter>
 						<CommonButton
 							onClick={() => setError(null)}
-							label="Close"
+							label={t('APPLICATION_STATUS_CLOSE_BUTTON')}
 						/>
 					</ModalFooter>
 				</ModalContent>
@@ -87,8 +89,8 @@ const ApplicationStatus: React.FC = () => {
 		<Layout
 			loading={isLoading}
 			_heading={{
-				heading: 'My Applications',
-				subHeading: 'Track your application progress',
+				heading: t('APPLICATION_STATUS_TITLE'),
+				subHeading: t('APPLICATION_STATUS_SUBTITLE'),
 				isFilter: true,
 			}}
 			isSearchbar={true}
@@ -99,7 +101,7 @@ const ApplicationStatus: React.FC = () => {
 						<ApplicationList applicationList={applicationList} />
 					) : (
 						<Box textAlign="center" pt={'30%'}>
-							No applications found
+							{t('APPLICATION_STATUS_NO_APPLICATIONS')}
 						</Box>
 					)}
 				</Stack>

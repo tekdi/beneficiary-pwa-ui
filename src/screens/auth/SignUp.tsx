@@ -106,7 +106,7 @@ const Signup: React.FC = () => {
 		} else {
 			setLoading(false);
 			setToastMessage(true);
-			setErrorMsg(otpResponse?.message || 'An error occurred.');
+			setErrorMsg(otpResponse?.message || t('SIGNUP_GENERAL_ERROR'));
 		}
 	};
 
@@ -140,12 +140,12 @@ const Signup: React.FC = () => {
 				} else {
 					setLoading(false);
 					setToastMessage(true);
-					setErrorMsg(response?.error || 'An error occurred.');
+					setErrorMsg(response?.error || t('SIGNUP_GENERAL_ERROR'));
 				}
 			} else {
 				setLoading(false);
 				setToastMessage(true);
-				setErrorMsg(verifyOTPResponse.message || 'An error occurred.');
+				setErrorMsg(verifyOTPResponse.message || t('SIGNUP_GENERAL_ERROR'));
 			}
 		}
 	};

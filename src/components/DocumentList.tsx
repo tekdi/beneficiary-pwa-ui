@@ -15,6 +15,7 @@ import { findDocumentStatus, getExpiryDate } from '../utils/jsHelper/helper';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import DocumentActions from './DocumentActions';
 import DocumentExpiry from './DocumentExpiry';
+import { useTranslation } from 'react-i18next';
 interface StatusIconProps {
 	status: string;
 	size?: number;
@@ -51,6 +52,7 @@ const StatusIcon: React.FC<StatusIconProps> = ({
 	'aria-label': ariaLabel,
 	userDocuments,
 }) => {
+	const { t } = useTranslation();
 	const result = findDocumentStatus(userDocuments, status);
 	const { success, isExpired } = getExpiryDate(userDocuments, status);
 	const documentExpired = success && isExpired;
@@ -76,14 +78,14 @@ const StatusIcon: React.FC<StatusIconProps> = ({
 		let statusText;
 
 		if (isExpired) {
-			statusText = 'Expired';
+			statusText = t('DOCUMENT_LIST_STATUS_EXPIRED');
 		} else if (result?.matchFound) {
-			statusText = 'Available';
+			statusText = t('DOCUMENT_LIST_STATUS_AVAILABLE');
 		} else {
-			statusText = 'Incomplete';
+			statusText = t('DOCUMENT_LIST_STATUS_INCOMPLETE');
 		}
 
-		label = `Document status: ${statusText}`;
+		label = `${t('DOCUMENT_LIST_STATUS_PREFIX')}: ${statusText}`;
 	}
 
 	return (

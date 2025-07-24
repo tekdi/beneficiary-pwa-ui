@@ -61,7 +61,7 @@ const Splash: React.FC = () => {
 				>
 					<Image
 						src={frameImage}
-						alt="Login Image"
+						alt={t('SPLASH_LOGIN_IMAGE_ALT')}
 						objectFit="contain"
 						width="60%"
 						height="400px"
