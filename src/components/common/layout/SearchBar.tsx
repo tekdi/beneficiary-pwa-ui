@@ -6,6 +6,7 @@ import {
 	IconButton,
 } from '@chakra-ui/react';
 import { SearchIcon, CloseIcon } from '@chakra-ui/icons';
+import { useTranslation } from 'react-i18next';
 
 interface SearchBarProps {
 	onSearch: (query: string) => void;
@@ -14,8 +15,12 @@ interface SearchBarProps {
 }
 
 const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
-	({ onSearch, placeholder = 'Search By Name', onClose }, ref) => {
+	({ onSearch, placeholder, onClose }, ref) => {
+		const { t } = useTranslation();
 		const [query, setQuery] = useState('');
+		
+		// Use translation constant if no placeholder is provided
+		const placeholderText = placeholder || t('COMMON_SEARCHBAR_PLACEHOLDER');
 
 		const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 			const newQuery = event.target.value;
@@ -44,7 +49,7 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 			<InputGroup>
 				<Input
 					type="text"
-					placeholder={placeholder}
+					placeholder={placeholderText}
 					value={query}
 					onChange={handleChange}
 					onKeyDown={handleKeyDown}

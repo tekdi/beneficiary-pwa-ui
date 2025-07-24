@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text, HStack, VStack } from '@chakra-ui/react';
 import { formatDate } from '../../utils/jsHelper/helper';
+import { useTranslation } from 'react-i18next';
 
 // Define common styles for Text and Input components
 const labelStyles = {
@@ -56,13 +57,15 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 }
 
 const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
+	const { t } = useTranslation();
+	
 	// Prepare base fields as an array
 	const baseFields = [
-		{ label: 'First Name', value: userData?.firstName ?? '-' },
-		{ label: 'Middle Name', value: userData?.middleName ?? '-' },
-		{ label: 'Last Name', value: userData?.lastName ?? '-' },
+		{ label: t('USER_DETAILS_FIRST_NAME'), value: userData?.firstName ?? '-' },
+		{ label: t('USER_DETAILS_MIDDLE_NAME'), value: userData?.middleName ?? '-' },
+		{ label: t('USER_DETAILS_LAST_NAME'), value: userData?.lastName ?? '-' },
 		{
-			label: 'Date of Birth',
+			label: t('USER_DETAILS_DATE_OF_BIRTH'),
 			value: userData?.dob ? formatDate(userData?.dob) : '-',
 		},
 	];

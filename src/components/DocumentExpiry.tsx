@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Text } from '@chakra-ui/react';
 import { getExpiryDate } from '../utils/jsHelper/helper';
+import { useTranslation } from 'react-i18next';
 
 interface DocumentExpiryProps {
 	status: string;
@@ -25,6 +26,7 @@ const DocumentExpiry: React.FC<DocumentExpiryProps> = ({
 	status,
 	userDocuments,
 }) => {
+	const { t } = useTranslation();
 	const [documentStatus, setDocumentStatus] = useState(false);
 	const [isExpired, setIsExpired] = useState(false);
 	const [expiryDate, setExpiryDate] = useState('');
@@ -53,7 +55,7 @@ const DocumentExpiry: React.FC<DocumentExpiryProps> = ({
 
 	return documentStatus ? (
 		<Text fontSize={10} color={isExpired ? '#C03744' : '#4D4639'}>
-			Expiry Date: {expiryDate}
+			{t('DOCUMENT_EXPIRY_PREFIX')}: {expiryDate}
 		</Text>
 	) : null;
 };
