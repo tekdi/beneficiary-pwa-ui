@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { transformData } from '../utils/jsHelper/helper';
 import Layout from './common/layout/Layout';
 interface FormData {
 	user_id?: string;
