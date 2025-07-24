@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
 	Box,
 	VStack,
@@ -92,6 +93,7 @@ function getEditableText(isEditable: boolean | undefined) {
 }
 
 const AddFields: React.FC = () => {
+	const { t } = useTranslation();
 	const [fields, setFields] = useState<Field[]>([]);
 	const [form, setForm] = useState<FieldForm>(initialForm);
 	const [errors, setErrors] = useState<Record<string, string>>({});
@@ -818,34 +820,93 @@ const AddFields: React.FC = () => {
 					{/* Encryption Information Modal */}
 					<Modal isOpen={isInfoModalOpen} onClose={onInfoModalClose} size="md">
 						<ModalOverlay />
-						<ModalContent>
-							<ModalHeader>
-								<HStack>
-									<InfoIcon color="blue.500" />
-									<Text fontSize="lg">Field Encryption</Text>
+						<ModalContent
+							borderRadius="xl"
+							boxShadow="0 2px 8px rgba(6,22,75,0.08)"
+							borderWidth="1.5px"
+							borderColor="#E2E8F0"
+						>
+							<ModalHeader
+								bg="#F5F6FA"
+								borderBottom="1px solid #E2E8F0"
+								borderTopRadius="xl"
+								py={4}
+							>
+								<HStack spacing={3}>
+									<InfoIcon color="#06164B" fontSize="20px" />
+									<Text
+										fontSize="lg"
+										fontWeight="bold"
+										color="#06164B"
+									>
+										{t('ENCRYPTION_MODAL_TITLE')}
+									</Text>
 								</HStack>
 							</ModalHeader>
-							<ModalCloseButton />
-							<ModalBody pb={6}>
-								<VStack spacing={3} align="stretch">
-									<Text fontSize="sm" color="gray.700">
-										Encrypts sensitive data like SSN, phone numbers, and addresses before storing in the database.
-									</Text>
+							<ModalCloseButton
+								color="#06164B"
+								_hover={{ bg: "#F5F6FA" }}
+								top={4}
+								right={4}
+							/>
+							<ModalBody pb={6} pt={6}>
+								<VStack spacing={4} align="stretch">
+									<Box
+										bg="white"
+										p={4}
+										borderRadius="lg"
+										borderWidth="1px"
+										borderColor="#E2E8F0"
+									>
+										<Text
+											fontSize="md"
+											color="#1F1B13"
+											lineHeight="1.6"
+										>
+											{t('ENCRYPTION_MODAL_DESCRIPTION')}
+										</Text>
+									</Box>
 
-									<Alert status="warning" borderRadius="md">
-										<AlertIcon />
+									<Alert
+										status="warning"
+										borderRadius="lg"
+										borderWidth="1px"
+										borderColor="#FBD38D"
+										bg="#FEF5E7"
+									>
+										<AlertIcon color="#D69E2E" />
 										<Box>
-											<AlertTitle fontSize="sm">Important:</AlertTitle>
-											<AlertDescription fontSize="sm">
-												• Once enabled, encryption <strong>cannot be disabled</strong><br/>
-												• Cannot encrypt fields with existing data<br/>
+											<AlertTitle
+												fontSize="md"
+												fontWeight="bold"
+												color="#D69E2E"
+											>
+												{t('ENCRYPTION_MODAL_IMPORTANT')}
+											</AlertTitle>
+											<AlertDescription
+												fontSize="sm"
+												color="#744210"
+												lineHeight="1.5"
+											>
+												{t('ENCRYPTION_MODAL_WARNING')}
 											</AlertDescription>
 										</Box>
 									</Alert>
 
-									<Text fontSize="xs" color="gray.500">
-										💡 Only enable for truly sensitive information
-									</Text>
+									<Box
+										bg="#F7FAFC"
+										p={3}
+										borderRadius="md"
+										borderLeft="4px solid #06164B"
+									>
+										<Text
+											fontSize="sm"
+											color="#4A5568"
+											fontWeight="medium"
+										>
+											{t('ENCRYPTION_MODAL_TIP')}
+										</Text>
+									</Box>
 								</VStack>
 							</ModalBody>
 						</ModalContent>

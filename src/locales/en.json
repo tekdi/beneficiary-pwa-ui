@@ -105,5 +105,10 @@
   "USER_DETAILS_TUTION_ADMIN_FEE_PAID": "Tuition/Admin Fee Paid",
   "USER_DETAILS_MISC_FEE_PAID": "Miscellaneous Fee Paid",
   "USER_DETAILS_AGE": "Age",
-  "WALLET_INTERFACE": "My Wallet"
+  "WALLET_INTERFACE": "My Wallet",
+  "ENCRYPTION_MODAL_TITLE": "Field Encryption",
+  "ENCRYPTION_MODAL_DESCRIPTION": "Encrypts sensitive data like SSN, phone numbers, and addresses before storing in the database.",
+  "ENCRYPTION_MODAL_IMPORTANT": "Important:",
+  "ENCRYPTION_MODAL_WARNING": "Encryption cannot be enabled for fields that already contain data, and cannot be disabled once data is entered. Please configure encryption settings before any data is entered.",
+  "ENCRYPTION_MODAL_TIP": "Only enable for truly sensitive information"
 }
