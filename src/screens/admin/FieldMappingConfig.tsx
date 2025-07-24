@@ -25,6 +25,7 @@ import {
 	fetchFields as fetchFieldsAPI,
 } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
+import { useTranslation } from 'react-i18next';
 
 // Props interface for FieldMappingConfig
 interface FieldMappingConfigProps {
@@ -80,6 +81,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 	const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([]);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const toast = useToast();
+	const { t } = useTranslation();
 
 	// --- Fetch available form fields from API ---
 	const fetchFields = async () => {
@@ -90,28 +92,28 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 			const coreFields = [
 				{
 					fieldId: 'coreField-firstName',
-					label: 'First Name',
+					label: t('FIELDMAPPING_CORE_FIRST_NAME'),
 					name: 'firstName',
 					type: 'text',
 					isRequired: true,
 				},
 				{
 					fieldId: 'coreField-middleName',
-					label: 'Middle Name',
+					label: t('FIELDMAPPING_CORE_MIDDLE_NAME'),
 					name: 'middleName',
 					type: 'text',
 					isRequired: true,
 				},
 				{
 					fieldId: 'coreField-lastName',
-					label: 'Last Name',
+					label: t('FIELDMAPPING_CORE_LAST_NAME'),
 					name: 'lastName',
 					type: 'text',
 					isRequired: true,
 				},
 				{
 					fieldId: 'coreField-dob',
-					label: 'Date of Birth',
+					label: t('FIELDMAPPING_CORE_DATE_OF_BIRTH'),
 					name: 'dob',
 					type: 'date',
 					isRequired: true,
@@ -123,9 +125,9 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		} catch (error) {
 			console.error('Error fetching fields:', error);
 			toast({
-				title: 'Error fetching fields',
+				title: t('FIELDMAPPING_ERROR_FETCHING_FIELDS'),
 				description:
-					error.message || 'Failed to fetch fields from server.',
+					error.message || t('FIELDMAPPING_FETCH_FIELDS_ERROR'),
 				status: 'error',
 				duration: 2000,
 				isClosable: true,
@@ -150,8 +152,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		} catch (error) {
 			console.error('Error fetching documents:', error);
 			toast({
-				title: 'Error',
-				description: 'Failed to fetch documents',
+				title: t('FIELDMAPPING_ERROR_TITLE'),
+				description: t('FIELDMAPPING_FETCH_DOCUMENTS_ERROR'),
 				status: 'error',
 				duration: 2000,
 				isClosable: true,
@@ -222,8 +224,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		} catch (error) {
 			console.error('Error fetching VC fields:', error);
 			toast({
-				title: 'Error',
-				description: 'Failed to fetch VC fields',
+				title: t('FIELDMAPPING_ERROR_TITLE'),
+				description: t('FIELDMAPPING_FETCH_VC_FIELDS_ERROR'),
 				status: 'error',
 				duration: 2000,
 				isClosable: true,
@@ -241,7 +243,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 			// Validate field selection
 			if (!fieldMapping.fieldId) {
 				validationErrors[`field_${fieldIndex}`] =
-					'Form field selection is required';
+					t('FIELDMAPPING_FIELD_SELECTION_REQUIRED');
 				hasErrors = true;
 			}
 			// 'Add Field Mapping' (addMapping) is now optional, so skip its required validation
@@ -249,7 +251,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 			fieldMapping.documentMappings.forEach((docMapping, docIndex) => {
 				if (!docMapping.selectedDocument) {
 					validationErrors[`field_${fieldIndex}_doc_${docIndex}`] =
-						'Document selection is required';
+						t('FIELDMAPPING_DOCUMENT_SELECTION_REQUIRED');
 					hasErrors = true;
 				}
 				if (
@@ -257,7 +259,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 					docMapping.selectedDocument
 				) {
 					validationErrors[`field_${fieldIndex}_vc_${docIndex}`] =
-						'VC Field selection is required';
+						t('FIELDMAPPING_VC_FIELD_SELECTION_REQUIRED');
 					hasErrors = true;
 				}
 			});
@@ -267,8 +269,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 
 		if (hasErrors) {
 			toast({
-				title: 'Validation Error',
-				description: 'Please fill in all required fields correctly.',
+				title: t('FIELDMAPPING_VALIDATION_ERROR_TITLE'),
+				description: t('FIELDMAPPING_VALIDATION_ERROR_MESSAGE'),
 				status: 'error',
 				duration: 2000,
 				isClosable: true,
@@ -315,8 +317,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 			);
 
 			toast({
-				title: 'Success',
-				description: `Mappings saved! ${totalFields} fields with ${totalDocMappings} document mappings.`,
+				title: t('FIELDMAPPING_SUCCESS_TITLE'),
+				description: `${t('FIELDMAPPING_SUCCESS_MESSAGE').replace('${totalFields}', totalFields.toString()).replace('${totalDocMappings}', totalDocMappings.toString())}`,
 				status: 'success',
 				duration: 2000,
 				isClosable: true,
@@ -326,8 +328,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		} catch (error) {
 			console.error('Error saving mappings:', error);
 			toast({
-				title: 'Error',
-				description: 'Failed to save mappings',
+				title: t('FIELDMAPPING_ERROR_TITLE'),
+				description: t('FIELDMAPPING_SAVE_ERROR'),
 				status: 'error',
 				duration: 2000,
 				isClosable: true,
@@ -526,8 +528,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		} catch (error) {
 			console.error('Error fetching field mappings:', error);
 			toast({
-				title: 'Error',
-				description: 'Failed to fetch field mappings',
+				title: t('FIELDMAPPING_ERROR_TITLE'),
+				description: t('FIELDMAPPING_FETCH_MAPPINGS_ERROR'),
 				status: 'error',
 				duration: 2000,
 				isClosable: true,
@@ -563,8 +565,8 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 		<Box bg="gray.50" minH="100vh" py={{ base: 4, md: 8 }}>
 			<Layout
 				showMenu={true}
-				title="Field Mappings"
-				subTitle="Configure form fields and their corresponding document mappings."
+				title={t('FIELDMAPPING_TITLE')}
+				subTitle={t('FIELDMAPPING_SUBTITLE')}
 			>
 				<VStack
 					spacing={10}
@@ -604,10 +606,10 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 													fontWeight="semibold"
 													color="#06164B"
 												>
-													Form Field #{fieldIndex + 1}
+													{t('FIELDMAPPING_FIELD_LABEL')}{fieldIndex + 1}
 												</FormLabel>
 												<Select
-													placeholder="Select form field"
+													placeholder={t('FIELDMAPPING_SELECT_FORM_FIELD_PLACEHOLDER')}
 													value={mapping.fieldId}
 													onChange={(e) =>
 														updateFieldMapping(
@@ -647,7 +649,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 
 											<HStack>
 												<IconButton
-													aria-label="Remove field mapping"
+													aria-label={t('FIELDMAPPING_REMOVE_FIELD_MAPPING_ARIA')}
 													icon={<DeleteIcon />}
 													size="lg"
 													colorScheme="red"
@@ -682,7 +684,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 													fontWeight="semibold"
 													color="#06164B"
 												>
-													Document Mappings
+													{t('FIELDMAPPING_DOCUMENT_MAPPINGS_TITLE')}
 												</Text>
 												<Badge
 													variant="outline"
@@ -695,7 +697,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																doc.selectedVcField
 														).length
 													}{' '}
-													configured
+													{t('FIELDMAPPING_CONFIGURED_BADGE')}
 												</Badge>
 											</Flex>
 
@@ -719,13 +721,12 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																		fontWeight="medium"
 																		color="#06164B"
 																	>
-																		Document
-																		#
+																		{t('FIELDMAPPING_DOCUMENT_LABEL')}
 																		{docIndex +
 																			1}
 																	</Text>
 																	<IconButton
-																		aria-label="Remove document mapping"
+																		aria-label={t('FIELDMAPPING_REMOVE_DOCUMENT_MAPPING_ARIA')}
 																		icon={
 																			<DeleteIcon />
 																		}
@@ -760,11 +761,10 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																		}
 																	>
 																		<FormLabel fontSize="xs">
-																			Document
-																			Type
+																			{t('FIELDMAPPING_DOCUMENT_TYPE_LABEL')}
 																		</FormLabel>
 																		<Select
-																			placeholder="Select document"
+																			placeholder={t('FIELDMAPPING_SELECT_DOCUMENT_PLACEHOLDER')}
 																			value={
 																				docMapping.selectedDocument
 																			}
@@ -829,11 +829,10 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																		}
 																	>
 																		<FormLabel fontSize="xs">
-																			VC
-																			Field
+																			{t('FIELDMAPPING_VC_FIELD_LABEL')}
 																		</FormLabel>
 																		<Select
-																			placeholder="Select VC field"
+																			placeholder={t('FIELDMAPPING_SELECT_VC_FIELD_PLACEHOLDER')}
 																			value={
 																				docMapping.selectedVcField
 																			}
@@ -909,7 +908,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 																				color="green.700"
 																			>
 																				<strong>
-																					Mapping:
+																					{t('FIELDMAPPING_MAPPING_LABEL')}
 																				</strong>{' '}
 																				{fields.find(
 																					(
@@ -938,7 +937,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 												<Flex justify="flex-end" mt={2}>
 													<IconButton
 														icon={<AddIcon />}
-														aria-label="Add Document Mapping"
+														aria-label={t('FIELDMAPPING_ADD_DOCUMENT_MAPPING_ARIA')}
 														size="sm"
 														bg="#06164B"
 														color="white"
@@ -976,10 +975,10 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 												fontSize="sm"
 												color="#06164B"
 											>
-												Transformation Value (JSON)
+												{t('FIELDMAPPING_TRANSFORMATION_VALUE_LABEL')}
 											</FormLabel>
 											<Textarea
-												placeholder='e.g. { "original": "m" , "mapped":"male"}'
+												placeholder={t('FIELDMAPPING_TRANSFORMATION_PLACEHOLDER')}
 												value={mapping.addMapping}
 												onChange={(e) => {
 													const newFieldMappings = [
@@ -1012,7 +1011,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 														setErrors((prev) => ({
 															...prev,
 															[`addMapping_${fieldIndex}`]:
-																'Invalid JSON format',
+																t('FIELDMAPPING_INVALID_JSON_FORMAT'),
 														}));
 													}
 
@@ -1061,7 +1060,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 								fontSize="md"
 								boxShadow="sm"
 							>
-								Add Field Mapping
+								{t('FIELDMAPPING_ADD_FIELD_MAPPING_BUTTON')}
 							</Button>
 						</VStack>
 					</Box>
@@ -1085,7 +1084,7 @@ const FieldMappingConfig: React.FC<FieldMappingConfigProps> = ({
 							boxShadow="sm"
 							onClick={saveAllMappings}
 						>
-							Save All Mappings
+							{t('FIELDMAPPING_SAVE_ALL_MAPPINGS_BUTTON')}
 						</Button>
 					</HStack>
 				</VStack>

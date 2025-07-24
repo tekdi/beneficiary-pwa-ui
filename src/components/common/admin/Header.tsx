@@ -3,6 +3,7 @@ import { Box, HStack, Text, useToast } from '@chakra-ui/react';
 import Logo from '../../../assets/images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { logoutUser } from '../../../services/auth/auth';
+import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
 	showMenu?: boolean;
@@ -20,31 +21,32 @@ const ADMIN_ROUTES = {
 } as const;
 
 const Header: React.FC<HeaderProps> = ({ showMenu }) => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const toast = useToast();
 	// Get user role from local storage
 
 	const menuNames = [
 		{
-			label: 'Fields',
+			label: t('ADMIN_HEADER_FIELDS_MENU'),
 			onClick: () => {
 				navigate(ADMIN_ROUTES.ADD_FIELD);
 			},
 		},
 		{
-			label: 'Documents Master',
+			label: t('ADMIN_HEADER_DOCUMENTS_MASTER_MENU'),
 			onClick: () => {
 				navigate(ADMIN_ROUTES.DOCUMENT_CONFIG);
 			},
 		},
 		{
-			label: 'Fields to VC Field Mapping',
+			label: t('ADMIN_HEADER_FIELD_MAPPING_MENU'),
 			onClick: () => {
 				navigate(ADMIN_ROUTES.FIELD_CONFIG);
 			},
 		},
 		{
-			label: 'Log out',
+			label: t('ADMIN_HEADER_LOGOUT_MENU'),
 			onClick: () => handleLogout(),
 		},
 	];
@@ -58,11 +60,11 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 		} catch (error) {
 			console.log(error);
 			toast({
-				title: 'Logout failed',
+				title: t('ADMIN_HEADER_LOGOUT_FAILED_MESSAGE'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
-				description: 'Try Again',
+				description: t('ADMIN_HEADER_TRY_AGAIN_MESSAGE'),
 			});
 		}
 	};
@@ -93,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ showMenu }) => {
 						style={{ width: '40px', marginRight: '8px' }}
 					/>
 					<Text color="#484848" fontWeight={500} fontSize={'28px'}>
-						{'Admin Panel'}
+						{t('ADMIN_HEADER_PANEL_TITLE')}
 					</Text>
 				</HStack>
 
@@ -114,13 +116,13 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 	menuNames,
 }) => {
 	const location = useLocation();
-
+	const { t } = useTranslation();
 	const getMenuPath = (label: string): string | undefined => {
-		if (label === 'Document Configuration')
+		if (label === t('ADMIN_HEADER_DOCUMENTS_MASTER_MENU'))
 			return ADMIN_ROUTES.DOCUMENT_CONFIG;
-		if (label === 'Fields to VC Field Mapping')
+		if (label === t('ADMIN_HEADER_FIELD_MAPPING_MENU'))
 			return ADMIN_ROUTES.FIELD_CONFIG;
-		if (label === 'Fields') return ADMIN_ROUTES.ADD_FIELD;
+		if (label === t('ADMIN_HEADER_FIELDS_MENU')) return ADMIN_ROUTES.ADD_FIELD;
 		return undefined;
 	};
 
@@ -132,7 +134,7 @@ const HeaderRightSection: React.FC<HeaderRightSectionProps> = ({
 		});
 
 		// If no match, fallback to "Documents Master"
-		return foundMenu?.label || 'Documents Master';
+		return foundMenu?.label || t('ADMIN_HEADER_DOCUMENTS_MASTER_MENU');
 	}, [location.pathname, menuNames]);
 
 	return (

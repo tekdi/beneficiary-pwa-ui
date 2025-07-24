@@ -301,7 +301,7 @@ const SignUpWithPassword: React.FC = () => {
 						/>
 						{userName.length > 0 && (
 							<Text textAlign="center" fontSize="14px" mt={4}>
-								{'Your username will be '}
+								{t('SIGNUP_USERNAME_WILL_BE')} 
 								<Text
 									as="span"
 									fontWeight="bold"

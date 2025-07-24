@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
 	Box,
 	VStack,
@@ -43,6 +42,7 @@ import {
 	deleteField,
 } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
+import { useTranslation } from 'react-i18next';
 
 // Extend Field type locally to include isEditable for table rendering
 import type { Field as BaseField } from '../../services/admin/admin';
@@ -466,8 +466,8 @@ const AddFields: React.FC = () => {
 											</Td>
 											<Td borderColor="#E2E8F0">
 												{field.isRequired
-													? 'Yes'
-													: 'No'}
+													? t('ADDFIELDS_REQUIRED_YES_OPTION')
+													: t('ADDFIELDS_REQUIRED_NO_OPTION')}
 											</Td>
 											<Td borderColor="#E2E8F0">
 												{editableText}
@@ -515,8 +515,8 @@ const AddFields: React.FC = () => {
 						<ModalContent>
 							<ModalHeader>
 								{modalMode === 'add'
-									? 'Add Field'
-									: 'Edit Field'}
+									? t('ADDFIELDS_ADD_FIELD_TITLE')
+									: t('ADDFIELDS_EDIT_FIELD_TITLE')}
 							</ModalHeader>
 							<ModalCloseButton />
 							<ModalBody>
@@ -525,7 +525,7 @@ const AddFields: React.FC = () => {
 										isInvalid={!!errors.label}
 										isRequired
 									>
-										<FormLabel>Label </FormLabel>
+										<FormLabel>{t('ADDFIELDS_FORM_LABEL_LABEL')} </FormLabel>
 										<Input
 											name="label"
 											value={form.label}
@@ -539,7 +539,7 @@ const AddFields: React.FC = () => {
 										isInvalid={!!errors.name}
 										isRequired
 									>
-										<FormLabel>Name </FormLabel>
+										<FormLabel>{t('ADDFIELDS_FORM_NAME_LABEL')} </FormLabel>
 										<Input
 											name="name"
 											value={form.name}
@@ -553,22 +553,22 @@ const AddFields: React.FC = () => {
 										isInvalid={!!errors.type}
 										isRequired
 									>
-										<FormLabel>Type </FormLabel>
+										<FormLabel>{t('ADDFIELDS_FORM_TYPE_LABEL')} </FormLabel>
 										<Select
 											name="type"
 											value={form.type}
 											onChange={handleInputChange}
 										>
-											<option value="text">Text</option>
+											<option value="text">{t('ADDFIELDS_TYPE_TEXT_OPTION')}</option>
 											<option value="numeric">
-												Numeric
+												{t('ADDFIELDS_TYPE_NUMERIC_OPTION')}
 											</option>
-											<option value="date">Date</option>
+											<option value="date">{t('ADDFIELDS_TYPE_DATE_OPTION')}</option>
 											<option value="boolean">
-												Boolean
+												{t('ADDFIELDS_TYPE_BOOLEAN_OPTION')}
 											</option>
 											<option value="drop_down">
-												Dropdown
+												{t('ADDFIELDS_TYPE_DROPDOWN_OPTION')}
 											</option>
 										</Select>
 										<FormErrorMessage>

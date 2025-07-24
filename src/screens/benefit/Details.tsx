@@ -158,7 +158,7 @@ const BenefitsDetails: React.FC = () => {
 		try {
 			if (!id) {
 				setError(
-					'Benefit identifier not available. Please retry from the catalogue.'
+					t('DETAILS_BENEFIT_IDENTIFIER_ERROR')
 				);
 				setLoading(false);
 				return;
@@ -166,7 +166,7 @@ const BenefitsDetails: React.FC = () => {
 			eligibilityResponse = await checkEligibilityOfUser(id);
 		} catch (err) {
 			console.error('Error in checking eligibility', err);
-			setError('Failed to check eligibility. Please try again later.');
+			setError(t('DETAILS_ELIGIBILITY_CHECK_ERROR'));
 			setLoading(false);
 			return;
 		}
@@ -188,7 +188,7 @@ const BenefitsDetails: React.FC = () => {
 
 		if (reasonMessages.length > 0) {
 			setError(
-				`You cannot proceed further because the following criteria are missing:\n${reasonMessages.join(
+				`${t('DETAILS_ELIGIBILITY_ERROR_PREFIX')}\n${reasonMessages.join(
 					'\n'
 				)}`
 			);
@@ -199,7 +199,7 @@ const BenefitsDetails: React.FC = () => {
 		// Step 3: Apply application
 		try {
 			if (!context) {
-				setError('Context unavailable. Please reload the page.');
+				setError(t('DETAILS_CONTEXT_UNAVAILABLE_ERROR'));
 				setLoading(false);
 				return;
 			}
@@ -235,11 +235,11 @@ const BenefitsDetails: React.FC = () => {
 					formData,
 				});
 			} else {
-				setError('URL not found in response');
+				setError(t('DETAILS_URL_NOT_FOUND_ERROR'));
 			}
 		} catch (error) {
 			console.error('Error during confirmation:', error);
-			setError('Something went wrong. Please try again.');
+			setError(t('DETAILS_GENERAL_ERROR'));
 		}
 
 		setLoading(false);
@@ -482,14 +482,14 @@ const BenefitsDetails: React.FC = () => {
 				setWebFormProp({});
 			} else {
 				setError(
-					'Error while creating application. Please try again later'
+					t('DETAILS_APPLICATION_CREATE_ERROR')
 				);
 			}
 		} catch (e) {
 			if (e instanceof Error) {
-				setError(`Error: ${e.message}`);
+				setError(`${t('DETAILS_ERROR_MODAL_TITLE')}: ${e.message}`);
 			} else {
-				setError('An unexpected error occurred');
+				setError(t('DETAILS_GENERAL_ERROR'));
 			}
 		}
 		setLoading(false);
@@ -504,14 +504,14 @@ const BenefitsDetails: React.FC = () => {
 			<Modal isOpen={true} onClose={() => setError('')}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Error</ModalHeader>
+					<ModalHeader>{t('DETAILS_ERROR_MODAL_TITLE')}</ModalHeader>
 					<ModalBody>
 						<Text>{error}</Text>
 					</ModalBody>
 					<ModalFooter>
 						<CommonButton
 							onClick={() => setError('')}
-							label="Close"
+							label={t('DETAILS_CLOSE_BUTTON')}
 						/>
 					</ModalFooter>
 				</ModalContent>

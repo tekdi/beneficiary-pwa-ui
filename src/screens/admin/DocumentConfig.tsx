@@ -17,6 +17,7 @@ import {
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { getMapping, updateMapping } from '../../services/admin/admin';
 import Layout from '../../components/common/admin/Layout';
+import { useTranslation } from 'react-i18next';
 
 interface DocumentConfig {
 	id: number;
@@ -31,6 +32,7 @@ interface ValidationErrors {
 }
 const DocumentConfig = () => {
 	const toast = useToast();
+	const { t } = useTranslation();
 
 	// --- State for document configurations and errors ---
 	const [documentConfigs, setDocumentConfigs] = useState<DocumentConfig[]>(
@@ -81,8 +83,8 @@ const DocumentConfig = () => {
 				// Log the error for debugging
 				console.error('Error fetching document configurations:', error);
 				toast({
-					title: 'Error',
-					description: 'Failed to fetch document configurations',
+					title: t('DOCUMENTCONFIG_ERROR_TITLE'),
+					description: t('DOCUMENTCONFIG_FETCH_ERROR'),
 					status: 'error',
 					duration: 2000,
 					isClosable: true,
@@ -136,7 +138,7 @@ const DocumentConfig = () => {
 		if (field === 'vcFields') {
 			if (value.trim() !== '' && !validateVcFields(value)) {
 				newErrors[`vcFields_${index}`] =
-					'Invalid format: Must be a JSON object where each key is a field name and its value is an object with a "type" property.';
+					t('DOCUMENTCONFIG_VC_FIELDS_INVALID_FORMAT');
 			} else {
 				delete newErrors[`vcFields_${index}`];
 			}
@@ -174,7 +176,7 @@ const DocumentConfig = () => {
 			['name', 'label', 'documentSubType', 'docType', 'vcFields'].forEach(
 				(field) => {
 					if (!doc[field]) {
-						newErrors[`${field}_${index}`] = `${field} is required`;
+						newErrors[`${field}_${index}`] = `${field} ${t('DOCUMENTCONFIG_FIELD_REQUIRED')}`;
 						hasError = true;
 					}
 				}
@@ -182,7 +184,7 @@ const DocumentConfig = () => {
 			if (doc.vcFields && doc.vcFields.trim() !== '') {
 				if (!validateVcFields(doc.vcFields)) {
 					newErrors[`vcFields_${index}`] =
-						'Invalid format: Must be a JSON object where each key is a field name and its value is an object with a "type" property.';
+						t('DOCUMENTCONFIG_VC_FIELDS_INVALID_FORMAT');
 					hasError = true;
 				} else {
 					delete newErrors[`vcFields_${index}`];
@@ -192,9 +194,9 @@ const DocumentConfig = () => {
 		setErrors(newErrors);
 		if (hasError) {
 			toast({
-				title: 'Validation Error',
+				title: t('DOCUMENTCONFIG_VALIDATION_ERROR_TITLE'),
 				description:
-					'Please fill in all fields and ensure VC fields are valid JSON with the correct structure.',
+					t('DOCUMENTCONFIG_VALIDATION_ERROR_MESSAGE'),
 				status: 'error',
 				duration: 2000,
 			});
@@ -211,8 +213,8 @@ const DocumentConfig = () => {
 			}));
 			await updateMapping(saveData, 'vcConfiguration');
 			toast({
-				title: 'Success',
-				description: `${documentConfigs.length} document configurations saved.`,
+				title: t('DOCUMENTCONFIG_SUCCESS_TITLE'),
+				description: `${documentConfigs.length}${t('DOCUMENTCONFIG_SUCCESS_MESSAGE')}`,
 				status: 'success',
 				duration: 2000,
 			});
@@ -220,8 +222,8 @@ const DocumentConfig = () => {
 			// Log the error for debugging
 			console.error('Error in JSON parsing or mapping:', error);
 			toast({
-				title: 'Error',
-				description: 'Failed to save document configurations',
+				title: t('DOCUMENTCONFIG_ERROR_TITLE'),
+				description: t('DOCUMENTCONFIG_SAVE_ERROR'),
 				status: 'error',
 				duration: 2000,
 			});
@@ -232,8 +234,8 @@ const DocumentConfig = () => {
 		<Box bg="gray.50" minH="100vh" py={{ base: 4, md: 8 }}>
 			<Layout
 				showMenu={true}
-				title="Document Configurations"
-				subTitle="Add and manage document configurations."
+				title={t('DOCUMENTCONFIG_TITLE')}
+				subTitle={t('DOCUMENTCONFIG_SUBTITLE')}
 			>
 				<VStack
 					spacing={10}
@@ -259,7 +261,7 @@ const DocumentConfig = () => {
 											<IconButton
 												icon={<DeleteIcon />}
 												colorScheme="red"
-												aria-label="Remove"
+												aria-label={t('DOCUMENTCONFIG_REMOVE_ARIA')}
 												size="lg"
 												variant="ghost"
 												onClick={() =>
@@ -292,7 +294,7 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Name
+													{t('DOCUMENTCONFIG_DOCUMENT_NAME_LABEL')}
 													<Text
 														as="span"
 														color="red.500"
@@ -334,7 +336,7 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Label
+													{t('DOCUMENTCONFIG_DOCUMENT_LABEL_LABEL')}
 													<Text
 														as="span"
 														color="red.500"
@@ -388,7 +390,7 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Type
+													{t('DOCUMENTCONFIG_DOCUMENT_TYPE_LABEL')}
 													<Text
 														as="span"
 														color="red.500"
@@ -432,7 +434,7 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													Document Sub Type
+													{t('DOCUMENTCONFIG_DOCUMENT_SUB_TYPE_LABEL')}
 													<Text
 														as="span"
 														color="red.500"
@@ -478,7 +480,7 @@ const DocumentConfig = () => {
 												fontWeight="bold"
 												color="#06164B"
 											>
-												VC fields (JSON)
+												{t('DOCUMENTCONFIG_VC_FIELDS_LABEL')}
 												<Text as="span" color="red.500">
 													*
 												</Text>{' '}
@@ -486,10 +488,7 @@ const DocumentConfig = () => {
 													color="#06164B"
 													fontSize={12}
 												>
-													These fields are the same as
-													those defined in the schema
-													published on the issuance
-													platform.
+													{t('DOCUMENTCONFIG_VC_FIELDS_DESCRIPTION')}
 												</Text>
 											</FormLabel>
 											<Textarea
@@ -501,7 +500,7 @@ const DocumentConfig = () => {
 														e.target.value
 													)
 												}
-												placeholder='e.g. {"field1": {"type": "string"}, "field2": {"type": "number"}}'
+												placeholder={t('DOCUMENTCONFIG_VC_FIELDS_PLACEHOLDER')}
 												resize="vertical"
 												minH="200px"
 												bg="white"
@@ -543,7 +542,7 @@ const DocumentConfig = () => {
 								fontSize="md"
 								boxShadow="sm"
 							>
-								Add Configuration
+								{t('DOCUMENTCONFIG_ADD_CONFIGURATION_BUTTON')}
 							</Button>
 						</VStack>
 					</Box>
@@ -567,7 +566,7 @@ const DocumentConfig = () => {
 							boxShadow="sm"
 							onClick={handleSaveAll}
 						>
-							Save All Configurations
+							{t('DOCUMENTCONFIG_SAVE_ALL_BUTTON')}
 						</Button>
 					</HStack>
 				</VStack>

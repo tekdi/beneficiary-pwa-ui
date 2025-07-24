@@ -108,7 +108,10 @@ const UserProfile: React.FC = () => {
 						middleName: userData?.middleName,
 						lastName: userData?.lastName,
 						dob: userData?.dob,
-						customFields: userData?.customFields || [],
+						customFields: userData?.customFields?.map(field => ({
+							...field,
+							value: String(field.value || '')
+						})) || [],
 					}}
 				/>
 				<Box
@@ -128,7 +131,7 @@ const UserProfile: React.FC = () => {
 						) : (
 							<CommonButton
 								onClick={() => setShowIframe(true)}
-								label="Upload  Document"
+								label={t('USER_PROFILE_UPLOAD_DOCUMENT_BUTTON')}
 							/>
 						)}
 					</VStack>
