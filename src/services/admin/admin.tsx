@@ -26,6 +26,12 @@ export interface Field {
 	name: string;
 	type: string;
 	isRequired: boolean;
+	isEditable?: boolean;
+	isEncrypted?: boolean;
+	ordering?: number;
+	fieldParams?: {
+		options?: FieldOption[];
+	};
 }
 
 export interface FieldOption {
@@ -42,7 +48,7 @@ export interface AddFieldPayload {
 	type: string;
 	ordering?: number;
 	fieldParams?: { options?: FieldOption[] } | null;
-	fieldAttributes?: { isEditable: boolean; isRequired: boolean };
+	fieldAttributes?: { isEditable: boolean; isRequired: boolean, isEncrypted: boolean };
 	sourceDetails?: any;
 	dependsOn?: Record<string, any>;
 }
@@ -122,7 +128,8 @@ export const fetchFields = async (
 				name: fieldObj.name,
 				type: fieldObj.type,
 				isRequired: fieldObj.fieldAttributes?.isRequired ?? false,
-				isEditable: fieldObj.fieldAttributes?.isEditable ?? false,
+				isEditable: fieldObj.fieldAttributes?.isEditable ?? true,
+				isEncrypted: fieldObj.fieldAttributes?.isEncrypted ?? false,
 				ordering: fieldObj.ordering,
 				fieldParams: fieldObj.fieldParams ?? undefined,
 			};
@@ -162,9 +169,11 @@ export const addField = async (payload: AddFieldPayload) => {
 			}
 		);
 		return response.data;
-	} catch (error) {
+	} catch (error: any) {
 		console.error('Error adding field:', error);
-		throw error;
+		// Extract the error message from the API response
+		const errorMessage = error.response?.data?.message || error.message || 'Failed to add field';
+		throw new Error(errorMessage);
 	}
 };
 
@@ -199,9 +208,11 @@ export const updateField = async (
 			}
 		);
 		return response.data;
-	} catch (error: unknown) {
+	} catch (error: any) {
 		console.error('Error updating field:', error);
-		throw error;
+		// Extract the error message from the API response
+		const errorMessage = error.response?.data?.message || error.message || 'Failed to update field';
+		throw new Error(errorMessage);
 	}
 };
 
