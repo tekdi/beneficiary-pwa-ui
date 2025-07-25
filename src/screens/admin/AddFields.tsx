@@ -122,7 +122,14 @@ const AddFields: React.FC = () => {
 			...prev,
 			[name]: type === 'checkbox' ? checked : value,
 		}));
-		setErrors((prev) => ({ ...prev, [name]: '' }));
+		
+		// Clear the current field's error and handle dropdown type change
+		if (name === 'type' && value !== 'drop_down') {
+			setForm((prev) => ({ ...prev, options: [] }));
+			setErrors((prev) => ({ ...prev, [name]: '', options: '' }));
+		} else {
+			setErrors((prev) => ({ ...prev, [name]: '' }));
+		}
 	};
 
 	const handleOptionChange = (
@@ -136,6 +143,8 @@ const AddFields: React.FC = () => {
 				opt.id === id ? { ...opt, [key]: value } : opt
 			),
 		}));
+		// Clear options error when user modifies options
+		setErrors((prev) => ({ ...prev, options: '' }));
 	};
 
 	const addOption = () => {
@@ -146,6 +155,8 @@ const AddFields: React.FC = () => {
 				{ id: Date.now().toString(), name: '', value: '' },
 			],
 		}));
+		// Clear options error when user adds an option
+		setErrors((prev) => ({ ...prev, options: '' }));
 	};
 
 	const removeOption = (id: string) => {
@@ -153,6 +164,8 @@ const AddFields: React.FC = () => {
 			...prev,
 			options: prev.options.filter((opt) => opt.id !== id),
 		}));
+		// Clear options error when user removes an option (in case they had too many invalid ones)
+		setErrors((prev) => ({ ...prev, options: '' }));
 	};
 
 	const validateForm = () => {
@@ -163,7 +176,7 @@ const AddFields: React.FC = () => {
 		if (form.ordering === '' || isNaN(Number(form.ordering)))
 			newErrors.ordering = 'Ordering is required and must be a number';
 		if (form.type === 'drop_down' && form.options.length === 0)
-			newErrors.options = 'At least one option is required';
+			newErrors.options = 'At least one option is required for dropdown fields';
 		if (form.type === 'drop_down') {
 			form.options.forEach((opt, idx) => {
 				if (!opt.name.trim() || !opt.value.trim()) {
@@ -567,7 +580,10 @@ const AddFields: React.FC = () => {
 									</FormControl>
 
 									{form.type === 'drop_down' && (
-										<Box>
+										<FormControl
+											isInvalid={!!errors.options}
+											isRequired
+										>
 											<FormLabel>
 												Dropdown Options
 											</FormLabel>
@@ -606,13 +622,11 @@ const AddFields: React.FC = () => {
 															removeOption(opt.id)
 														}
 													/>
-													<FormErrorMessage>
-														{
-															errors[
-																`option_${idx}`
-															]
-														}
-													</FormErrorMessage>
+													{errors[`option_${idx}`] && (
+														<FormErrorMessage>
+															{errors[`option_${idx}`]}
+														</FormErrorMessage>
+													)}
 												</HStack>
 											))}
 											<Button
@@ -626,7 +640,7 @@ const AddFields: React.FC = () => {
 											<FormErrorMessage>
 												{errors.options}
 											</FormErrorMessage>
-										</Box>
+										</FormControl>
 									)}
 									<HStack mb={2} mt={3}>
 										<FormControl
