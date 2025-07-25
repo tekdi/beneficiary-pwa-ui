@@ -59,7 +59,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 			<Modal isOpen={previewDocument} onClose={onClose} size="lg">
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Preview Document: {documentName}</ModalHeader>
+					<ModalHeader>{t('DIALOGUE_PREVIEW_DOCUMENT_TITLE')}: {documentName}</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
 						<Box
@@ -79,7 +79,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 					</ModalBody>
 					<ModalFooter>
 						<CommonButton
-							label="Close"
+							label={t('DIALOGUE_CLOSE_BUTTON')}
 							onClick={onClose}
 							width="100px"
 						/>
@@ -94,7 +94,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 				<ModalOverlay />
 				<ModalContent borderRadius="md">
 					<ModalHeader className="border-bottom">
-						<Box className="heading">Confirmation</Box>
+						<Box className="heading">{t('DIALOGUE_CONFIRMATION_TITLE')}</Box>
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody
@@ -103,9 +103,8 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 						overflowY="auto" // Enables scrolling for Modal Body
 						p={5}
 					>
-						Are you sure you want to delete the document{' '}
-						<strong>{documentName}</strong>? This action cannot be
-						undone.
+						{t('DIALOGUE_DELETE_CONFIRMATION_MESSAGE')}{' '}
+						<strong>{documentName}</strong>? {t('DIALOGUE_DELETE_ACTION_WARNING')}
 					</ModalBody>
 					<ModalFooter>
 						<CommonButton
@@ -124,7 +123,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader>
-						Document Image Preview: {documentName}
+						{t('DIALOGUE_DOCUMENT_IMAGE_PREVIEW_TITLE')}: {documentName}
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody

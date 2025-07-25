@@ -41,7 +41,7 @@ const SignIn: React.FC = () => {
 			if (response?.data) {
 				// Validate required fields
 				if (!response.data.username) {
-					throw new Error(t('USERNAME_MISSING_ERROR'));
+					throw new Error(t('SIGNIN_USERNAME_MISSING_ERROR'));
 				}
 
 				// Store tokens
@@ -79,15 +79,15 @@ const SignIn: React.FC = () => {
 
 				navigate(0);
 			} else {
-				throw new Error(t('INVALID_RESPONSE_ERROR'));
+				throw new Error(t('SIGNIN_INVALID_RESPONSE_ERROR'));
 			}
 		} catch (error) {
 			toast({
 				title: t('SIGNIN_FAILED'),
 				status: 'error',
-				duration: 10000,
+				duration: 2000,
 				isClosable: true,
-				description: error?.message ?? t('UNKNOWN_ERROR'),
+				description: error?.message ?? t('SIGNIN_UNKNOWN_ERROR'),
 			});
 		} finally {
 			setLoading(false);

@@ -59,11 +59,11 @@ const Home: React.FC = () => {
 		} catch (error) {
 			console.log(error);
 			toast({
-				title: 'Logout failed',
+				title: t('HOME_LOGOUT_FAILED'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
-				description: 'Try Again',
+				description: t('HOME_TRY_AGAIN'),
 			});
 		}
 	};
@@ -83,7 +83,7 @@ const Home: React.FC = () => {
 			const response = await getUserConsents();
 			checkConsent(response?.data.data);
 		} catch (error) {
-			console.log('Failed to load consents', error);
+			console.log(t('HOME_CONSENTS_LOAD_ERROR'), error);
 		}
 	};
 
@@ -92,7 +92,7 @@ const Home: React.FC = () => {
 			await sendConsent(userData?.user_id, purpose, purpose_text);
 			setConsentSaved(false);
 		} catch {
-			console.log('Error sending consent');
+			console.log(t('HOME_CONSENT_SEND_ERROR'));
 		}
 	};
 

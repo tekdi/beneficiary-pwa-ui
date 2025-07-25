@@ -108,7 +108,9 @@ export const loginUser = async (loginData: object) => {
 
 		return response.data;
 	} catch (error) {
-		handleError(error);
+		const errorMessage =
+			error?.response?.data?.message || 'Invalid username or password';
+		throw new Error(errorMessage);
 	}
 };
 
@@ -134,7 +136,6 @@ export const logoutUser = async () => {
 		);
 		if (response) {
 			localStorage.clear();
-
 		}
 
 		return response.data as { success: boolean; message: string };
@@ -220,7 +221,7 @@ export const getDocumentsList = async () => {
 		);
 
 		// Return the documents list data
-		return response.data;	
+		return response.data;
 	} catch (error) {
 		handleError(error);
 	}

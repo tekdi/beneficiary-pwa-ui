@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Text, Spinner, Flex } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 interface CustomButton {
 	onClick?: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -16,12 +17,17 @@ const CommonButton: React.FC<CustomButton> = ({
 	onClick,
 	mt,
 	width = '100%',
-	label = 'Submit',
+	label,
 	isDisabled = false,
 	variant = 'solid',
 	loading = false, // Default to false if not passed
-	loadingLabel = 'Loding...', // Default loading label
+	loadingLabel,
 }) => {
+	const { t } = useTranslation();
+	
+	// Use translation constants if no custom labels are provided
+	const buttonLabel = label || t('COMMON_BUTTON_SUBMIT_LABEL');
+	const buttonLoadingLabel = loadingLabel || t('COMMON_BUTTON_LOADING_LABEL');
 	return (
 		<div style={{ textAlign: 'center' }}>
 			<Button
@@ -53,10 +59,10 @@ const CommonButton: React.FC<CustomButton> = ({
 				{loading ? (
 					<Flex align="center" gap={2}>
 						<Spinner size="sm" color="blue.500" />
-						{loadingLabel}
+						{buttonLoadingLabel}
 					</Flex>
 				) : (
-					label
+					buttonLabel
 				)}
 				{/* Show loading spinner if loading */}
 			</Button>
