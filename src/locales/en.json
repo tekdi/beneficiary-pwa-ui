@@ -12,6 +12,11 @@
   "ADDFIELDS_TYPE_DROPDOWN_OPTION": "Dropdown",
   "ADDFIELDS_TYPE_NUMERIC_OPTION": "Numeric",
   "ADDFIELDS_TYPE_TEXT_OPTION": "Text",
+  "ADDFIELDS_ENCRYPTION_MODAL_DESCRIPTION": "Encrypts sensitive data like SSN, phone numbers, and addresses before storing in the database.",
+  "ADDFIELDS_ENCRYPTION_MODAL_IMPORTANT": "Important:",
+  "ADDFIELDS_ENCRYPTION_MODAL_TIP": "Only enable for truly sensitive information",
+  "ADDFIELDS_ENCRYPTION_MODAL_TITLE": "Field Encryption",
+  "ADDFIELDS_ENCRYPTION_MODAL_WARNING": "Encryption cannot be enabled for fields that already contain data, and cannot be disabled once data is entered. Please configure encryption settings before any data is entered.",
   "ADMIN_HEADER_DOCUMENTS_MASTER_MENU": "Documents Master",
   "ADMIN_HEADER_FIELD_MAPPING_MENU": "Fields to VC Field Mapping",
   "ADMIN_HEADER_FIELDS_MENU": "Fields",
@@ -329,10 +334,5 @@
   "USER_PROFILE_UPLOAD_MISSING_DOCUMENTS": "Upload Missing Documents",
   "WALLET_INTERFACE": "My Wallet",
   "WEBVIEW_COMPLETE_APPLICATION_TITLE": "Complete Application",
-  "WEBVIEW_FORM_UI_TITLE": "Form UI",
-  "ENCRYPTION_MODAL_TITLE": "Field Encryption",
-  "ENCRYPTION_MODAL_DESCRIPTION": "Encrypts sensitive data like SSN, phone numbers, and addresses before storing in the database.",
-  "ENCRYPTION_MODAL_IMPORTANT": "Important:",
-  "ENCRYPTION_MODAL_WARNING": "Encryption cannot be enabled for fields that already contain data, and cannot be disabled once data is entered. Please configure encryption settings before any data is entered.",
-  "ENCRYPTION_MODAL_TIP": "Only enable for truly sensitive information"
+  "WEBVIEW_FORM_UI_TITLE": "Form UI"
 }
