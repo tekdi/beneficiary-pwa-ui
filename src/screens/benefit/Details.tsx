@@ -33,6 +33,7 @@ import {
 	formatLabel,
 	getExpiredRequiredDocsMessage,
 	parseDocList,
+	validateBenefitEndDate,
 } from '../../utils/jsHelper/helper';
 
 import termsAndConditions from '../../assets/termsAndConditions.json';
@@ -70,6 +71,12 @@ interface BenefitItem {
 			};
 		}>;
 	}>;
+	time?: {
+		range?: {
+			start?: string;
+			end?: string;
+		};
+	};
 }
 interface FinancialSupportRequest {
 	domain: string;
@@ -150,6 +157,14 @@ const BenefitsDetails: React.FC = () => {
 
 		if (expiredMessage) {
 			setError(expiredMessage);
+			setLoading(false);
+			return;
+		}
+
+		// Validate benefit end date
+		const benefitEndDateValidation = validateBenefitEndDate(item?.time?.range?.end);
+		if (!benefitEndDateValidation.isValid) {
+			setError(benefitEndDateValidation.errorMessage || 'Benefit validation failed');
 			setLoading(false);
 			return;
 		}
