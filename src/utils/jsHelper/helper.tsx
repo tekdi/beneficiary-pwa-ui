@@ -731,6 +731,8 @@ export const validateBenefitEndDate = (endDate: string | null | undefined): Bene
 			};
 		}
 	} catch (error) {
+		console.error('Error parsing benefit end date:', error);
+		
 		return {
 			isValid: false,
 			errorMessage: 'Invalid date format'
