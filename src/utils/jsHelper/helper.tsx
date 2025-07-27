@@ -697,3 +697,61 @@ export const parseDocList = (list: DocumentTag[], fromEligibility = false) => {
 		};
 	});
 };
+
+export interface BenefitEndDateValidation {
+	isValid: boolean;
+	errorMessage?: string;
+}
+
+/**
+ * Validates if the benefit end date is still valid (not expired).
+ * 
+ * @param endDate - The benefit end date string (e.g., from resultItem?.time?.range?.end)
+ * @returns Object containing validation result and error message if applicable
+ */
+export const validateBenefitEndDate = (endDate: string | null | undefined): BenefitEndDateValidation => {
+	// Handle null/undefined dates
+	if (!endDate) {
+		return {
+			isValid: false,
+			errorMessage: 'Benefit end date not available'
+		};
+	}
+
+	// Try to parse the date
+	let benefitEndDate: Date;
+	try {
+		benefitEndDate = new Date(endDate);
+		
+		// Check if the parsed date is valid
+		if (isNaN(benefitEndDate.getTime())) {
+			return {
+				isValid: false,
+				errorMessage: 'Invalid date format'
+			};
+		}
+	} catch (error) {
+		return {
+			isValid: false,
+			errorMessage: 'Invalid date format'
+		};
+	}
+
+	// Compare with current date
+	const currentDate = new Date();
+	
+	// Set time to start of day for accurate comparison
+	const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+	const benefitEndDateOnly = new Date(benefitEndDate.getFullYear(), benefitEndDate.getMonth(), benefitEndDate.getDate());
+
+	if (benefitEndDateOnly < currentDateOnly) {
+		return {
+			isValid: false,
+			errorMessage: 'Benefit has expired'
+		};
+	}
+
+	return {
+		isValid: true
+	};
+};
