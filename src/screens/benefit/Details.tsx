@@ -33,8 +33,6 @@ import {
 	formatLabel,
 	getExpiredRequiredDocsMessage,
 	parseDocList,
-	validateBenefitEndDate,
-	validateRequiredDocuments,
 } from '../../utils/jsHelper/helper';
 
 import termsAndConditions from '../../assets/termsAndConditions.json';
@@ -72,12 +70,6 @@ interface BenefitItem {
 			};
 		}>;
 	}>;
-	time?: {
-		range?: {
-			start?: string;
-			end?: string;
-		};
-	};
 }
 interface FinancialSupportRequest {
 	domain: string;
@@ -155,35 +147,9 @@ const BenefitsDetails: React.FC = () => {
 			userDocuments,
 			item?.document ?? []
 		);
+
 		if (expiredMessage) {
 			setError(expiredMessage);
-			setLoading(false);
-			return;
-		}
-
-		// Validate required documents are uploaded
-		const documentValidationResult = validateRequiredDocuments(
-			item?.document ?? [],
-			userDocuments ?? []
-		);
-		if (!documentValidationResult.isValid) {
-			setError(
-				documentValidationResult.errorMessage ||
-					'Required documents are missing'
-			);
-			setLoading(false);
-			return;
-		}
-
-		// Validate benefit end date
-		const benefitEndDateValidation = validateBenefitEndDate(
-			item?.time?.range?.end
-		);
-		if (!benefitEndDateValidation.isValid) {
-			setError(
-				benefitEndDateValidation.errorMessage ||
-					'Benefit validation failed'
-			);
 			setLoading(false);
 			return;
 		}
@@ -191,7 +157,9 @@ const BenefitsDetails: React.FC = () => {
 		let eligibilityResponse;
 		try {
 			if (!id) {
-				setError(t('DETAILS_BENEFIT_IDENTIFIER_ERROR'));
+				setError(
+					t('DETAILS_BENEFIT_IDENTIFIER_ERROR')
+				);
 				setLoading(false);
 				return;
 			}
@@ -513,7 +481,9 @@ const BenefitsDetails: React.FC = () => {
 				setSubmitDialouge({ orderId, name: item?.descriptor?.name });
 				setWebFormProp({});
 			} else {
-				setError(t('DETAILS_APPLICATION_CREATE_ERROR'));
+				setError(
+					t('DETAILS_APPLICATION_CREATE_ERROR')
+				);
 			}
 		} catch (e) {
 			if (e instanceof Error) {
