@@ -155,9 +155,6 @@ const BenefitsDetails: React.FC = () => {
 			userDocuments,
 			item?.document ?? []
 		);
-		console.log('userDocuments', userDocuments);
-		console.log('item?.document', item?.document);
-
 		if (expiredMessage) {
 			setError(expiredMessage);
 			setLoading(false);
