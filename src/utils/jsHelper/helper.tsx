@@ -298,53 +298,53 @@ const normalizeGender = (input: string) => {
 	}
 	return 'other';
 };
-export const transformData = (userData) => {
-	return {
-		firstName: userData?.firstName ?? '',
-		middleName: userData?.middleName ?? '',
-		fatherName: userData?.fatherName ?? '',
-		lastName: userData?.lastName ?? '',
-		gender: normalizeGender(userData?.gender),
-		class: userData?.class ? `${userData.class}` : '',
-		annualIncome: userData?.annualIncome ?? '',
-		// caste: userData?.caste?.toLowerCase() ?? '',
-		// disabled: userData?.disability ? 'yes' : 'no',
-		// state: userData?.state ?? '',
-		studentType: userData?.studentType ?? '',
-		docs: userData?.docs ?? [],
-		bankAccountHolderName: userData?.bankAccountHolderName ?? '',
-		bankName: userData?.bankName ?? '',
-		bankAccountNumber: userData?.bankAccountNumber ?? '',
-		bankIfscCode: userData?.bankIfscCode ?? '',
-		previousYearMarks: userData?.previousYearMarks ?? '',
-		phoneNumber: userData?.phoneNumber ?? '',
-		aadhaar: userData?.aadhaar?.toString() ?? '',
-		udid: userData?.udid ?? '',
-		dob: formatDate(userData?.dob) ?? '',
-		disabilityRange: userData?.disabilityRange ?? '',
-		disabilityType: userData?.disabilityType ?? ' ',
-		branchCode: userData?.branchCode ?? ' ',
-		bankAddress: userData?.bankAddress ?? ' ',
-		nspOtr: userData?.nspOtr ?? ' ',
-		tuitionAndAdminFeePaid:
-			userData?.tuitionAndAdminFeePaid?.toString() ?? ' ',
-		miscFeePaid: userData?.miscFeePaid?.toString() ?? ' ',
-		currentSchoolName: userData?.currentSchoolName ?? ' ',
-		bapId: import.meta.env.VITE_API_BASE_ID,
-		age: userData?.age ?? ' ',
-		year: userData?.class ? `${userData.class}` : '',
-		currentlyEnrolledInOtherGovtScheme:
-			userData?.currentlyEnrolledInOtherGovtScheme ?? ' ',
-		haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship:
-			userData?.haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship ??
-			' ',
-		studentId: userData?.studentId ?? ' ',
-		...(userData?.external_application_id
-			? { external_application_id: userData.external_application_id }
-			: {}),
-		...(userData?.remark ? { remark: userData.remark } : {}),
-	};
-};
+// export const transformData = (userData) => {
+// 	return {
+// 		firstName: userData?.firstName ?? '',
+// 		middleName: userData?.middleName ?? '',
+// 		fatherName: userData?.fatherName ?? '',
+// 		lastName: userData?.lastName ?? '',
+// 		gender: normalizeGender(userData?.gender),
+// 		class: userData?.class ? `${userData.class}` : '',
+// 		annualIncome: userData?.annualIncome ?? '',
+// 		// caste: userData?.caste?.toLowerCase() ?? '',
+// 		// disabled: userData?.disability ? 'yes' : 'no',
+// 		// state: userData?.state ?? '',
+// 		studentType: userData?.studentType ?? '',
+// 		docs: userData?.docs ?? [],
+// 		bankAccountHolderName: userData?.bankAccountHolderName ?? '',
+// 		bankName: userData?.bankName ?? '',
+// 		bankAccountNumber: userData?.bankAccountNumber ?? '',
+// 		bankIfscCode: userData?.bankIfscCode ?? '',
+// 		previousYearMarks: userData?.previousYearMarks ?? '',
+// 		phoneNumber: userData?.phoneNumber ?? '',
+// 		aadhaar: userData?.aadhaar?.toString() ?? '',
+// 		udid: userData?.udid ?? '',
+// 		dob: formatDate(userData?.dob) ?? '',
+// 		disabilityRange: userData?.disabilityRange ?? '',
+// 		disabilityType: userData?.disabilityType ?? ' ',
+// 		branchCode: userData?.branchCode ?? ' ',
+// 		bankAddress: userData?.bankAddress ?? ' ',
+// 		nspOtr: userData?.nspOtr ?? ' ',
+// 		tuitionAndAdminFeePaid:
+// 			userData?.tuitionAndAdminFeePaid?.toString() ?? ' ',
+// 		miscFeePaid: userData?.miscFeePaid?.toString() ?? ' ',
+// 		currentSchoolName: userData?.currentSchoolName ?? ' ',
+// 		bapId: import.meta.env.VITE_API_BASE_ID,
+// 		age: userData?.age ?? ' ',
+// 		year: userData?.class ? `${userData.class}` : '',
+// 		currentlyEnrolledInOtherGovtScheme:
+// 			userData?.currentlyEnrolledInOtherGovtScheme ?? ' ',
+// 		haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship:
+// 			userData?.haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship ??
+// 			' ',
+// 		studentId: userData?.studentId ?? ' ',
+// 		...(userData?.external_application_id
+// 			? { external_application_id: userData.external_application_id }
+// 			: {}),
+// 		...(userData?.remark ? { remark: userData.remark } : {}),
+// 	};
+// };
 
 export const formatDate = (dateString) => {
 	if (dateString === null) return '-';
@@ -839,7 +839,7 @@ export const validateRequiredDocuments = (
 		if (missingDocuments.length > 0) {
 			return {
 				isValid: false,
-				errorMessage: `⚠️ Please upload the following required documents to proceed:\n${missingDocuments.join('\n')}`,
+				errorMessage: `⚠️ Please upload the following required documents to proceed: ${missingDocuments.join(', ')}`,
 				missingDocuments,
 			};
 		}
