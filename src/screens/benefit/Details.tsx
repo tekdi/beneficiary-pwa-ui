@@ -34,6 +34,7 @@ import {
 	getExpiredRequiredDocsMessage,
 	parseDocList,
 	validateBenefitEndDate,
+	validateRequiredDocuments,
 } from '../../utils/jsHelper/helper';
 
 import termsAndConditions from '../../assets/termsAndConditions.json';
@@ -157,6 +158,20 @@ const BenefitsDetails: React.FC = () => {
 
 		if (expiredMessage) {
 			setError(expiredMessage);
+			setLoading(false);
+			return;
+		}
+
+		// Validate required documents are uploaded
+		const documentValidationResult = validateRequiredDocuments(
+			item?.document ?? [],
+			userDocuments ?? []
+		);
+		if (!documentValidationResult.isValid) {
+			setError(
+				documentValidationResult.errorMessage ||
+					'Required documents are missing'
+			);
 			setLoading(false);
 			return;
 		}
