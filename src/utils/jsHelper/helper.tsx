@@ -298,7 +298,7 @@ const normalizeGender = (input: string) => {
 	}
 	return 'other';
 };
-export const transformData = (userData) => {
+/* export const transformData = (userData) => {
 	return {
 		firstName: userData?.firstName ?? '',
 		middleName: userData?.middleName ?? '',
@@ -344,7 +344,7 @@ export const transformData = (userData) => {
 			: {}),
 		...(userData?.remark ? { remark: userData.remark } : {}),
 	};
-};
+}; */
 
 export const formatDate = (dateString) => {
 	if (dateString === null) return '-';
@@ -696,4 +696,160 @@ export const parseDocList = (list: DocumentTag[], fromEligibility = false) => {
 			allowedProofs: value.allowedProofs ?? [],
 		};
 	});
+};
+
+export interface BenefitEndDateValidation {
+	isValid: boolean;
+	errorMessage?: string;
+}
+
+/**
+ * Validates if the benefit end date is still valid (not expired).
+ *
+ * @param endDate - The benefit end date string (e.g., from resultItem?.time?.range?.end)
+ * @returns Object containing validation result and error message if applicable
+ */
+export const validateBenefitEndDate = (
+	endDate: string | null | undefined
+): BenefitEndDateValidation => {
+	// Handle null/undefined dates
+	if (!endDate) {
+		return {
+			isValid: false,
+			errorMessage: 'Benefit end date not available',
+		};
+	}
+
+	// Try to parse the date
+	let benefitEndDate: Date;
+	try {
+		benefitEndDate = new Date(endDate);
+
+		// Check if the parsed date is valid
+		if (isNaN(benefitEndDate.getTime())) {
+			return {
+				isValid: false,
+				errorMessage: 'Invalid date format',
+			};
+		}
+	} catch (error) {
+		console.error('Error parsing benefit end date:', error);
+
+		return {
+			isValid: false,
+			errorMessage: 'Invalid date format',
+		};
+	}
+
+	// Compare with current date
+	const currentDate = new Date();
+
+	// Set time to start of day for accurate comparison
+	const currentDateOnly = new Date(
+		currentDate.getFullYear(),
+		currentDate.getMonth(),
+		currentDate.getDate()
+	);
+	const benefitEndDateOnly = new Date(
+		benefitEndDate.getFullYear(),
+		benefitEndDate.getMonth(),
+		benefitEndDate.getDate()
+	);
+
+	if (benefitEndDateOnly < currentDateOnly) {
+		return {
+			isValid: false,
+			errorMessage: 'Benefit has expired',
+		};
+	}
+
+	return {
+		isValid: true,
+	};
+};
+
+export interface DocumentValidationResult {
+	isValid: boolean;
+	errorMessage?: string;
+	missingDocuments?: string[];
+}
+
+/**
+ * Validates if the user has uploaded all required documents.
+ *
+ * @param itemDocuments - Array of required documents from item.documents
+ * @param userDocuments - Array of user's uploaded documents
+ * @returns Object containing validation result and missing document details
+ */
+export const validateRequiredDocuments = (
+	itemDocuments: Array<{
+		id?: number;
+		code?: string | string[];
+		isRequired?: boolean;
+		allowedProofs?: string[];
+		label?: string;
+	}> = [],
+	userDocuments: Array<{
+		doc_subtype?: string;
+		is_uploaded?: boolean;
+		doc_type?: string;
+		doc_verified?: boolean;
+	}> = []
+): DocumentValidationResult => {
+	try {
+		// Filter for required documents only
+		const requiredDocuments = itemDocuments.filter(
+			(doc) => doc.isRequired === true
+		);
+
+		if (requiredDocuments.length === 0) {
+			return { isValid: true };
+		}
+
+		// Get uploaded document subtypes that are actually uploaded
+		const uploadedDocTypes = userDocuments
+			.filter((doc) => doc.is_uploaded === true)
+			.map((doc) => doc.doc_subtype)
+			.filter(Boolean); // Remove null/undefined values
+
+		const missingDocuments: string[] = [];
+
+		// Check each required document
+		for (const requiredDoc of requiredDocuments) {
+			if (
+				!requiredDoc.allowedProofs ||
+				requiredDoc.allowedProofs.length === 0
+			) {
+				continue; // Skip if no allowed proofs defined
+			}
+
+			// Check if user has uploaded any document that matches the allowed proofs
+			const hasMatchingDocument = requiredDoc.allowedProofs.some(
+				(allowedProof) => uploadedDocTypes.includes(allowedProof)
+			);
+
+			if (!hasMatchingDocument) {
+				// Extract document name from label for better error message
+				const documentName =
+					requiredDoc.label || requiredDoc.allowedProofs.join(', ');
+				missingDocuments.push(documentName);
+			}
+		}
+
+		if (missingDocuments.length > 0) {
+			return {
+				isValid: false,
+				errorMessage: `⚠️ Please upload the following required documents to proceed: ${missingDocuments.join(', ')}`,
+				missingDocuments,
+			};
+		}
+
+		return { isValid: true };
+	} catch (error) {
+		console.error('Error validating required documents:', error);
+		return {
+			isValid: false,
+			errorMessage: 'Error validating documents. Please try again.',
+		};
+	}
 };
