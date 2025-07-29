@@ -5,7 +5,7 @@ const bap_id = import.meta.env.VITE_API_BASE_ID;
 const bap_uri = import.meta.env.VITE_BAP_URL;
 const bpp_id = import.meta.env.VITE_BPP_ID;
 const bpp_uri = import.meta.env.VITE_BPP_URL;
-
+const DOMAIN_FINANCIAL_SUPPORT = 'ubi:financial-support';
 function handleError(error: any) {
 	throw error.response ? error.response.data : new Error('Network Error');
 }
@@ -41,7 +41,7 @@ interface GetOneParams {
 export const getOne = async ({ id }: GetOneParams) => {
 	const loginData = {
 		context: {
-			domain: 'onest:financial-support',
+			domain: DOMAIN_FINANCIAL_SUPPORT,
 			action: 'select',
 			timestamp: '2023-08-02T07:21:58.448Z',
 			ttl: 'PT10M',
@@ -52,6 +52,16 @@ export const getOne = async ({ id }: GetOneParams) => {
 			bpp_uri,
 			transaction_id: generateUUID(),
 			message_id: generateUUID(),
+			location: {
+				country: {
+					name: 'India',
+					code: 'IND',
+				},
+				city: {
+					name: 'Bangalore',
+					code: 'std:080',
+				},
+			},
 		},
 		message: {
 			order: {
@@ -128,7 +138,7 @@ export const confirmApplication = async ({
 }: ConfirmApplicationParams) => {
 	const data = {
 		context: {
-			domain: 'onest:financial-support',
+			domain: DOMAIN_FINANCIAL_SUPPORT,
 			location: {
 				country: {
 					name: 'India',
