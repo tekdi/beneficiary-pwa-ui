@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, HStack, VStack } from '@chakra-ui/react';
-import { formatDate } from '../../utils/jsHelper/helper';
+import { formatDate, calculateAge, formatText } from '../../utils/jsHelper/helper';
 import { useTranslation } from 'react-i18next';
 
 // Define common styles for Text and Input components
@@ -22,6 +22,7 @@ const valueStyles = {
 interface CustomField {
 	label: string;
 	value: string | number | null;
+	name?: string;
 }
 
 interface UserData {
@@ -48,6 +49,23 @@ const Field: React.FC<FieldProps> = ({ label, value, defaultValue = '-' }) => (
 		<Text {...valueStyles}>{value ?? defaultValue}</Text>
 	</Box>
 );
+
+// Helper function to process field values based on field type
+const processFieldValue = (field: CustomField, userDob?: string | null): string | number | null => {
+	// Handle age field - calculate from DOB
+	if (field.name === 'age' && userDob) {
+		const calculatedAge = calculateAge(userDob);
+		return calculatedAge !== null ? calculatedAge.toString() : '-';
+	}
+	
+	// Handle disability type field - format from underscore-separated to title case
+	if (field.name === 'disabilityType') {
+		return formatText(field.value);
+	}
+	
+	// Return original value for all other fields
+	return field.value;
+};
 
 // Helper to chunk an array into pairs
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -104,7 +122,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 									{row.map((field) => (
 										<Field
 											label={field.label}
-											value={field.value}
+											value={processFieldValue(field, userData?.dob)}
 											key={field.label}
 										/>
 									))}
