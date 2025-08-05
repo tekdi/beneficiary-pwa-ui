@@ -40,9 +40,9 @@ const SignIn: React.FC = () => {
 			// Trim spaces from username and password
 			const trimmedUsername = username.trim();
 
-			const response = await loginUser({ 
-				username: trimmedUsername, 
-				password
+			const response = await loginUser({
+				username: trimmedUsername,
+				password,
 			});
 			if (response?.data) {
 				// Validate required fields
@@ -52,10 +52,16 @@ const SignIn: React.FC = () => {
 
 				// Store tokens
 				localStorage.setItem('authToken', response.data.access_token);
-				localStorage.setItem('refreshToken', response.data.refresh_token);
+				localStorage.setItem(
+					'refreshToken',
+					response.data.refresh_token
+				);
 				if (response.data.walletToken) {
 					// Store wallet token if available
-					localStorage.setItem('walletToken', response.data.walletToken);
+					localStorage.setItem(
+						'walletToken',
+						response.data.walletToken
+					);
 				}
 
 				// Create user object with data from API response
