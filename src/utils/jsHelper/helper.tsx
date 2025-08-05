@@ -593,7 +593,6 @@ export const calculateAge = (birthDateInput: Date | string): number | null => {
 	if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
 		age--;
 	}
-
 	return age >= 0 ? age : 0;
 };
 
@@ -852,4 +851,14 @@ export const validateRequiredDocuments = (
 			errorMessage: 'Error validating documents. Please try again.',
 		};
 	}
+};
+
+// Helper function to format text from underscore-separated to title case
+export const formatText= (value: string | number | null): string => {
+	if (!value || typeof value !== 'string') return '-';
+	
+	return value
+		.split('_')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.join(' ');
 };
