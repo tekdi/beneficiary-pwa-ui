@@ -262,13 +262,16 @@ const BenefitsDetails: React.FC = () => {
 				: (authUser ?? undefined);
 
 			// Calculate age from dob if present
-			const formData = baseFormData && (baseFormData as any)?.dob 
-				? {
-						...baseFormData,
-						age: calculateAge((baseFormData as any).dob) || (baseFormData as any).age
-					}
-				: baseFormData;
-			
+			const formData =
+				baseFormData && (baseFormData as any)?.dob
+					? {
+							...baseFormData,
+							age:
+								calculateAge((baseFormData as any).dob) ||
+								(baseFormData as any).age,
+						}
+					: baseFormData;
+
 			if (url) {
 				setWebFormProp({
 					url,

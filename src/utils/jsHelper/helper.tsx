@@ -854,11 +854,13 @@ export const validateRequiredDocuments = (
 };
 
 // Helper function to format text from underscore-separated to title case
-export const formatText= (value: string | number | null): string => {
+export const formatText = (value: string | number | null): string => {
 	if (!value || typeof value !== 'string') return '-';
-	
+
 	return value
 		.split('_')
-		.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.map(
+			(word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+		)
 		.join(' ');
 };

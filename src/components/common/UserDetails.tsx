@@ -1,6 +1,10 @@
 import React from 'react';
 import { Box, Text, HStack, VStack } from '@chakra-ui/react';
-import { formatDate, calculateAge, formatText } from '../../utils/jsHelper/helper';
+import {
+	formatDate,
+	calculateAge,
+	formatText,
+} from '../../utils/jsHelper/helper';
 import { useTranslation } from 'react-i18next';
 
 // Define common styles for Text and Input components
@@ -51,18 +55,21 @@ const Field: React.FC<FieldProps> = ({ label, value, defaultValue = '-' }) => (
 );
 
 // Helper function to process field values based on field type
-const processFieldValue = (field: CustomField, userDob?: string | null): string | number | null => {
+const processFieldValue = (
+	field: CustomField,
+	userDob?: string | null
+): string | number | null => {
 	// Handle age field - calculate from DOB
 	if (field.name === 'age' && userDob) {
 		const calculatedAge = calculateAge(userDob);
 		return calculatedAge !== null ? calculatedAge.toString() : '-';
 	}
-	
+
 	// Handle disability type field - format from underscore-separated to title case
 	if (field.name === 'disabilityType') {
 		return formatText(field.value);
 	}
-	
+
 	// Return original value for all other fields
 	return field.value;
 };
@@ -76,12 +83,21 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 
 const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 	const { t } = useTranslation();
-	
+
 	// Prepare base fields as an array
 	const baseFields = [
-		{ label: t('USER_DETAILS_FIRST_NAME'), value: userData?.firstName ?? '-' },
-		{ label: t('USER_DETAILS_MIDDLE_NAME'), value: userData?.middleName ?? '-' },
-		{ label: t('USER_DETAILS_LAST_NAME'), value: userData?.lastName ?? '-' },
+		{
+			label: t('USER_DETAILS_FIRST_NAME'),
+			value: userData?.firstName ?? '-',
+		},
+		{
+			label: t('USER_DETAILS_MIDDLE_NAME'),
+			value: userData?.middleName ?? '-',
+		},
+		{
+			label: t('USER_DETAILS_LAST_NAME'),
+			value: userData?.lastName ?? '-',
+		},
 		{
 			label: t('USER_DETAILS_DATE_OF_BIRTH'),
 			value: userData?.dob ? formatDate(userData?.dob) : '-',
@@ -122,7 +138,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 									{row.map((field) => (
 										<Field
 											label={field.label}
-											value={processFieldValue(field, userData?.dob)}
+											value={processFieldValue(
+												field,
+												userData?.dob
+											)}
 											key={field.label}
 										/>
 									))}
