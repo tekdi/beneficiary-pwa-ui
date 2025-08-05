@@ -102,6 +102,8 @@ interface AuthUser {
 	phone_number?: string;
 	username: string;
 	email: string;
+	dob: string;
+	age: number;
 }
 
 interface WebFormProps {
@@ -263,12 +265,12 @@ const BenefitsDetails: React.FC = () => {
 
 			// Calculate age from dob if present
 			const formData =
-				baseFormData && (baseFormData as any)?.dob
+				baseFormData && baseFormData?.dob
 					? {
 							...baseFormData,
 							age:
-								calculateAge((baseFormData as any).dob) ||
-								(baseFormData as any).age,
+								calculateAge(baseFormData.dob) ||
+								baseFormData.age,
 						}
 					: baseFormData;
 
