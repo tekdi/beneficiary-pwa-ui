@@ -14,7 +14,6 @@ import FloatingInput from '../../components/common/input/Input';
 import FloatingPasswordInput from '../../components/common/input/PasswordInput';
 import CommonButton from '../../components/common/button/Button';
 import { useTranslation } from 'react-i18next';
-import Loader from '../../components/common/Loader';
 import { registerWithPassword } from '../../services/auth/auth';
 
 interface UserDetails {
@@ -244,7 +243,6 @@ const SignUpWithPassword: React.FC = () => {
 			}}
 			isBottombar={false}
 		>
-			{loading && <Loader />}
 			<Box p={5}>
 				<VStack align="stretch" spacing={6}>
 					<FormControl>
@@ -307,7 +305,7 @@ const SignUpWithPassword: React.FC = () => {
 									fontWeight="bold"
 									color="#06164B"
 								>
-									{userName}
+									{` ${userName}`}
 								</Text>
 							</Text>
 						)}
@@ -315,7 +313,8 @@ const SignUpWithPassword: React.FC = () => {
 							mt={4}
 							label={t('LOGIN_REGISTER_BUTTON')}
 							onClick={handleSignUp}
-							//
+							loading={loading}
+							loadingLabel="Registering..."
 						/>
 					</FormControl>
 				</VStack>
