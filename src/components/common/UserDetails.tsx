@@ -122,7 +122,6 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 				);
 				const configData = config?.data?.value || [];
 				setFieldsConfig(configData);
-				console.log('Loaded field config:', configData);
 			} catch (error) {
 				console.error('Failed to load fields config:', error);
 				setFieldsConfig([]); // Fallback to empty array
