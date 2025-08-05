@@ -251,7 +251,7 @@ const BenefitsDetails: React.FC = () => {
 				'submitted',
 			].includes(applicationStatus?.toLowerCase() || '');
 
-			const formData = isEditableStatus
+			const baseFormData = isEditableStatus
 				? {
 						...(authUser || {}),
 						...(applicationData?.application_data || {}),
@@ -261,6 +261,14 @@ const BenefitsDetails: React.FC = () => {
 					}
 				: (authUser ?? undefined);
 
+			// Calculate age from dob if present
+			const formData = baseFormData && (baseFormData as any)?.dob 
+				? {
+						...baseFormData,
+						age: calculateAge((baseFormData as any).dob) || (baseFormData as any).age
+					}
+				: baseFormData;
+			
 			if (url) {
 				setWebFormProp({
 					url,
