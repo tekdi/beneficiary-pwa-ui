@@ -7,6 +7,7 @@ import { getDocumentsList, getUser } from '../services/auth/auth';
 import { AuthContext } from '../utils/context/checkToken';
 import CommonDialogue from './common/Dialogue';
 import { VscPreview } from 'react-icons/vsc';
+import { useTranslation } from 'react-i18next';
 
 interface DocumentActionsProps {
 	status: string;
@@ -26,6 +27,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 	userDocuments,
 	isDelete = true,
 }) => {
+	const { t } = useTranslation();
 	const documentStatus = findDocumentStatus(userDocuments, status);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -39,7 +41,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 		try {
 			const result = await getUser();
 			const data = await getDocumentsList();
-			updateUserData(result?.data, data?.data);
+			updateUserData(result?.data, data?.data?.value);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
@@ -50,7 +52,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 			setIsConfirmationOpen(false);
 			if (response) {
 				toast({
-					title: 'Document deleted successfully',
+					title: t('DOCUMENT_ACTIONS_DELETE_SUCCESS'),
 					status: 'success',
 					duration: 3000,
 					isClosable: true,
@@ -64,7 +66,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 		} catch (error) {
 			console.error('Error deleting document:', error);
 			toast({
-				title: 'Error deleting document',
+				title: t('DOCUMENT_ACTIONS_DELETE_ERROR'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
@@ -106,7 +108,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 				setIsImageDialogOpen(true);
 			} else {
 				toast({
-					title: 'No images found in uploaded document',
+					title: t('DOCUMENT_ACTIONS_NO_IMAGES_FOUND'),
 					status: 'info',
 					duration: 3000,
 					isClosable: true,
@@ -114,7 +116,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 			}
 		} catch {
 			toast({
-				title: 'Invalid JSON in document data',
+				title: t('DOCUMENT_ACTIONS_INVALID_JSON'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
@@ -131,14 +133,14 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 				<Box display="flex" gap={2} alignItems="center">
 					<IconButton
 						icon={<FaEye />}
-						aria-label="Preview"
+						aria-label={t('DOCUMENT_ACTIONS_PREVIEW_ARIA')}
 						size="sm"
 						color={'grey'}
 						onClick={() => handlepreview()}
 					/>
 					<IconButton
 						icon={<VscPreview />}
-						aria-label="Preview Base64 Image"
+						aria-label={t('DOCUMENT_ACTIONS_PREVIEW_IMAGE_ARIA')}
 						size="sm"
 						color="grey"
 						onClick={handleImagePreview}
@@ -146,7 +148,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 					{isDelete && (
 						<IconButton
 							icon={<FaTrashAlt />}
-							aria-label="Delete"
+							aria-label={t('DOCUMENT_ACTIONS_DELETE_ARIA')}
 							size="sm"
 							color={'grey'}
 							onClick={() => handleOpneConfirmation()}

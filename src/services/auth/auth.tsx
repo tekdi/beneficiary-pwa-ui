@@ -108,7 +108,9 @@ export const loginUser = async (loginData: object) => {
 
 		return response.data;
 	} catch (error) {
-		handleError(error);
+		const errorMessage =
+			error?.response?.data?.message || 'Invalid username or password';
+		throw new Error(errorMessage);
 	}
 };
 
@@ -133,8 +135,7 @@ export const logoutUser = async () => {
 			}
 		);
 		if (response) {
-			localStorage.removeItem('authToken');
-			localStorage.removeItem('refreshToken');
+			localStorage.clear();
 		}
 
 		return response.data as { success: boolean; message: string };
@@ -210,7 +211,7 @@ export const getDocumentsList = async () => {
 	try {
 		const token = localStorage.getItem('authToken');
 		const response = await axios.get(
-			`${apiBaseUrl}/content/documents_list`,
+			`${apiBaseUrl}/admin/config/vcConfiguration`,
 			{
 				headers: {
 					Accept: '*/*',

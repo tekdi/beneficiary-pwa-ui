@@ -28,6 +28,7 @@ import { AuthContext } from '../utils/context/checkToken';
 import { fetchVCJson } from '../services/benefit/benefits';
 import Loader from '../components/common/Loader';
 import { AiFillCloseCircle } from 'react-icons/ai';
+import { useTranslation } from 'react-i18next';
 interface Document {
 	name: string;
 	label: string;
@@ -120,6 +121,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 	userId,
 	userData = [],
 }) => {
+	const { t } = useTranslation();
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -134,7 +136,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			try {
 				const userResult = await getUser();
 				const docsResult = await getDocumentsList();
-				updateUserData(userResult.data, docsResult.data);
+				updateUserData(userResult?.data, docsResult.data.value);
 			} catch (error) {
 				console.error('Failed to fetch user data', error);
 			}
@@ -147,8 +149,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 		const fetchDocuments = async () => {
 			try {
 				const response = await getDocumentsList();
-				console.log('Documents List:', response.data);
-				const formattedDocuments = response.data
+				const formattedDocuments = response?.data?.value
 					.filter((doc: any) => doc.documentSubType !== 'aadhaar')
 					.map((doc: any) => ({
 						name: doc.name,
@@ -224,8 +225,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			// Refresh user data to update the UI
 			const userResult = await getUser();
 			const docsResult = await getDocumentsList();
-			updateUserData(userResult.data, docsResult.data);
-
+			updateUserData(userResult?.data, docsResult?.data?.value);
 			toast({
 				title: 'Success',
 				description: 'Document uploaded successfully',
@@ -291,7 +291,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 	return (
 		<Layout
 			_heading={{
-				heading: 'Document Scanner',
+				heading: t('DOCUMENT_SCANNER_TITLE'),
 				handleBack: () => window.history.back(),
 			}}
 		>
@@ -330,8 +330,8 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 											leftIcon={<AttachmentIcon />}
 										>
 											{documentStatus.matchFound
-												? 'Re-upload'
-												: 'Upload'}
+												? t('DOCUMENT_SCANNER_REUPLOAD_BUTTON')
+												: t('DOCUMENT_SCANNER_UPLOAD_BUTTON')}
 										</Button>
 									</HStack>
 								</ListItem>
@@ -344,7 +344,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			<Modal isOpen={isOpen} onClose={onClose} size="xl">
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Scan {selectedDocument?.name}</ModalHeader>
+					<ModalHeader>{t('SCAN_DOCUMENTS_TITLE')} {selectedDocument?.name}</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody pb={6}>
 						<ScanVC onScanResult={handleScanResult} />

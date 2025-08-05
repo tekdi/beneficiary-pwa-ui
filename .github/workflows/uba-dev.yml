@@ -1,10 +1,8 @@
 name: Deploy to UBA-DEV
-
 on:
   push:
     branches:
-      - main
-
+      - main      
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -53,3 +51,12 @@ jobs:
         if: always()
         run: |
           echo "Cleanup complete."
+
+      ## Notify on Slack
+      - name: Notify on Slack channel
+        uses: iRoachie/slack-github-actions@v2.3.2
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+        if: ${{ always() }}

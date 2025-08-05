@@ -28,7 +28,15 @@ import {
 import WebViewFormSubmitWithRedirect from '../../components/WebView';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../components/common/Loader';
-import { calculateAge } from '../../utils/jsHelper/helper';
+import {
+	calculateAge,
+	formatLabel,
+	getExpiredRequiredDocsMessage,
+	parseDocList,
+	validateBenefitEndDate,
+	validateRequiredDocuments,
+} from '../../utils/jsHelper/helper';
+
 import termsAndConditions from '../../assets/termsAndConditions.json';
 import CommonDialogue from '../../components/common/Dialogue';
 import DocumentActions from '../../components/DocumentActions';
@@ -46,6 +54,9 @@ interface BenefitItem {
 	document?: {
 		label?: string;
 		proof?: string;
+		code?: string;
+		allowedProofs?: string[];
+		isRequired?: boolean;
 	}[];
 	tags?: Array<{
 		descriptor?: {
@@ -61,6 +72,12 @@ interface BenefitItem {
 			};
 		}>;
 	}>;
+	time?: {
+		range?: {
+			start?: string;
+			end?: string;
+		};
+	};
 }
 interface FinancialSupportRequest {
 	domain: string;
@@ -92,14 +109,30 @@ interface WebFormProps {
 	formData?: {};
 	item?: BenefitItem;
 }
-
+export interface DocumentItem {
+	id?: number;
+	code?: string | string[];
+	isRequired?: boolean;
+	allowedProofs?: string[];
+	proof?: string | string[];
+	label?: string;
+}
+interface ApplicationData {
+	status: string;
+	application_data?: Record<string, any>;
+	external_application_id?: string;
+	remark?: string;
+}
 const BenefitsDetails: React.FC = () => {
 	const [context, setContext] = useState<FinancialSupportRequest | null>(
 		null
 	);
 	const [item, setItem] = useState<BenefitItem | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [isApplied, setIsApplied] = useState<boolean>(false);
+	const [applicationStatus, setApplicationStatus] = useState<string | null>(
+		null
+	);
+
 	const [error, setError] = useState<string>('');
 	const [authUser, setAuthUser] = useState<AuthUser | null>(null);
 	const [webFormProp, setWebFormProp] = useState<WebFormProps>({});
@@ -114,23 +147,58 @@ const BenefitsDetails: React.FC = () => {
 	const { t } = useTranslation();
 	// const [isEligible, setIsEligible] = useState<any[]>();
 	const [userDocuments, setUserDocuments] = useState();
+	const [applicationData, setApplicationData] =
+		useState<ApplicationData | null>(null);
 	const handleConfirmation = async () => {
 		setLoading(true);
+		const expiredMessage = getExpiredRequiredDocsMessage(
+			userDocuments,
+			item?.document ?? []
+		);
+		if (expiredMessage) {
+			setError(expiredMessage);
+			setLoading(false);
+			return;
+		}
 
+		// Validate required documents are uploaded
+		const documentValidationResult = validateRequiredDocuments(
+			item?.document ?? [],
+			userDocuments ?? []
+		);
+		if (!documentValidationResult.isValid) {
+			setError(
+				documentValidationResult.errorMessage ||
+					'Required documents are missing'
+			);
+			setLoading(false);
+			return;
+		}
+
+		// Validate benefit end date
+		const benefitEndDateValidation = validateBenefitEndDate(
+			item?.time?.range?.end
+		);
+		if (!benefitEndDateValidation.isValid) {
+			setError(
+				benefitEndDateValidation.errorMessage ||
+					'Benefit validation failed'
+			);
+			setLoading(false);
+			return;
+		}
 		// Step 1: Try eligibility API
 		let eligibilityResponse;
 		try {
 			if (!id) {
-				setError(
-					'Benefit identifier not available. Please retry from the catalogue.'
-				);
+				setError(t('DETAILS_BENEFIT_IDENTIFIER_ERROR'));
 				setLoading(false);
 				return;
 			}
 			eligibilityResponse = await checkEligibilityOfUser(id);
 		} catch (err) {
 			console.error('Error in checking eligibility', err);
-			setError('Failed to check eligibility. Please try again later.');
+			setError(t('DETAILS_ELIGIBILITY_CHECK_ERROR'));
 			setLoading(false);
 			return;
 		}
@@ -152,7 +220,7 @@ const BenefitsDetails: React.FC = () => {
 
 		if (reasonMessages.length > 0) {
 			setError(
-				`You cannot proceed further because the following criteria are missing:\n${reasonMessages.join(
+				`${t('DETAILS_ELIGIBILITY_ERROR_PREFIX')}\n${reasonMessages.join(
 					'\n'
 				)}`
 			);
@@ -163,7 +231,7 @@ const BenefitsDetails: React.FC = () => {
 		// Step 3: Apply application
 		try {
 			if (!context) {
-				setError('Context unavailable. Please reload the page.');
+				setError(t('DETAILS_CONTEXT_UNAVAILABLE_ERROR'));
 				setLoading(false);
 				return;
 			}
@@ -172,18 +240,38 @@ const BenefitsDetails: React.FC = () => {
 			const url = (result as { data: { responses: Array<any> } }).data
 				?.responses?.[0]?.message?.order?.items?.[0]?.xinput?.form?.url;
 
-			const formData = authUser ?? undefined;
+			// If the application is resubmit, merge `authUser` and `applicationData`
+			// Priority is given to keys from `applicationData`, but any extra keys
+			// from `authUser` that are not present in `applicationData` will be included.
+			// Otherwise, use `authUser` as the formData.
+
+			const isEditableStatus = [
+				'application resubmit',
+				'application pending',
+				'submitted',
+			].includes(applicationStatus?.toLowerCase() || '');
+
+			const formData = isEditableStatus
+				? {
+						...(authUser || {}),
+						...(applicationData?.application_data || {}),
+						external_application_id:
+							applicationData?.external_application_id,
+						remark: applicationData?.remark,
+					}
+				: (authUser ?? undefined);
+
 			if (url) {
 				setWebFormProp({
 					url,
 					formData,
 				});
 			} else {
-				setError('URL not found in response');
+				setError(t('DETAILS_URL_NOT_FOUND_ERROR'));
 			}
 		} catch (error) {
 			console.error('Error during confirmation:', error);
-			setError('Something went wrong. Please try again.');
+			setError(t('DETAILS_GENERAL_ERROR'));
 		}
 
 		setLoading(false);
@@ -199,40 +287,74 @@ const BenefitsDetails: React.FC = () => {
 		);
 	};
 
-	const extractRequiredDocs = (resultItem) => {
+	/**
+	 * Extracts and merges required and eligibility document items from the result item.
+	 *
+	 * @param resultItem - An object containing tags with document metadata.
+	 * @returns A list of merged and formatted DocumentItem objects.
+	 */
+	const extractRequiredDocs = (resultItem): DocumentItem[] => {
+		// Find the tag with code 'required-docs'
 		const requiredDocsTag = resultItem?.tags?.find(
-			(e: { descriptor: { code: string } }) =>
-				e?.descriptor?.code === 'required-docs'
+			(e: any) => e?.descriptor?.code === 'required-docs'
 		);
-		if (!requiredDocsTag?.list) return [];
 
-		const docs: { label: string; proof: string; isRequired: boolean }[] =
-			[];
+		// Find the tag with code 'eligibility'
+		const eligibilityTag = resultItem?.tags?.find(
+			(e: any) => e?.descriptor?.code === 'eligibility'
+		);
 
-		for (const doc of requiredDocsTag.list) {
-			try {
-				const parsed = JSON.parse(doc.value);
-				const allowedProofs = parsed.allowedProofs || [];
-				const isRequired = parsed.isRequired;
+		// Parse the list of required documents (isRequired = false)
+		const requiredList = parseDocList(requiredDocsTag?.list ?? [], false);
 
-				const label = allowedProofs
-					.map((proof) =>
-						proof
-							.replace(/([A-Z])/g, ' $1')
-							.replace(/^./, (str) => str.toUpperCase())
-					)
-					.join(' / ');
+		// Parse the list of eligibility documents (isRequired = true)
+		const eligibilityList = parseDocList(eligibilityTag?.list ?? [], true);
 
-				docs.push({
-					label: `${label} (${isRequired ? 'Mandatory' : 'Non-mandatory'})`,
-					proof: allowedProofs[0],
-					isRequired,
+		// Combine both required and eligibility documents
+		const allDocs = [...requiredList, ...eligibilityList];
+
+		// Create a map to merge documents based on their allowedProofs
+		const mergedMap = new Map<string, DocumentItem>();
+
+		allDocs.forEach((doc) => {
+			// Use a stringified version of allowedProofs as a unique key
+			const key = doc.allowedProofs.join(',');
+
+			if (mergedMap.has(key)) {
+				// If document with same key exists, merge with the existing entry
+				const existing = mergedMap.get(key);
+
+				// Normalize codes to arrays
+				const existingCodes = Array.isArray(existing.code)
+					? existing.code
+					: [existing.code];
+
+				// Merge current doc with existing one
+
+				mergedMap.set(key, {
+					...existing,
+					code: [...existingCodes, doc.code], // Merge codes ( evidence)
+
+					isRequired: existing.isRequired || doc.isRequired, // Keep true if any is required
 				});
-			} catch (e) {
-				console.error('Failed to parse document data:', e);
+			} else {
+				// If it's a new document group, add to the map
+				mergedMap.set(key, {
+					...doc,
+					code: doc.code,
+				});
 			}
-		}
-		return docs;
+		});
+
+		// Convert merged map to array and format each document with label
+		return Array.from(mergedMap.values()).map((doc) => ({
+			...doc,
+			label: formatLabel(
+				doc.allowedProofs,
+				Array.isArray(doc.code) ? doc.code : [doc.code],
+				doc.isRequired
+			),
+		}));
 	};
 
 	const extractContext = (result) => {
@@ -247,7 +369,19 @@ const BenefitsDetails: React.FC = () => {
 		}
 		/* const eligibilityArr = checkEligibility(resultItem, user);
 		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */
-		setAuthUser(user?.data || {});
+		const customFields = user?.data?.customFields || [];
+		const customFieldValues = customFields.reduce(
+			(acc, field) => {
+				acc[field.name] = field.value;
+				return acc;
+			},
+			{} as Record<string, any>
+		);
+		const combinedData = {
+			...user.data,
+			...customFieldValues,
+		};
+		setAuthUser(combinedData || {});
 
 		const appResult = await getApplication({
 			user_id: user?.data?.user_id,
@@ -255,7 +389,9 @@ const BenefitsDetails: React.FC = () => {
 		});
 
 		if (appResult?.data?.applications?.length > 0) {
-			setIsApplied(true);
+			const status = appResult.data.applications[0].status;
+			setApplicationData(appResult.data.applications[0]);
+			setApplicationStatus(status); // Can be 'submitted', 'resubmit', etc.
 		}
 	};
 
@@ -369,7 +505,7 @@ const BenefitsDetails: React.FC = () => {
 					benefit_provider_uri: context?.bap_uri,
 					external_application_id: orderId,
 					application_name: item?.descriptor?.name,
-					status: 'submitted',
+					status: 'application pending',
 					application_data: payload?.userData,
 				};
 
@@ -377,15 +513,13 @@ const BenefitsDetails: React.FC = () => {
 				setSubmitDialouge({ orderId, name: item?.descriptor?.name });
 				setWebFormProp({});
 			} else {
-				setError(
-					'Error while creating application. Please try again later'
-				);
+				setError(t('DETAILS_APPLICATION_CREATE_ERROR'));
 			}
 		} catch (e) {
 			if (e instanceof Error) {
-				setError(`Error: ${e.message}`);
+				setError(`${t('DETAILS_ERROR_MODAL_TITLE')}: ${e.message}`);
 			} else {
-				setError('An unexpected error occurred');
+				setError(t('DETAILS_GENERAL_ERROR'));
 			}
 		}
 		setLoading(false);
@@ -400,14 +534,14 @@ const BenefitsDetails: React.FC = () => {
 			<Modal isOpen={true} onClose={() => setError('')}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Error</ModalHeader>
+					<ModalHeader>{t('DETAILS_ERROR_MODAL_TITLE')}</ModalHeader>
 					<ModalBody>
 						<Text>{error}</Text>
 					</ModalBody>
 					<ModalFooter>
 						<CommonButton
 							onClick={() => setError('')}
-							label="Close"
+							label={t('DETAILS_CLOSE_BUTTON')}
 						/>
 					</ModalFooter>
 				</ModalContent>
@@ -441,6 +575,23 @@ const BenefitsDetails: React.FC = () => {
 	const handleRedirect = () => {
 		navigate('/applicationStatus');
 	};
+	const getActionLabel = (
+		status: string | null,
+		t: (key: string) => string
+	): string => {
+		if (!status) {
+			return t('BENEFIT_DETAILS_PROCEED_TO_APPLY');
+		} else if (
+			status === 'application resubmit' ||
+			status === 'application pending' ||
+			status === 'submitted'
+		) {
+			return t('BENEFIT_DETAILS_RESUBMIT_APPLICATION');
+		} else {
+			return t('BENEFIT_DETAILS_APPLICATION_SUBMITTED');
+		}
+	};
+
 	return (
 		<Layout
 			_heading={{ heading: item?.descriptor?.name || '', handleBack }}
@@ -546,22 +697,35 @@ const BenefitsDetails: React.FC = () => {
 					<UnorderedList mt={4}>
 						{item?.document?.map((document) => (
 							<Box
-								key={document.proof}
+								key={document.label}
 								display="flex"
 								alignItems="center"
 								justifyContent="space-between"
-								width={'100%'}
+								width="100%"
+								mb={4} // spacing between document rows
 							>
-								<ListItem key={document.label}>
-									{document.label}
-								</ListItem>
-								{userDocuments && (
-									<DocumentActions
-										status={document.proof}
-										userDocuments={userDocuments}
-										isDelete={false}
-									/>
-								)}
+								<Box width="70%">
+									<ListItem>{document.label}</ListItem>
+								</Box>
+
+								<Box
+									width="30%"
+									display="flex"
+									flexDirection="column"
+									alignItems="flex-end"
+									justifyContent="flex-start"
+									pt="2px"
+									gap={1} // vertical spacing between DocumentActions
+								>
+									{document.allowedProofs.map((proof) => (
+										<DocumentActions
+											key={proof}
+											status={proof}
+											userDocuments={userDocuments}
+											isDelete={false}
+										/>
+									))}
+								</Box>
 							</Box>
 						))}
 					</UnorderedList>
@@ -570,12 +734,17 @@ const BenefitsDetails: React.FC = () => {
 						<CommonButton
 							mt={6}
 							onClick={handleConfirmation}
-							label={
-								isApplied
-									? t('BENEFIT_DETAILS_APPLICATION_SUBMITTED')
-									: t('BENEFIT_DETAILS_PROCEED_TO_APPLY')
+							label={getActionLabel(applicationStatus, t)}
+							isDisabled={
+								!!applicationStatus &&
+								![
+									'application pending',
+									'submitted',
+									'application resubmit',
+								].includes(
+									(applicationStatus || '').toLowerCase()
+								)
 							}
-							isDisabled={isApplied}
 						/>
 					) : (
 						<CommonButton

@@ -33,6 +33,7 @@ import { getAll } from '../../services/benefit/benefits';
 import { Castes, IncomeRange, Gender } from '../../assets/mockdata/FilterData';
 import { getIncomeRangeValue } from '../../utils/jsHelper/helper';
 import SearchBar from '../../components/common/layout/SearchBar';
+import { useTranslation } from 'react-i18next';
 
 // Define types for benefit data and filter structure
 interface Benefit {
@@ -69,6 +70,7 @@ interface PaginationInfo {
 }
 
 const ExploreBenefits: React.FC = () => {
+	const { t } = useTranslation();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [search, setSearch] = useState<string>('');
 	const [userFilter, setUserFilter] = useState<Filter>({});
@@ -112,8 +114,10 @@ const ExploreBenefits: React.FC = () => {
 	// Debounce search to avoid excessive API calls
 	const [debouncedSearch, setDebouncedSearch] = useState<string>('');
 
-	const [showSearchBarMyBenefits, setShowSearchBarMyBenefits] = useState(false);
-	const [showSearchBarAllBenefits, setShowSearchBarAllBenefits] = useState(false);
+	const [showSearchBarMyBenefits, setShowSearchBarMyBenefits] =
+		useState(false);
+	const [showSearchBarAllBenefits, setShowSearchBarAllBenefits] =
+		useState(false);
 	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
@@ -175,14 +179,24 @@ const ExploreBenefits: React.FC = () => {
 				if (token) {
 					setIsAuthenticated(true);
 					const user = await getUser();
-					const income = getIncomeRangeValue(
-						user?.data?.annualIncome
+					const customFields = user?.data?.customFields || [];
+
+					const incomeField = customFields.find(
+						(field) => field.name === 'annualIncome'
+					);
+					const casteField = customFields.find(
+						(field) => field.name === 'caste'
+					);
+					const genderField = customFields.find(
+						(field) => field.name === 'gender'
 					);
 
+					const income = getIncomeRangeValue(incomeField?.value);
+
 					const userFilters: Filter = {
-						caste: user?.data?.caste,
+						caste: casteField?.value || '',
 						annualIncome: income,
-						gender: user?.data?.gender,
+						gender: genderField?.gender || '',
 					};
 
 					const newUserFilter: Filter = {};
@@ -410,8 +424,8 @@ const ExploreBenefits: React.FC = () => {
 				>
 					<Text fontSize="lg" color="gray.600">
 						{activeTab === 0
-							? 'No benefits available'
-							: 'No benefits match your profile'}
+							? t('BENEFITS_NO_BENEFITS_AVAILABLE')
+							: t('BENEFITS_NO_BENEFITS_MATCH_PROFILE')}
 					</Text>
 				</Box>
 			);
@@ -460,7 +474,7 @@ const ExploreBenefits: React.FC = () => {
 		<Layout
 			loading={loading}
 			_heading={{
-				heading: 'Browse Benefits',
+				heading: t('BENEFITS_BROWSE_TITLE'),
 			}}
 			isMenu={Boolean(localStorage.getItem('authToken'))}
 		>
@@ -468,7 +482,7 @@ const ExploreBenefits: React.FC = () => {
 				<Modal isOpen={!!error} onClose={() => setError(null)}>
 					<ModalOverlay />
 					<ModalContent>
-						<ModalHeader>Error</ModalHeader>
+						<ModalHeader>{t('BENEFITS_ERROR_MODAL_TITLE')}</ModalHeader>
 						<ModalBody>
 							<Text>{error}</Text>
 						</ModalBody>
@@ -477,7 +491,7 @@ const ExploreBenefits: React.FC = () => {
 								colorScheme="blue"
 								onClick={() => setError(null)}
 							>
-								Close
+								{t('BENEFITS_ERROR_CLOSE_BUTTON')}
 							</Button>
 						</ModalFooter>
 					</ModalContent>
@@ -507,20 +521,21 @@ const ExploreBenefits: React.FC = () => {
 				>
 					<Box flexShrink={0}>
 						<TabList>
-							{isAuthenticated && <Tab>My Benefits</Tab>}
-							<Tab>All Benefits</Tab>
+							{isAuthenticated && <Tab>{t('BENEFITS_MY_BENEFITS_TAB')}</Tab>}
+							<Tab>{t('BENEFITS_ALL_BENEFITS_TAB')}</Tab>
 						</TabList>
 					</Box>
 
 					<Flex flexShrink={0} align="center" gap={2}>
 						<IconButton
 							icon={<SearchIcon />}
-							aria-label="Search"
+							aria-label={t('BENEFITS_SEARCH_ARIA')}
 							variant="ghost"
 							onClick={handleShowSearchBar}
 						/>
 						{/* Only show filter for All Benefits tab (when "All Benefits" is active) */}
-						{((isAuthenticated && activeTab === 1) || (!isAuthenticated && activeTab === 0)) && (
+						{((isAuthenticated && activeTab === 1) ||
+							(!isAuthenticated && activeTab === 0)) && (
 							<FilterDialog
 								inputs={filterInputs}
 								setFilter={setAllBenefitsFilter}
@@ -538,7 +553,7 @@ const ExploreBenefits: React.FC = () => {
 									onSearch={handleSearch}
 									ref={searchInputRef}
 									onClose={handleHideSearchBar}
-									placeholder="Search My Benefits"
+									placeholder={t('BENEFITS_SEARCH_MY_PLACEHOLDER')}
 								/>
 							)}
 							{benefitsContent}
@@ -550,7 +565,7 @@ const ExploreBenefits: React.FC = () => {
 								onSearch={handleSearch}
 								ref={searchInputRef}
 								onClose={handleHideSearchBar}
-								placeholder="Search All Benefits"
+								placeholder={t('BENEFITS_SEARCH_ALL_PLACEHOLDER')}
 							/>
 						)}
 						{benefitsContent}

@@ -15,9 +15,10 @@ import { useNavigate } from 'react-router-dom';
 import CommonButton from '../components/common/button/Button';
 import { getDocumentsList, getUser } from '../services/auth/auth';
 import Toaster from '../components/common/ToasterMessage';
+import { useTranslation } from 'react-i18next';
 
-// Define the JSON Schema
-const schema: RJSFSchema = {
+// Define the JSON Schema function
+const getSchema = (t: (key: string) => string): RJSFSchema => ({
 	type: 'object',
 	properties: {
 		personalInfo: {
@@ -26,44 +27,44 @@ const schema: RJSFSchema = {
 			properties: {
 				firstName: {
 					type: 'string',
-					title: 'First Name',
+					title: t('EDITPROFILE_FIRST_NAME_LABEL'),
 					minLength: 2,
 				},
 				fatherName: {
 					type: 'string',
-					title: "Father's Name",
+					title: t('EDITPROFILE_FATHER_NAME_LABEL'),
 					minLength: 2,
 				},
 				motherName: {
 					type: 'string',
-					title: "Mother's Name",
+					title: t('EDITPROFILE_MOTHER_NAME_LABEL'),
 					minLength: 2,
 				},
-				lastName: { type: 'string', title: 'Last Name', minLength: 2 },
-				dob: { type: 'string', title: 'Date of Birth', format: 'date' },
+				lastName: { type: 'string', title: t('EDITPROFILE_LAST_NAME_LABEL'), minLength: 2 },
+				dob: { type: 'string', title: t('EDITPROFILE_DOB_LABEL'), format: 'date' },
 				gender: {
 					type: 'string',
-					title: 'Gender',
-					enum: ['Male', 'Female'],
+					title: t('EDITPROFILE_GENDER_LABEL'),
+					enum: [t('EDITPROFILE_GENDER_MALE_OPTION'), t('EDITPROFILE_GENDER_FEMALE_OPTION')],
 				},
 				caste: {
 					type: 'string',
-					title: 'Caste',
-					enum: ['sc', 'st', 'OBC', 'General'],
+					title: t('EDITPROFILE_CASTE_LABEL'),
+					enum: [t('EDITPROFILE_CASTE_SC_OPTION'), t('EDITPROFILE_CASTE_ST_OPTION'), t('EDITPROFILE_CASTE_OBC_OPTION'), t('EDITPROFILE_CASTE_GENERAL_OPTION')],
 				},
 				disabilityStatus: {
 					type: 'string',
-					title: 'Disability Status',
-					enum: ['yes', 'no'],
+					title: t('EDITPROFILE_DISABILITY_STATUS_LABEL'),
+					enum: [t('EDITPROFILE_DISABILITY_YES_OPTION'), t('EDITPROFILE_DISABILITY_NO_OPTION')],
 				},
 				annualIncome: {
 					type: 'string',
-					title: 'Annual Income',
+					title: t('EDITPROFILE_ANNUAL_INCOME_LABEL'),
 					enum: [
-						'0-50000',
-						'50001-100000',
-						'100001-250000',
-						'250001+',
+						t('EDITPROFILE_INCOME_0_50K'),
+						t('EDITPROFILE_INCOME_50K_100K'),
+						t('EDITPROFILE_INCOME_100K_250K'),
+						t('EDITPROFILE_INCOME_250K_PLUS'),
 					],
 				},
 			},
@@ -75,37 +76,37 @@ const schema: RJSFSchema = {
 			properties: {
 				class: {
 					type: 'integer',
-					title: 'Class',
+					title: t('EDITPROFILE_CLASS_LABEL'),
 					enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
 				},
 				studentType: {
 					type: 'string',
-					title: 'Student Type',
-					enum: ['Day', 'Hosteller'],
+					title: t('EDITPROFILE_STUDENT_TYPE_LABEL'),
+					enum: [t('EDITPROFILE_STUDENT_TYPE_DAY'), t('EDITPROFILE_STUDENT_TYPE_HOSTELLER')],
 				},
 				currentSchoolName: {
 					type: 'string',
-					title: 'Current School Name',
+					title: t('EDITPROFILE_CURRENT_SCHOOL_NAME_LABEL'),
 					minLength: 2,
 				},
 				currentSchoolAddress: {
 					type: 'string',
-					title: 'Current School Address',
+					title: t('EDITPROFILE_CURRENT_SCHOOL_ADDRESS_LABEL'),
 					minLength: 2,
 				},
 				currentSchoolDistrict: {
 					type: 'string',
-					title: 'Current School District',
+					title: t('EDITPROFILE_CURRENT_SCHOOL_DISTRICT_LABEL'),
 					minLength: 2,
 				},
 				previousYearMarks: {
 					type: 'string',
-					title: 'Previous Year Marks',
+					title: t('EDITPROFILE_PREVIOUS_YEAR_MARKS_LABEL'),
 					pattern: '^[0-9]+(\\.[0-9]{1,2})?%$',
 				},
 				samagraId: {
 					type: 'string',
-					title: 'Samagra ID',
+					title: t('EDITPROFILE_SAMAGRA_ID_LABEL'),
 					minLength: 5,
 				},
 			},
@@ -117,18 +118,18 @@ const schema: RJSFSchema = {
 			properties: {
 				bankAccountHolderName: {
 					type: 'string',
-					title: 'Bank Account Holder Name',
+					title: t('EDITPROFILE_BANK_ACCOUNT_HOLDER_NAME_LABEL'),
 					minLength: 2,
 				},
-				bankName: { type: 'string', title: 'Bank Name', minLength: 2 },
+				bankName: { type: 'string', title: t('EDITPROFILE_BANK_NAME_LABEL'), minLength: 2 },
 				bankAccountNumber: {
 					type: 'string',
-					title: 'Bank Account Number',
+					title: t('EDITPROFILE_BANK_ACCOUNT_NUMBER_LABEL'),
 					pattern: '^[0-9]{9,18}$',
 				},
 				bankIfscCode: {
 					type: 'string',
-					title: 'Bank IFSC Code',
+					title: t('EDITPROFILE_BANK_IFSC_CODE_LABEL'),
 					pattern: '^[A-Z]{4}[0-9]{7}$',
 				},
 			},
@@ -140,10 +141,10 @@ const schema: RJSFSchema = {
 			],
 		},
 	},
-};
+});
 
 // UI Schema for form layout customization
-const uiSchema = {
+const getUiSchema = (t: (key: string) => string) => ({
 	personalInfo: {
 		dob: {
 			'ui:widget': 'date',
@@ -151,16 +152,17 @@ const uiSchema = {
 	},
 	bankDetails: {
 		bankAccountNumber: {
-			'ui:help': 'Enter valid 9-18 digit account number',
+			'ui:help': t('EDITPROFILE_BANK_ACCOUNT_NUMBER_HELP'),
 		},
 		bankIfscCode: {
-			'ui:help': 'Enter valid IFSC code (e.g., SBIN0000123)',
+			'ui:help': t('EDITPROFILE_BANK_IFSC_CODE_HELP'),
 		},
 	},
-};
+});
 
 // Main Component
 const EditProfile = () => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { userData, updateUserData } = useContext(AuthContext); // Access userData from context
 	const [formData, setFormData] = useState<any>(null); // Manage form state
@@ -199,14 +201,14 @@ const EditProfile = () => {
 			await updateUserDetails(userData.user_id, payload);
 			console.log('User details updated successfully.');
 			setToastMessage({
-				message: 'User details updated successfully!',
+				message: t('EDITPROFILE_UPDATE_SUCCESS'),
 				type: 'success',
 			});
 			init(); // Re-fetch data or perform necessary updates
 		} catch (error) {
 			console.error('Error updating user details:', error);
 			setToastMessage({
-				message: 'Failed to update user details. Please try again.',
+				message: t('EDITPROFILE_UPDATE_ERROR'),
 				type: 'error',
 			});
 		}
@@ -216,17 +218,17 @@ const EditProfile = () => {
 	const handleBack = () => navigate(-1);
 
 	return (
-		<Layout _heading={{ heading: 'Edit Profile', handleBack }}>
+		<Layout _heading={{ heading: t('EDITPROFILE_TITLE'), handleBack }}>
 			<Box p={5} className="card-scroll invisible-scroll">
 				{formData && (
 					<Form
-						schema={schema}
-						uiSchema={uiSchema}
+						schema={getSchema(t)}
+						uiSchema={getUiSchema(t)}
 						formData={formData}
 						validator={validator}
 						onSubmit={onSubmit}
 					>
-						<CommonButton label="Edit Profile" />
+						<CommonButton label={t('EDITPROFILE_TITLE')} />
 					</Form>
 				)}
 			</Box>
