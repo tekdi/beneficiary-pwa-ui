@@ -58,8 +58,8 @@ const CommonButton: React.FC<CustomButton> = ({
 			>
 				{loading ? (
 					<Flex align="center" gap={2}>
-						<Spinner size="sm" color="blue.500" />
 						{buttonLoadingLabel}
+						<Spinner size="sm" color="blue.500" />
 					</Flex>
 				) : (
 					buttonLabel
