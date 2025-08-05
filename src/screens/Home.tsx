@@ -18,7 +18,7 @@ import '../assets/styles/App.css';
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonDialogue from '../components/common/Dialogue';
 import termsAndConditions from '../assets/termsAndConditions.json';
-import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar';
+/* import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar'; */
 
 const Home: React.FC = () => {
 	const navigate = useNavigate();
@@ -30,7 +30,7 @@ const Home: React.FC = () => {
 	const purpose = 'sign_up_tnc';
 	const purpose_text = 'sign_up_tnc';
 	const toast = useToast();
-	const [fetchingAadhar, setFetchingAadhar] = useState(false);
+	/* 	const [fetchingAadhar, setFetchingAadhar] = useState(false); */
 
 	const handleRedirect = () => {
 		navigate('/explorebenefits');
@@ -42,7 +42,7 @@ const Home: React.FC = () => {
 		try {
 			const result = await getUser();
 			const data = await getDocumentsList();
-			updateUserData(result.data, data.data);
+			updateUserData(result?.data, data?.data?.value);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
@@ -59,11 +59,11 @@ const Home: React.FC = () => {
 		} catch (error) {
 			console.log(error);
 			toast({
-				title: 'Logout failed',
+				title: t('HOME_LOGOUT_FAILED'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
-				description: 'Try Again',
+				description: t('HOME_TRY_AGAIN'),
 			});
 		}
 	};
@@ -83,7 +83,7 @@ const Home: React.FC = () => {
 			const response = await getUserConsents();
 			checkConsent(response?.data.data);
 		} catch (error) {
-			console.log('Failed to load consents', error);
+			console.log(t('HOME_CONSENTS_LOAD_ERROR'), error);
 		}
 	};
 
@@ -92,7 +92,7 @@ const Home: React.FC = () => {
 			await sendConsent(userData?.user_id, purpose, purpose_text);
 			setConsentSaved(false);
 		} catch {
-			console.log('Error sending consent');
+			console.log(t('HOME_CONSENT_SEND_ERROR'));
 		}
 	};
 
@@ -106,7 +106,7 @@ const Home: React.FC = () => {
 		getConsent();
 	}, []);
 
-	const handleAadharFetch = async () => {
+	/* 	const handleAadharFetch = async () => {
 		try {
 			const digilockerURL = await getDigiLockerRequest();
 
@@ -169,7 +169,7 @@ const Home: React.FC = () => {
 		} catch (err) {
 			console.error('Error fetching DigiLocker URL:', err);
 		}
-	};
+	}; */
 
 	return (
 		<Layout
@@ -183,7 +183,7 @@ const Home: React.FC = () => {
 				<VStack spacing={4} align="stretch">
 					<DocumentList
 						documents={documents}
-						userData={userData?.docs}
+						userDocuments={userData?.docs}
 					/>
 					<CommonButton
 						onClick={handleScanRedirect}
@@ -200,7 +200,7 @@ const Home: React.FC = () => {
 						label={t('PROFILE_EXPLORE_BENEFITS')}
 					/>
 					{!showIframe ? (
-						<UploadDocumentEwallet userId={userData?.user_id} />
+						<UploadDocumentEwallet/>
 					) : (
 						<CommonButton
 							onClick={() => setShowIframe(false)}

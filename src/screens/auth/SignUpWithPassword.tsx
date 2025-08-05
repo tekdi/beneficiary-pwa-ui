@@ -67,6 +67,32 @@ const SignUpWithPassword: React.FC = () => {
 		return '';
 	};
 
+	const validatePassword = (password: string): string => {
+		const trimmedPassword = password.trim();
+
+		if (!trimmedPassword) {
+			return 'Password is required.';
+		}
+
+		if (trimmedPassword.length < 8) {
+			return 'Password must be at least 8 characters long.';
+		}
+
+		// Optional: Add more password strength requirements
+		const passwordPattern =
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+
+		if (!passwordPattern.test(trimmedPassword)) {
+			return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
+		}
+
+		return '';
+	};
+
+	const [passwordError, setPasswordError] = useState<string>('');
+	const [confirmPasswordError, setConfirmPasswordError] =
+		useState<string>('');
+
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
 		key: keyof UserDetails
@@ -90,10 +116,21 @@ const SignUpWithPassword: React.FC = () => {
 
 			if (key === 'phoneNumber') {
 				const errorMessage = validateMobile(value);
-				if (errorMessage !== '') {
-					setMobileError(errorMessage);
-				} else {
-					setMobileError('');
+				setMobileError(errorMessage);
+			}
+
+			// Add password validation
+			if (key === 'password') {
+				const errorMessage = validatePassword(value);
+				setPasswordError(errorMessage);
+
+				// Also validate confirm password if it exists
+				if (confirmPassword) {
+					if (value !== confirmPassword) {
+						setConfirmPasswordError('Passwords do not match.');
+					} else {
+						setConfirmPasswordError('');
+					}
 				}
 			}
 
@@ -101,9 +138,25 @@ const SignUpWithPassword: React.FC = () => {
 		});
 	};
 
+	const handleConfirmPasswordChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
+		const value = e.target.value;
+		setConfirmPassword(value);
+
+		if (!value.trim()) {
+			setConfirmPasswordError('Confirm password is required.');
+		} else if (value !== userDetails.password) {
+			setConfirmPasswordError('Passwords do not match.');
+		} else {
+			setConfirmPasswordError('');
+		}
+	};
+
 	const handleSignUp = async () => {
-		const errorMessage = validateMobile(userDetails.phoneNumber);
-		if (errorMessage !== '') {
+		// Validate mobile
+		const mobileErrorMessage = validateMobile(userDetails.phoneNumber);
+		if (mobileErrorMessage) {
 			toast({
 				title: t('SIGNUP_INVALID_MOBILE_NUMBER'),
 				status: 'error',
@@ -112,6 +165,21 @@ const SignUpWithPassword: React.FC = () => {
 			});
 			return;
 		}
+
+		// Validate password
+		const passwordErrorMessage = validatePassword(userDetails.password);
+		if (passwordErrorMessage) {
+			toast({
+				title: 'Invalid Password',
+				description: passwordErrorMessage,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		// Validate password match
 		if (userDetails.password !== confirmPassword) {
 			toast({
 				title: t('SIGNUP_PASSWORD_NOT_MATCHING'),
@@ -121,6 +189,8 @@ const SignUpWithPassword: React.FC = () => {
 			});
 			return;
 		}
+
+		// Proceed with registration...
 		try {
 			setLoading(true);
 			const response = await registerWithPassword(userDetails);
@@ -176,7 +246,7 @@ const SignUpWithPassword: React.FC = () => {
 		>
 			{loading && <Loader />}
 			<Box p={5}>
-				<VStack align="stretch" spacing={4}>
+				<VStack align="stretch" spacing={6}>
 					<FormControl>
 						<FloatingInput
 							name="firstName"
@@ -204,28 +274,34 @@ const SignUpWithPassword: React.FC = () => {
 							isInvalid={!validate(userDetails.phoneNumber)}
 							errorMessage={mobileError}
 						/>
-						<FloatingPasswordInput
-							label={t('SIGNUP_CREATE_PASSWORD')}
-							value={userDetails.password}
-							onChange={(e) => handleInputChange(e, 'password')}
-							isInvalid={!userDetails.password.trim()}
-							errorMessage={t(
-								'SIGNUP_CREATE_PASSWORD_IS_REQUIRED'
-							)}
-						/>
+						<Box mb={passwordError ? 7 : 0}>
+							<FloatingPasswordInput
+								label={t('SIGNUP_CREATE_PASSWORD')}
+								value={userDetails.password}
+								onChange={(e) =>
+									handleInputChange(e, 'password')
+								}
+								isInvalid={passwordError !== ''}
+								errorMessage={
+									passwordError ||
+									t('SIGNUP_CREATE_PASSWORD_IS_REQUIRED')
+								}
+							/>
+						</Box>
 
 						<FloatingPasswordInput
 							label={t('SIGNUP_CONFIRM_PASSWORD')}
 							value={confirmPassword}
-							onChange={(e) => setConfirmPassword(e.target.value)}
-							isInvalid={confirmPassword.trim() === ''}
-							errorMessage={t(
-								'SIGNUP_CONFIRM_PASSWORD_IS_REQUIRED'
-							)}
+							onChange={handleConfirmPasswordChange}
+							isInvalid={confirmPasswordError !== ''}
+							errorMessage={
+								confirmPasswordError ||
+								t('SIGNUP_CONFIRM_PASSWORD_IS_REQUIRED')
+							}
 						/>
 						{userName.length > 0 && (
 							<Text textAlign="center" fontSize="14px" mt={4}>
-								{'Your username will be '}
+								{t('SIGNUP_USERNAME_WILL_BE')} 
 								<Text
 									as="span"
 									fontWeight="bold"

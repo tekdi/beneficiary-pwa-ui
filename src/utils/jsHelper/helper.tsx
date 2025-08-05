@@ -298,10 +298,11 @@ const normalizeGender = (input: string) => {
 	}
 	return 'other';
 };
-export const transformData = (userData) => {
+/* export const transformData = (userData) => {
 	return {
 		firstName: userData?.firstName ?? '',
-		middleName: userData?.fatherName ?? '',
+		middleName: userData?.middleName ?? '',
+		fatherName: userData?.fatherName ?? '',
 		lastName: userData?.lastName ?? '',
 		gender: normalizeGender(userData?.gender),
 		class: userData?.class ? `${userData.class}` : '',
@@ -331,16 +332,33 @@ export const transformData = (userData) => {
 		currentSchoolName: userData?.currentSchoolName ?? ' ',
 		bapId: import.meta.env.VITE_API_BASE_ID,
 		age: userData?.age ?? ' ',
+		year: userData?.class ? `${userData.class}` : '',
+		currentlyEnrolledInOtherGovtScheme:
+			userData?.currentlyEnrolledInOtherGovtScheme ?? ' ',
+		haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship:
+			userData?.haveTwoOfYourDifferentlyAbledSiblingsAvailedThisScholarship ??
+			' ',
+		studentId: userData?.studentId ?? ' ',
+		...(userData?.external_application_id
+			? { external_application_id: userData.external_application_id }
+			: {}),
+		...(userData?.remark ? { remark: userData.remark } : {}),
 	};
-};
+}; */
 
 export const formatDate = (dateString) => {
 	if (dateString === null) return '-';
+	// Return as-is if input is in 'YYYY/MM/DD' format
+
+	const ddmmyyyyFormat = /^\d{2}\/\d{2}\/\d{4}$/;
+	if (ddmmyyyyFormat.test(dateString)) {
+		const [day, month, year] = dateString.split('/');
+		return `${day}/${month}/${year}`; // Return as-is or convert if needed
+	}
 	const date = new Date(dateString);
 	const day = String(date.getUTCDate()).padStart(2, '0');
 	const month = String(date.getUTCMonth() + 1).padStart(2, '0');
 	const year = date.getUTCFullYear();
-
 	return `${day}/${month}/${year}`;
 };
 interface UserData {
@@ -352,7 +370,6 @@ interface UserData {
 export function getPreviewDetails(applicationData, documents) {
 	let idCounter = 1; // To generate unique IDs
 	const result: UserData[] = [];
-	documents.push('docs', 'domicileCertificate');
 
 	function formatKey(key) {
 		// Convert camelCase to space-separated
@@ -368,7 +385,11 @@ export function getPreviewDetails(applicationData, documents) {
 	for (const key in applicationData) {
 		if (applicationData.hasOwnProperty(key)) {
 			// Skip keys listed in the `arr`
-			if (!documents.includes(key)) {
+			if (
+				!documents.some(
+					(doc: { key: string; value: string }) => doc.key === key
+				)
+			) {
 				result.push({
 					id: idCounter++,
 					label: formatKey(key),
@@ -380,18 +401,42 @@ export function getPreviewDetails(applicationData, documents) {
 
 	return result;
 }
-export function getSubmmitedDoc(userData, document) {
-	const result = [];
-	const codes = document.map((item) => item.documentSubType);
+function decodeFromBase64(base64Str: string): string {
+	try {
+		const base64Part = base64Str.replace(/^base64,/, '');
+		return decodeURIComponent(atob(base64Part));
+	} catch (error) {
+		console.error('Failed to decode base64 string:', error);
+		throw new Error('Failed to decode base64 string');
+	}
+}
+function extractTitle(base64Str: string): string | undefined {
+	try {
+		const decoded = decodeFromBase64(base64Str);
+		const parsed = JSON.parse(decoded); // assumes it's JSON
+		const [title] = parsed.credentialSchema.title.split(':');
+
+		return title.trim(); // handles both cases
+	} catch (error) {
+		console.error('Failed to extract title:', error);
+		return undefined;
+	}
+}
+
+export function getSubmmitedDoc(userData) {
+	const result: { key: string; value: string }[] = [];
 	for (const key in userData) {
 		if (
-			codes.includes(key) &&
 			typeof userData[key] === 'string' &&
 			userData[key].startsWith('base64')
 		) {
-			result.push(key);
+			const value = extractTitle(userData[key]);
+			if (value) {
+				result.push({ key, value });
+			}
 		}
 	}
+
 	return result;
 }
 
@@ -420,10 +465,6 @@ export function checkEligibilityCriteria({
 	condition: string;
 	conditionValues: string | number | (string | number)[];
 }): boolean {
-	console.log('value', value);
-	console.log('condition', condition);
-	console.log('conditionValues', conditionValues);
-
 	if (value == null) return false;
 	// Convert value to string if it's a number
 	const val =
@@ -554,4 +595,261 @@ export const calculateAge = (birthDateInput: Date | string): number | null => {
 	}
 
 	return age >= 0 ? age : 0;
+};
+
+export function getExpiryDate(
+	userData: { doc_subtype: string; doc_data: string }[],
+	doc: string
+) {
+	try {
+		const match = userData.find((item) => item.doc_subtype === doc);
+		if (!match) return { success: false };
+
+		const parsedData = JSON.parse(match.doc_data);
+		if (!parsedData.validUntil) {
+			return { success: false };
+		}
+
+		const expiry = new Date(parsedData.validUntil);
+		if (isNaN(expiry.getTime())) {
+			return { success: false };
+		}
+		const expDate = formatDate(parsedData.validUntil);
+		const now = new Date();
+		const isExpired = expiry.getTime() < now.getTime();
+
+		return { success: true, expDate, isExpired };
+	} catch (error) {
+		console.error('Error parsing document data:', error);
+		return { success: false };
+	}
+}
+export function getExpiredRequiredDocsMessage(
+	userData: { doc_subtype: string; doc_data: string }[],
+	documents: { label?: string; proof?: string; isRequired?: boolean }[]
+): string | null {
+	const expiredLabels = documents
+		.filter((doc) => doc.isRequired)
+		.map((doc) => {
+			const result = getExpiryDate(userData, doc.proof);
+			if (result.success && result.isExpired) {
+				// Format: incomeCertificate -> Income Certificate
+				return doc.proof
+					.replace(/([a-z])([A-Z])/g, '$1 $2')
+					.replace(/^./, (s) => s.toUpperCase());
+			}
+			return null;
+		})
+		.filter(Boolean);
+
+	if (expiredLabels.length === 0) return null;
+
+	return `⚠️ ${expiredLabels.join(', ')} ${
+		expiredLabels.length === 1 ? 'has' : 'have'
+	} expired. Please upload valid documents to proceed further.`;
+}
+/**
+ * Utility function to format a user-readable label for a document.
+ *
+ * @param proofs - Array of allowed proof strings (e.g., ["incomeCertificate"]).
+ * @param evidence - Array of document types or codes (e.g., ["incomeProof"]).
+ * @param isRequired - Flag to indicate whether the document is required.
+ * @returns A formatted string label like "Document for incomeProof (Income Certificate) *"
+ */
+export const formatLabel = (
+	proofs: string[],
+	evidence: string[],
+	isRequired: boolean
+) => {
+	const documentName = proofs
+		.map((p) =>
+			p
+				.replace(/([A-Z])/g, ' $1')
+				.replace(/^./, (str) => str.toUpperCase())
+		)
+		.join(' / ');
+	const requiredMark = isRequired ? ' *' : '';
+	return `Document for ${evidence.join(', ')} (${documentName} )${requiredMark}`;
+};
+export interface Descriptor {
+	code: string;
+	name: string;
+}
+export interface DocumentTag {
+	descriptor: Descriptor;
+	value: string;
+	display: boolean;
+}
+export const parseDocList = (list: DocumentTag[], fromEligibility = false) => {
+	return list.map((item: DocumentTag) => {
+		let value;
+		try {
+			value = JSON.parse(item?.value ?? '{}');
+		} catch (error) {
+			console.error('Failed to parse document item value:', error);
+			value = {};
+		}
+		return {
+			id: value.id,
+			code: value.documentType ?? value.evidence,
+			isRequired: fromEligibility ? true : value.isRequired,
+			allowedProofs: value.allowedProofs ?? [],
+		};
+	});
+};
+
+export interface BenefitEndDateValidation {
+	isValid: boolean;
+	errorMessage?: string;
+}
+
+/**
+ * Validates if the benefit end date is still valid (not expired).
+ *
+ * @param endDate - The benefit end date string (e.g., from resultItem?.time?.range?.end)
+ * @returns Object containing validation result and error message if applicable
+ */
+export const validateBenefitEndDate = (
+	endDate: string | null | undefined
+): BenefitEndDateValidation => {
+	// Handle null/undefined dates
+	if (!endDate) {
+		return {
+			isValid: false,
+			errorMessage: 'Benefit end date not available',
+		};
+	}
+
+	// Try to parse the date
+	let benefitEndDate: Date;
+	try {
+		benefitEndDate = new Date(endDate);
+
+		// Check if the parsed date is valid
+		if (isNaN(benefitEndDate.getTime())) {
+			return {
+				isValid: false,
+				errorMessage: 'Invalid date format',
+			};
+		}
+	} catch (error) {
+		console.error('Error parsing benefit end date:', error);
+
+		return {
+			isValid: false,
+			errorMessage: 'Invalid date format',
+		};
+	}
+
+	// Compare with current date
+	const currentDate = new Date();
+
+	// Set time to start of day for accurate comparison
+	const currentDateOnly = new Date(
+		currentDate.getFullYear(),
+		currentDate.getMonth(),
+		currentDate.getDate()
+	);
+	const benefitEndDateOnly = new Date(
+		benefitEndDate.getFullYear(),
+		benefitEndDate.getMonth(),
+		benefitEndDate.getDate()
+	);
+
+	if (benefitEndDateOnly < currentDateOnly) {
+		return {
+			isValid: false,
+			errorMessage: 'Benefit has expired',
+		};
+	}
+
+	return {
+		isValid: true,
+	};
+};
+
+export interface DocumentValidationResult {
+	isValid: boolean;
+	errorMessage?: string;
+	missingDocuments?: string[];
+}
+
+/**
+ * Validates if the user has uploaded all required documents.
+ *
+ * @param itemDocuments - Array of required documents from item.documents
+ * @param userDocuments - Array of user's uploaded documents
+ * @returns Object containing validation result and missing document details
+ */
+export const validateRequiredDocuments = (
+	itemDocuments: Array<{
+		id?: number;
+		code?: string | string[];
+		isRequired?: boolean;
+		allowedProofs?: string[];
+		label?: string;
+	}> = [],
+	userDocuments: Array<{
+		doc_subtype?: string;
+		is_uploaded?: boolean;
+		doc_type?: string;
+		doc_verified?: boolean;
+	}> = []
+): DocumentValidationResult => {
+	try {
+		// Filter for required documents only
+		const requiredDocuments = itemDocuments.filter(
+			(doc) => doc.isRequired === true
+		);
+
+		if (requiredDocuments.length === 0) {
+			return { isValid: true };
+		}
+
+		// Get uploaded document subtypes that are actually uploaded
+		const uploadedDocTypes = userDocuments
+			.filter((doc) => doc.is_uploaded === true)
+			.map((doc) => doc.doc_subtype)
+			.filter(Boolean); // Remove null/undefined values
+
+		const missingDocuments: string[] = [];
+
+		// Check each required document
+		for (const requiredDoc of requiredDocuments) {
+			if (
+				!requiredDoc.allowedProofs ||
+				requiredDoc.allowedProofs.length === 0
+			) {
+				continue; // Skip if no allowed proofs defined
+			}
+
+			// Check if user has uploaded any document that matches the allowed proofs
+			const hasMatchingDocument = requiredDoc.allowedProofs.some(
+				(allowedProof) => uploadedDocTypes.includes(allowedProof)
+			);
+
+			if (!hasMatchingDocument) {
+				// Extract document name from label for better error message
+				const documentName =
+					requiredDoc.label || requiredDoc.allowedProofs.join(', ');
+				missingDocuments.push(documentName);
+			}
+		}
+
+		if (missingDocuments.length > 0) {
+			return {
+				isValid: false,
+				errorMessage: `⚠️ Please upload the following required documents to proceed: ${missingDocuments.join(', ')}`,
+				missingDocuments,
+			};
+		}
+
+		return { isValid: true };
+	} catch (error) {
+		console.error('Error validating required documents:', error);
+		return {
+			isValid: false,
+			errorMessage: 'Error validating documents. Please try again.',
+		};
+	}
 };

@@ -14,6 +14,7 @@ import {
 import { MdOutlineFilterAlt } from 'react-icons/md';
 import FloatingSelect from '../input/FloatingSelect';
 import CommonButton from '../button/Button';
+import { useTranslation } from 'react-i18next';
 
 interface FilterDialogProps {
 	inputs: {
@@ -23,9 +24,15 @@ interface FilterDialogProps {
 		data: Array<{ label: string; value: string }>;
 	}[];
 	setFilter: (values: Record<string, string>) => void;
+	mr?: string;
 }
 
-const FilterDialog: React.FC<FilterDialogProps> = ({ inputs, setFilter }) => {
+const FilterDialog: React.FC<FilterDialogProps> = ({
+	inputs,
+	setFilter,
+	mr,
+}) => {
+	const { t } = useTranslation();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [values, setValues] = useState<Record<string, string>>({});
 
@@ -58,16 +65,17 @@ const FilterDialog: React.FC<FilterDialogProps> = ({ inputs, setFilter }) => {
 				aria-label="Filter"
 				icon={<MdOutlineFilterAlt />}
 				fontSize="25px"
-				marginLeft="100%"
+				// marginLeft="100%"
 				onClick={onOpen}
 				variant="ghost"
 				colorScheme="#484848"
+				marginRight={mr}
 			/>
 
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Filters</ModalHeader>
+					<ModalHeader>{t('COMMON_FILTERS_TITLE')}</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
 						{inputs.map((item) => (
@@ -86,7 +94,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({ inputs, setFilter }) => {
 
 					<ModalFooter>
 						<CommonButton
-							label="Apply Filter"
+							label={t('COMMON_FILTERS_APPLY_BUTTON')}
 							onClick={handleFilter}
 						/>
 					</ModalFooter>

@@ -6,24 +6,34 @@ import { FaEye, FaTrashAlt } from 'react-icons/fa';
 import { getDocumentsList, getUser } from '../services/auth/auth';
 import { AuthContext } from '../utils/context/checkToken';
 import CommonDialogue from './common/Dialogue';
+import { VscPreview } from 'react-icons/vsc';
+import { useTranslation } from 'react-i18next';
 
 interface DocumentActionsProps {
-	status: boolean;
-	userData: {
+	status: string;
+	userDocuments: {
 		doc_id: string;
 		doc_data: string;
 		doc_name: string;
-	};
+	}[];
+	isDelete?: boolean;
+}
+interface ImageEntry {
+	mimetype?: string;
+	content?: string;
 }
 const DocumentActions: React.FC<DocumentActionsProps> = ({
 	status,
-	userData,
+	userDocuments,
+	isDelete = true,
 }) => {
-	const documentStatus = findDocumentStatus(userData, status);
+	const { t } = useTranslation();
+	const documentStatus = findDocumentStatus(userDocuments, status);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 	const [document, setDocument] = useState();
-
+	const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+	const [docImageList, setdocImageList] = useState<string[]>([]);
 	const { updateUserData } = useContext(AuthContext)!;
 	const toast = useToast();
 
@@ -31,7 +41,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 		try {
 			const result = await getUser();
 			const data = await getDocumentsList();
-			updateUserData(result?.data, data?.data);
+			updateUserData(result?.data, data?.data?.value);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
@@ -42,7 +52,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 			setIsConfirmationOpen(false);
 			if (response) {
 				toast({
-					title: 'Document deleted successfully',
+					title: t('DOCUMENT_ACTIONS_DELETE_SUCCESS'),
 					status: 'success',
 					duration: 3000,
 					isClosable: true,
@@ -56,7 +66,7 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 		} catch (error) {
 			console.error('Error deleting document:', error);
 			toast({
-				title: 'Error deleting document',
+				title: t('DOCUMENT_ACTIONS_DELETE_ERROR'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
@@ -72,27 +82,78 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 
 		setIsPreviewOpen(true);
 	};
+
+	const handleImagePreview = () => {
+		try {
+			const parseData = JSON.parse(documentStatus?.doc_data as string);
+			const credentialSubject = parseData?.credentialSubject;
+
+			const images: string[] = [];
+
+			if (credentialSubject && typeof credentialSubject === 'object') {
+				Object.values(credentialSubject).forEach((entry) => {
+					if (
+						typeof entry === 'object' &&
+						entry !== null &&
+						'url' in entry &&
+						typeof (entry as { url: unknown }).url === 'string'
+					) {
+						images.push((entry as { url: string }).url);
+					}
+				});
+			}
+
+			if (images.length > 0) {
+				setdocImageList(images);
+				setIsImageDialogOpen(true);
+			} else {
+				toast({
+					title: t('DOCUMENT_ACTIONS_NO_IMAGES_FOUND'),
+					status: 'info',
+					duration: 3000,
+					isClosable: true,
+				});
+			}
+		} catch {
+			toast({
+				title: t('DOCUMENT_ACTIONS_INVALID_JSON'),
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+		}
+	};
+
 	const handleOpneConfirmation = () => {
 		setIsConfirmationOpen(true);
 	};
 	if (documentStatus?.matchFound) {
 		return (
 			<>
-				<Box>
+				<Box display="flex" gap={2} alignItems="center">
 					<IconButton
 						icon={<FaEye />}
-						aria-label="Preview"
+						aria-label={t('DOCUMENT_ACTIONS_PREVIEW_ARIA')}
 						size="sm"
 						color={'grey'}
 						onClick={() => handlepreview()}
 					/>
 					<IconButton
-						icon={<FaTrashAlt />}
-						aria-label="Delete"
+						icon={<VscPreview />}
+						aria-label={t('DOCUMENT_ACTIONS_PREVIEW_IMAGE_ARIA')}
 						size="sm"
-						color={'grey'}
-						onClick={() => handleOpneConfirmation()}
+						color="grey"
+						onClick={handleImagePreview}
 					/>
+					{isDelete && (
+						<IconButton
+							icon={<FaTrashAlt />}
+							aria-label={t('DOCUMENT_ACTIONS_DELETE_ARIA')}
+							size="sm"
+							color={'grey'}
+							onClick={() => handleOpneConfirmation()}
+						/>
+					)}
 				</Box>
 
 				<CommonDialogue
@@ -103,10 +164,21 @@ const DocumentActions: React.FC<DocumentActionsProps> = ({
 					documentName={documentStatus.doc_name}
 				/>
 				<CommonDialogue
+					isOpen={isImageDialogOpen}
+					onClose={() => {
+						setIsImageDialogOpen(false);
+						setdocImageList([]);
+					}}
+					docImageList={docImageList}
+					documentName={documentStatus.doc_name}
+				/>
+
+				<CommonDialogue
 					isOpen={isPreviewOpen}
 					previewDocument={isPreviewOpen}
 					onClose={() => setIsPreviewOpen(false)}
 					document={document}
+					documentName={documentStatus.doc_name}
 				/>
 			</>
 		);

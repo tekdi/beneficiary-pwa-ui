@@ -19,6 +19,7 @@ const UserProfile: React.FC = () => {
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+
 	const handleBack = () => {
 		navigate(-2);
 	};
@@ -27,7 +28,7 @@ const UserProfile: React.FC = () => {
 		try {
 			const result = await getUser();
 			const data = await getDocumentsList();
-			updateUserData(result?.data, data?.data);
+			updateUserData(result?.data, data?.data?.value);
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
 		}
@@ -101,7 +102,18 @@ const UserProfile: React.FC = () => {
 					</Text>
 				</Flex>
 
-				<UserDetails userData={{ ...userData }} />
+				<UserDetails
+					userData={{
+						firstName: userData?.firstName,
+						middleName: userData?.middleName,
+						lastName: userData?.lastName,
+						dob: userData?.dob,
+						customFields: userData?.customFields?.map(field => ({
+							...field,
+							value: String(field.value || '')
+						})) || [],
+					}}
+				/>
 				<Box
 					p={5}
 					shadow="md"
@@ -112,14 +124,14 @@ const UserProfile: React.FC = () => {
 					<VStack spacing={4} align="stretch">
 						<DocumentList
 							documents={documents}
-							userData={userData?.docs}
+							userDocuments={userData?.docs}
 						/>
 						{showIframe ? (
-							<UploadDocumentEwallet userId={userData?.user_id} />
+							<UploadDocumentEwallet />
 						) : (
 							<CommonButton
 								onClick={() => setShowIframe(true)}
-								label="Upload  Document"
+								label={t('USER_PROFILE_UPLOAD_DOCUMENT_BUTTON')}
 							/>
 						)}
 					</VStack>

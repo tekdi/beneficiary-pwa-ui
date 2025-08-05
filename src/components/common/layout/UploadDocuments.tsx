@@ -10,8 +10,10 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { useTranslation } from 'react-i18next';
 
 function UploadDocuments() {
+	const { t } = useTranslation();
 	const [fileName, setFileName] = useState('');
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,14 +21,14 @@ function UploadDocuments() {
 		if (file) {
 			// Validate file size (e.g., 5MB limit)
 			if (file.size > 5 * 1024 * 1024) {
-				alert('File size should not exceed 5MB');
+				alert(t('UPLOAD_DOCUMENTS_FILE_SIZE_ERROR'));
 				return;
 			}
 			// Validate file type
 			const allowedTypes = ['.json', '.xml', '.docx'];
 			const fileExt = file.name.split('.').pop()?.toLowerCase();
 			if (!fileExt || !allowedTypes.includes(`.${fileExt}`)) {
-				alert('Invalid file type');
+				alert(t('UPLOAD_DOCUMENTS_INVALID_FILE_TYPE'));
 				return;
 			}
 			setFileName(file.name);
@@ -66,7 +68,7 @@ function UploadDocuments() {
 						alt="Upload Documents"
 						mr="2"
 					/>
-					Upload
+					{t('UPLOAD_DOCUMENTS_UPLOAD_BUTTON')}
 				</Button>
 			</Box>
 			<Box>
@@ -86,7 +88,7 @@ function UploadDocuments() {
 						alt="Upload Documents"
 						mr="2"
 					/>
-					Caste Certificate
+					{t('UPLOAD_DOCUMENTS_CASTE_CERTIFICATE')}
 				</Button>
 			</Box>
 
@@ -104,7 +106,7 @@ function UploadDocuments() {
 									as={CheckIcon}
 									color="var(--theme-color)"
 								/>
-								Caste Certificate
+								{t('UPLOAD_DOCUMENTS_CASTE_CERTIFICATE')}
 							</ListItem>
 						</List>
 						<Text mt={2}>{fileName}</Text>
