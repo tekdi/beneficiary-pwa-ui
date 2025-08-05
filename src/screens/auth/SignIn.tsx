@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
 	const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
 	useEffect(() => {
-		// Check for empty fields
+		// Check for empty fields after trimming spaces
 		const isValid = username.trim() !== '' && password.trim() !== '';
 
 		// Set form validity
@@ -37,7 +37,13 @@ const SignIn: React.FC = () => {
 		try {
 			setLoading(true); // Show loading indicator
 
-			const response = await loginUser({ username, password });
+			// Trim spaces from username and password
+			const trimmedUsername = username.trim();
+
+			const response = await loginUser({ 
+				username: trimmedUsername, 
+				password
+			});
 			if (response?.data) {
 				// Validate required fields
 				if (!response.data.username) {
@@ -127,7 +133,9 @@ const SignIn: React.FC = () => {
 						/>
 					</FormControl>
 					<CommonButton
-						isDisabled={!isFormValid || loading}
+						isDisabled={!isFormValid}
+						loading={loading}
+						loadingLabel="Signing in..."
 						onClick={() => handleLogin()}
 						label={t('LOGIN_BUTTON')}
 					/>
