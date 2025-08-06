@@ -853,7 +853,7 @@ const AddFields: React.FC = () => {
 										fontWeight="bold"
 										color="#06164B"
 									>
-										{t('ENCRYPTION_MODAL_TITLE')}
+										{t('ADDFIELDS_ENCRYPTION_MODAL_TITLE')}
 									</Text>
 								</HStack>
 							</ModalHeader>
@@ -877,7 +877,7 @@ const AddFields: React.FC = () => {
 											color="#1F1B13"
 											lineHeight="1.6"
 										>
-											{t('ENCRYPTION_MODAL_DESCRIPTION')}
+											{t('ADDFIELDS_ENCRYPTION_MODAL_DESCRIPTION')}
 										</Text>
 									</Box>
 
@@ -895,14 +895,14 @@ const AddFields: React.FC = () => {
 												fontWeight="bold"
 												color="#D69E2E"
 											>
-												{t('ENCRYPTION_MODAL_IMPORTANT')}
+												{t('ADDFIELDS_ENCRYPTION_MODAL_IMPORTANT')}
 											</AlertTitle>
 											<AlertDescription
 												fontSize="sm"
 												color="#744210"
 												lineHeight="1.5"
 											>
-												{t('ENCRYPTION_MODAL_WARNING')}
+												{t('ADDFIELDS_ENCRYPTION_MODAL_WARNING')}
 											</AlertDescription>
 										</Box>
 									</Alert>
@@ -918,7 +918,7 @@ const AddFields: React.FC = () => {
 											color="#4A5568"
 											fontWeight="medium"
 										>
-											{t('ENCRYPTION_MODAL_TIP')}
+											{t('ADDFIELDS_ENCRYPTION_MODAL_TIP')}
 										</Text>
 									</Box>
 								</VStack>
