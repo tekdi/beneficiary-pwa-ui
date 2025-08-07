@@ -256,6 +256,7 @@ const BenefitsDetails: React.FC = () => {
 				'submitted',
 			].includes(applicationStatus?.toLowerCase() || '');
 
+			
 			const baseFormData = isEditableStatus
 				? {
 						...(authUser || {}),
@@ -292,7 +293,7 @@ const BenefitsDetails: React.FC = () => {
 			if (url) {
 				setWebFormProp({
 					url,
-					formData,
+					formData: baseFormData,
 				});
 			} else {
 				setError(t('DETAILS_URL_NOT_FOUND_ERROR'));
