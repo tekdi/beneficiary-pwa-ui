@@ -35,6 +35,7 @@ import {
 	parseDocList,
 	validateBenefitEndDate,
 	validateRequiredDocuments,
+	filterExpiredDocuments,
 } from '../../utils/jsHelper/helper';
 
 import termsAndConditions from '../../assets/termsAndConditions.json';
@@ -104,6 +105,7 @@ interface AuthUser {
 	email: string;
 	dob: string;
 	age: number;
+	docs?: any[];
 }
 
 interface WebFormProps {
@@ -124,6 +126,7 @@ interface ApplicationData {
 	application_data?: Record<string, any>;
 	external_application_id?: string;
 	remark?: string;
+	docs?: any[];
 }
 const BenefitsDetails: React.FC = () => {
 	const [context, setContext] = useState<FinancialSupportRequest | null>(
@@ -264,7 +267,7 @@ const BenefitsDetails: React.FC = () => {
 				: (authUser ?? undefined);
 
 			// Calculate age from dob if present
-			const formData =
+			let formData =
 				baseFormData && baseFormData?.dob
 					? {
 							...baseFormData,
@@ -273,6 +276,18 @@ const BenefitsDetails: React.FC = () => {
 								baseFormData.age,
 						}
 					: baseFormData;
+
+			// Filter out expired documents from form data if user has documents
+			if (formData && formData.docs && item?.document) {
+				const filteredDocs = filterExpiredDocuments(
+					formData.docs,
+					item.document
+				);
+				formData = {
+					...formData,
+					docs: filteredDocs,
+				} as any;
+			}
 
 			if (url) {
 				setWebFormProp({
