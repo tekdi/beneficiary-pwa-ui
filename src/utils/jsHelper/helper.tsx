@@ -602,7 +602,7 @@ export function getExpiryDate(
 ) {
 	try {
 		const match = userData.find((item) => item.doc_subtype === doc);
-		if (!match || !match.doc_data) return { success: false };
+		if (!match?.doc_data) return { success: false };
 		const parsedData = JSON.parse(match.doc_data);
 		if (!parsedData.validUntil) {
 			return { success: false };
@@ -622,6 +622,36 @@ export function getExpiryDate(
 		return { success: false };
 	}
 }
+// Helper function to check document expiry status
+function checkDocumentExpiry(userData: { doc_subtype?: string; doc_data?: string }[], allowedProofs: string[]) {
+	const expiredProofs: string[] = [];
+	const validProofs: string[] = [];
+
+	for (const proof of allowedProofs) {
+		const result = getExpiryDate(userData, proof);
+		const userHasDoc = userData.some((userDoc) => userDoc.doc_subtype === proof);
+		
+		console.log('result for proof', proof, result, 'userHasDoc:', userHasDoc);
+		
+		if (userHasDoc) {
+			if (result.success && result.isExpired) {
+				expiredProofs.push(proof);
+			} else if (result.success && !result.isExpired) {
+				validProofs.push(proof);
+			}
+		}
+	}
+
+	return { expiredProofs, validProofs };
+}
+
+// Helper function to format document label
+function formatDocumentLabel(doc: { label?: string }, expiredProofs: string[]): string {
+	return doc.label || expiredProofs[0]
+		.replace(/([a-z])([A-Z])/g, '$1 $2')
+		.replace(/^./, (s) => s.toUpperCase());
+}
+
 export function getExpiredRequiredDocsMessage(
 	userData: { doc_subtype?: string; doc_data?: string }[],
 	documents: {
@@ -634,46 +664,17 @@ export function getExpiredRequiredDocsMessage(
 	const expiredLabels = documents
 		.filter((doc) => doc.isRequired)
 		.map((doc) => {
-			// Check each allowed proof for expiry
-			if (doc.allowedProofs && doc.allowedProofs.length > 0) {
-				const expiredProofs: string[] = [];
-				const validProofs: string[] = [];
-
-				// Check all proofs for this document
-				for (const proof of doc.allowedProofs) {
-					const result = getExpiryDate(userData, proof);
-					const userHasDoc = userData.some(
-						(userDoc) => userDoc.doc_subtype === proof
-					);
-
-					console.log(
-						'result for proof',
-						proof,
-						result,
-						'userHasDoc:',
-						userHasDoc
-					);
-
-					if (userHasDoc) {
-						if (result.success && result.isExpired) {
-							expiredProofs.push(proof);
-						} else if (result.success && !result.isExpired) {
-							validProofs.push(proof);
-						}
-					}
-				}
-
-				// Only return error if ALL uploaded proofs are expired (no valid alternatives)
-				if (expiredProofs.length > 0 && validProofs.length === 0) {
-					return (
-						doc.label ||
-						expiredProofs[0]
-							.replace(/([a-z])([A-Z])/g, '$1 $2')
-							.replace(/^./, (s) => s.toUpperCase())
-					);
-				}
+			if (!doc.allowedProofs || doc.allowedProofs.length === 0) {
+				return null;
 			}
 
+			const { expiredProofs, validProofs } = checkDocumentExpiry(userData, doc.allowedProofs);
+
+			// Only return error if ALL uploaded proofs are expired (no valid alternatives)
+			if (expiredProofs.length > 0 && validProofs.length === 0) {
+				return formatDocumentLabel(doc, expiredProofs);
+			}
+			
 			return null;
 		})
 		.filter(Boolean);
