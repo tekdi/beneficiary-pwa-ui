@@ -367,11 +367,14 @@ interface UserData {
 	value: string;
 	length?: number;
 }
-export function getPreviewDetails(applicationData, documents) {
+export function getPreviewDetails(
+	applicationData: Record<string, string>,
+	documents?: { key: string; value: string }[]
+) {
 	let idCounter = 1; // To generate unique IDs
 	const result: UserData[] = [];
 
-	function formatKey(key) {
+	function formatKey(key: string) {
 		// Convert camelCase to space-separated
 		const spacedKey = key.replace(/([a-z])([A-Z])/g, '$1 $2');
 
@@ -384,23 +387,23 @@ export function getPreviewDetails(applicationData, documents) {
 
 	for (const key in applicationData) {
 		if (applicationData.hasOwnProperty(key)) {
-			// Skip keys listed in the `arr`
-			if (
-				!documents.some(
-					(doc: { key: string; value: string }) => doc.key === key
-				)
-			) {
-				result.push({
-					id: idCounter++,
-					label: formatKey(key),
-					value: applicationData[key],
-				});
-			}
+			// Skip vc_documents
+			if (key === 'vc_documents') continue;
+
+			// If documents exist, skip keys already present in them
+			if (documents?.some((doc) => doc.key === key)) continue;
+
+			result.push({
+				id: idCounter++,
+				label: formatKey(key),
+				value: applicationData[key],
+			});
 		}
 	}
 
 	return result;
 }
+
 function decodeFromBase64(base64Str: string): string {
 	try {
 		const base64Part = base64Str.replace(/^base64,/, '');
@@ -623,16 +626,19 @@ export function getExpiryDate(
 	}
 }
 // Helper function to check document expiry status
-function checkDocumentExpiry(userData: { doc_subtype?: string; doc_data?: string }[], allowedProofs: string[]) {
+function checkDocumentExpiry(
+	userData: { doc_subtype?: string; doc_data?: string }[],
+	allowedProofs: string[]
+) {
 	const expiredProofs: string[] = [];
 	const validProofs: string[] = [];
 
 	for (const proof of allowedProofs) {
 		const result = getExpiryDate(userData, proof);
-		const userHasDoc = userData.some((userDoc) => userDoc.doc_subtype === proof);
-		
-		console.log('result for proof', proof, result, 'userHasDoc:', userHasDoc);
-		
+		const userHasDoc = userData.some(
+			(userDoc) => userDoc.doc_subtype === proof
+		);
+
 		if (userHasDoc) {
 			if (result.success && result.isExpired) {
 				expiredProofs.push(proof);
@@ -646,10 +652,16 @@ function checkDocumentExpiry(userData: { doc_subtype?: string; doc_data?: string
 }
 
 // Helper function to format document label
-function formatDocumentLabel(doc: { label?: string }, expiredProofs: string[]): string {
-	return doc.label || expiredProofs[0]
-		.replace(/([a-z])([A-Z])/g, '$1 $2')
-		.replace(/^./, (s) => s.toUpperCase());
+function formatDocumentLabel(
+	doc: { label?: string },
+	expiredProofs: string[]
+): string {
+	return (
+		doc.label ||
+		expiredProofs[0]
+			.replace(/([a-z])([A-Z])/g, '$1 $2')
+			.replace(/^./, (s) => s.toUpperCase())
+	);
 }
 
 export function getExpiredRequiredDocsMessage(
@@ -668,13 +680,16 @@ export function getExpiredRequiredDocsMessage(
 				return null;
 			}
 
-			const { expiredProofs, validProofs } = checkDocumentExpiry(userData, doc.allowedProofs);
+			const { expiredProofs, validProofs } = checkDocumentExpiry(
+				userData,
+				doc.allowedProofs
+			);
 
 			// Only return error if ALL uploaded proofs are expired (no valid alternatives)
 			if (expiredProofs.length > 0 && validProofs.length === 0) {
 				return formatDocumentLabel(doc, expiredProofs);
 			}
-			
+
 			return null;
 		})
 		.filter(Boolean);
@@ -902,6 +917,37 @@ export const formatText = (value: string | number | null): string => {
 		)
 		.join(' ');
 };
+interface VcDocumentInterface {
+	document_subtype: string;
+	document_submission_reason: string;
+}
+export function formatDocuments(
+	vc_documents: VcDocumentInterface[]
+): { key: string; value: string }[] {
+	const formatTitle = (str: string) =>
+		str
+			.replace(/([A-Z])/g, ' $1') // insert space before capital letters
+			.replace(/_/g, ' ') // replace underscores with spaces
+			.replace(/^./, (c) => c.toUpperCase()); // capitalize first letter
+
+	return vc_documents.map((doc) => {
+		let reasons: string[];
+		try {
+			reasons = JSON.parse(doc.document_submission_reason) as string[];
+		} catch {
+			reasons = [];
+		}
+		const formattedSubtype = formatTitle(doc.document_subtype);
+
+		return {
+			key: doc.document_subtype,
+			value:
+				reasons.length === 0
+					? formattedSubtype
+					: `Document for ${reasons.join(', ')} (${formattedSubtype})`,
+		};
+	});
+}
 
 /**
  * Filters out expired documents from user documents array when there are multiple allowed proofs

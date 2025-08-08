@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getApplicationDetails } from '../../services/auth/auth';
 import Layout from '../../components/common/layout/Layout';
 import {
+	formatDocuments,
 	getPreviewDetails,
 	getSubmmitedDoc,
 } from '../../utils/jsHelper/helper';
@@ -69,20 +70,31 @@ const Preview: React.FC = () => {
 			const result = await getApplicationDetails(id);
 
 			setStatus(result?.data?.status);
-			const doc = getSubmmitedDoc(result?.data?.application_data);
+			if (result?.data?.application_data?.vc_documents) {
+				const formattedDoc = formatDocuments(
+					result?.data?.application_data?.vc_documents
+				);
+				setDocument(formattedDoc);
+				const data = getPreviewDetails(result?.data?.application_data);
+				setUserData(data);
+			} else {
+				const doc = getSubmmitedDoc(result?.data?.application_data);
+				const data = getPreviewDetails(
+					result?.data?.application_data,
+					doc
+				);
+				setUserData(data);
+				const seen = new Set();
+				const filteredDoc = doc.filter((item) => {
+					if (seen.has(item.value)) return false;
+					seen.add(item.value);
+					return true;
+				});
+				setDocument(filteredDoc);
+			}
 
 			setBenefitName(result?.data?.external_application_id);
-			const data = getPreviewDetails(result?.data?.application_data, doc);
 
-			setUserData(data);
-			const seen = new Set();
-			const filteredDoc = doc.filter((item) => {
-				if (seen.has(item.value)) return false;
-				seen.add(item.value);
-				return true;
-			});
-
-			setDocument(filteredDoc);
 			setLoading(false);
 		} catch (error) {
 			console.error('Error fetching application details:', error);
@@ -183,7 +195,7 @@ const Preview: React.FC = () => {
 				{userData && (
 					<>
 						<Text {...labelStyles}>Uploaded Documents</Text>
-						<UnorderedList mt={3}>
+						<UnorderedList m={3}>
 							{document.map((document) => (
 								<ListItem key={document.key}>
 									{document.value}
