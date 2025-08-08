@@ -639,14 +639,6 @@ function checkDocumentExpiry(
 			(userDoc) => userDoc.doc_subtype === proof
 		);
 
-		console.log(
-			'result for proof',
-			proof,
-			result,
-			'userHasDoc:',
-			userHasDoc
-		);
-
 		if (userHasDoc) {
 			if (result.success && result.isExpired) {
 				expiredProofs.push(proof);
