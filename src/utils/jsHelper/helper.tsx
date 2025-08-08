@@ -367,11 +367,14 @@ interface UserData {
 	value: string;
 	length?: number;
 }
-export function getPreviewDetails(applicationData, documents) {
+export function getPreviewDetails(
+	applicationData: any,
+	documents?: { key: string; value: string }[]
+) {
 	let idCounter = 1; // To generate unique IDs
 	const result: UserData[] = [];
 
-	function formatKey(key) {
+	function formatKey(key: string) {
 		// Convert camelCase to space-separated
 		const spacedKey = key.replace(/([a-z])([A-Z])/g, '$1 $2');
 
@@ -384,23 +387,23 @@ export function getPreviewDetails(applicationData, documents) {
 
 	for (const key in applicationData) {
 		if (applicationData.hasOwnProperty(key)) {
-			// Skip keys listed in the `arr`
-			if (
-				!documents.some(
-					(doc: { key: string; value: string }) => doc.key === key
-				)
-			) {
-				result.push({
-					id: idCounter++,
-					label: formatKey(key),
-					value: applicationData[key],
-				});
-			}
+			// Skip vc_documents
+			if (key === 'vc_documents') continue;
+
+			// If documents exist, skip keys already present in them
+			if (documents?.some((doc) => doc.key === key)) continue;
+
+			result.push({
+				id: idCounter++,
+				label: formatKey(key),
+				value: applicationData[key],
+			});
 		}
 	}
 
 	return result;
 }
+
 function decodeFromBase64(base64Str: string): string {
 	try {
 		const base64Part = base64Str.replace(/^base64,/, '');
@@ -864,3 +867,19 @@ export const formatText = (value: string | number | null): string => {
 		)
 		.join(' ');
 };
+export function formatDocuments(vc_documents) {
+	const formatTitle = (str) =>
+		str
+			.replace(/([A-Z])/g, ' $1') // insert space before capital letters
+			.replace(/^./, (c) => c.toUpperCase()); // capitalize first letter
+
+	return vc_documents.map((doc) => {
+		const reasons = JSON.parse(doc.document_submission_reason); // parse stringified array
+		const formattedSubtype = formatTitle(doc.document_subtype);
+
+		return {
+			key: doc.document_subtype,
+			value: `Document for ${reasons.join(', ')} (${formattedSubtype})`,
+		};
+	});
+}
