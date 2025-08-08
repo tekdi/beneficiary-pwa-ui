@@ -384,20 +384,7 @@ export function getPreviewDetails(
 		// Capitalize each word
 		return normalizedKey.replace(/\b\w/g, (char) => char.toUpperCase());
 	}
-	const toDisplayString = (value: unknown): string => {
-		if (value == null || value === '') return '-';
-		if (
-			Array.isArray(value) ||
-			(typeof value === 'object' && value !== null)
-		) {
-			try {
-				return JSON.stringify(value);
-			} catch {
-				return String(value);
-			}
-		}
-		return String(value);
-	};
+
 	for (const key in applicationData) {
 		if (applicationData.hasOwnProperty(key)) {
 			// Skip vc_documents
@@ -409,7 +396,7 @@ export function getPreviewDetails(
 			result.push({
 				id: idCounter++,
 				label: formatKey(key),
-				value: toDisplayString(applicationData[key]),
+				value: applicationData[key],
 			});
 		}
 	}
