@@ -35,6 +35,7 @@ interface CommonDialogueProps {
 	documentName?: string;
 	document?: object;
 	previewDocument?: boolean;
+	docImageList?: string[];
 }
 const CommonDialogue: React.FC<CommonDialogueProps> = ({
 	isOpen,
@@ -45,18 +46,20 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 	documentName,
 	document,
 	previewDocument,
+	docImageList,
 }) => {
 	const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 	const handleAccordionChange = (expandedIndex) => {
 		setIsAccordionOpen(expandedIndex.length > 0);
 	};
+
 	const { t } = useTranslation();
 	if (previewDocument) {
 		return (
 			<Modal isOpen={previewDocument} onClose={onClose} size="lg">
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Preview Document</ModalHeader>
+					<ModalHeader>{t('DIALOGUE_PREVIEW_DOCUMENT_TITLE')}: {documentName}</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
 						<Box
@@ -76,7 +79,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 					</ModalBody>
 					<ModalFooter>
 						<CommonButton
-							label="Close"
+							label={t('DIALOGUE_CLOSE_BUTTON')}
 							onClick={onClose}
 							width="100px"
 						/>
@@ -91,7 +94,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 				<ModalOverlay />
 				<ModalContent borderRadius="md">
 					<ModalHeader className="border-bottom">
-						<Box className="heading">Confirmation</Box>
+						<Box className="heading">{t('DIALOGUE_CONFIRMATION_TITLE')}</Box>
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody
@@ -100,9 +103,8 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 						overflowY="auto" // Enables scrolling for Modal Body
 						p={5}
 					>
-						Are you sure you want to delete the document{' '}
-						<strong>{documentName}</strong>? This action cannot be
-						undone.
+						{t('DIALOGUE_DELETE_CONFIRMATION_MESSAGE')}{' '}
+						<strong>{documentName}</strong>? {t('DIALOGUE_DELETE_ACTION_WARNING')}
 					</ModalBody>
 					<ModalFooter>
 						<CommonButton
@@ -115,6 +117,48 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 			</Modal>
 		);
 	}
+	if (docImageList && docImageList.length > 0) {
+		return (
+			<Modal isOpen={true} onClose={onClose} size="xl">
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>
+						{t('DIALOGUE_DOCUMENT_IMAGE_PREVIEW_TITLE')}: {documentName}
+					</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody
+						display="flex"
+						flexDirection="column"
+						alignItems="center"
+						gap={4}
+						p={4}
+					>
+						{docImageList.map((img, idx) => (
+							<img
+								key={img.slice(0, 20)}
+								src={`${img}`}
+								alt={`Document Preview ${idx + 1}`}
+								style={{
+									maxWidth: '100%',
+									maxHeight: '60vh',
+									borderRadius: '8px',
+									objectFit: 'contain',
+								}}
+							/>
+						))}
+					</ModalBody>
+					<ModalFooter>
+						<CommonButton
+							label="Close"
+							onClick={onClose}
+							width="100px"
+						/>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		);
+	}
+
 	return (
 		<Modal isOpen={Boolean(isOpen)} onClose={onClose}>
 			<ModalOverlay />

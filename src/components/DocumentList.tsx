@@ -1,16 +1,26 @@
 import * as React from 'react';
-import { VStack, Text, Icon, HStack, useTheme, Box } from '@chakra-ui/react';
+import {
+	VStack,
+	Text,
+	Icon,
+	HStack,
+	useTheme,
+	Box,
+	Tooltip,
+} from '@chakra-ui/react';
 
 import { CheckCircleIcon, WarningIcon } from '@chakra-ui/icons';
 import Loader from './common/Loader';
-import { findDocumentStatus } from '../utils/jsHelper/helper';
-
+import { findDocumentStatus, getExpiryDate } from '../utils/jsHelper/helper';
+import { AiFillCloseCircle } from 'react-icons/ai';
 import DocumentActions from './DocumentActions';
+import DocumentExpiry from './DocumentExpiry';
+import { useTranslation } from 'react-i18next';
 interface StatusIconProps {
-	status: boolean;
+	status: string;
 	size?: number;
 	'aria-label'?: string;
-	userData: object;
+	userDocuments: UserDocument[];
 }
 
 interface Document {
@@ -33,29 +43,69 @@ interface UserDocument {
 }
 interface DocumentListProps {
 	documents: Document[] | string[];
-	userData: UserDocument;
+	userDocuments: UserDocument[];
 }
+
 const StatusIcon: React.FC<StatusIconProps> = ({
 	status,
 	size = 5,
 	'aria-label': ariaLabel,
-	userData,
+	userDocuments,
 }) => {
-	const result = findDocumentStatus(userData, status);
+	const { t } = useTranslation();
+	const result = findDocumentStatus(userDocuments, status);
+	const { success, isExpired } = getExpiryDate(userDocuments, status);
+	const documentExpired = success && isExpired;
+	let iconComponent;
+	let iconColor;
+
+	if (documentExpired) {
+		iconComponent = AiFillCloseCircle;
+		iconColor = '#C03744';
+	} else if (result?.matchFound) {
+		iconComponent = CheckCircleIcon;
+		iconColor = '#0B7B69';
+	} else {
+		iconComponent = WarningIcon;
+		iconColor = '#EDA145';
+	}
+
+	let label;
+
+	if (ariaLabel) {
+		label = ariaLabel;
+	} else {
+		let statusText;
+
+		if (isExpired) {
+			statusText = t('DOCUMENT_LIST_STATUS_EXPIRED');
+		} else if (result?.matchFound) {
+			statusText = t('DOCUMENT_LIST_STATUS_AVAILABLE');
+		} else {
+			statusText = t('DOCUMENT_LIST_STATUS_INCOMPLETE');
+		}
+
+		label = `${t('DOCUMENT_LIST_STATUS_PREFIX')}: ${statusText}`;
+	}
+
 	return (
-		<Icon
-			as={result?.matchFound ? CheckCircleIcon : WarningIcon}
-			color={result?.matchFound ? '#0B7B69' : '#EDA145'}
-			boxSize={size}
-			aria-label={
-				ariaLabel ||
-				`Document status: ${status ? 'Available' : 'Incomplete'}`
-			}
-		/>
+		<Tooltip label={label} hasArrow>
+			<Box display="inline-block">
+				<Icon
+					as={iconComponent}
+					color={iconColor}
+					boxSize={size}
+					aria-label={label}
+				/>
+			</Box>
+		</Tooltip>
 	);
 };
 
-const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
+const DocumentList: React.FC<DocumentListProps> = ({
+	documents,
+	userDocuments,
+}) => {
 	const theme = useTheme();
 
 	return documents && documents.length > 0 ? (
@@ -73,14 +123,14 @@ const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
 					paddingY={3}
 					alignItems="center"
 					spacing={3}
-					height={61}
+					height={70}
 					width="100%"
 					pl={2}
 				>
 					{/* Default status to false if not provided */}
 					<StatusIcon
 						status={document.documentSubType}
-						userData={userData}
+						userDocuments={userDocuments}
 					/>
 					<Box
 						display="flex"
@@ -88,18 +138,23 @@ const DocumentList: React.FC<DocumentListProps> = ({ documents, userData }) => {
 						justifyContent="space-between"
 						width={'100%'}
 					>
-						<Text
-							fontSize="16px"
-							fontWeight="400"
-							color={theme.colors.text}
-							width={'80%'}
-						>
-							{document.label}
-						</Text>
+						<Box width={'70%'}>
+							<Text
+								fontSize="16px"
+								fontWeight="400"
+								color={theme.colors.text}
+							>
+								{document.name}
+							</Text>
+							<DocumentExpiry
+								status={document.documentSubType}
+								userDocuments={userDocuments}
+							/>
+						</Box>
 
 						<DocumentActions
 							status={document.documentSubType}
-							userData={userData}
+							userDocuments={userDocuments}
 						/>
 					</Box>
 				</HStack>

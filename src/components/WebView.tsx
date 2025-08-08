@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { transformData } from '../utils/jsHelper/helper';
 import Layout from './common/layout/Layout';
 interface FormData {
 	user_id?: string;
@@ -19,7 +18,10 @@ interface BenefitItem {
 		value?: number;
 		currency?: string;
 	};
-	document?: string[];
+	document?: {
+		label?: string;
+		proof?: string;
+	}[];
 	tags?: Array<{
 		descriptor?: { code?: string; short_desc: string };
 		list?: Array<{ value?: string }>;
@@ -85,7 +87,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
 				src={url}
 				style={{ width: '100%' }}
 				title="Form UI"
-				name={JSON.stringify(transformData(formData) ?? {})}
+				name={JSON.stringify(formData ?? {})}
 			></iframe>
 		</Layout>
 	);
