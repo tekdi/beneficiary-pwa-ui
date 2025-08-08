@@ -287,7 +287,7 @@ const BenefitsDetails: React.FC = () => {
 				formData = {
 					...formData,
 					docs: filteredDocs,
-				} as any;
+				};
 			}
 
 			if (url) {
