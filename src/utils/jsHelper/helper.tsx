@@ -920,13 +920,14 @@ export const formatText = (value: string | number | null): string => {
 interface VcDocumentInterface {
 	document_subtype: string;
 	document_submission_reason: string;
-} // stringified JSON array +}
+}
 export function formatDocuments(
 	vc_documents: VcDocumentInterface[]
 ): { key: string; value: string }[] {
-	const formatTitle = (str) =>
+	const formatTitle = (str: string) =>
 		str
 			.replace(/([A-Z])/g, ' $1') // insert space before capital letters
+			.replace(/_/g, ' ') // replace underscores with spaces
 			.replace(/^./, (c) => c.toUpperCase()); // capitalize first letter
 
 	return vc_documents.map((doc) => {
@@ -935,13 +936,13 @@ export function formatDocuments(
 			reasons = JSON.parse(doc.document_submission_reason) as string[];
 		} catch {
 			reasons = [];
-		} // parse stringified array
+		}
 		const formattedSubtype = formatTitle(doc.document_subtype);
 
 		return {
 			key: doc.document_subtype,
 			value:
-				reasons.length == 0
+				reasons.length === 0
 					? formattedSubtype
 					: `Document for ${reasons.join(', ')} (${formattedSubtype})`,
 		};
