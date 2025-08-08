@@ -44,8 +44,8 @@ const FloatingPasswordInput: React.FC<FloatingPasswordInputProps> = ({
 		zIndex: 100,
 		transition: 'all 0.2s ease-out',
 		pointerEvents: 'none',
-		top: isFocused || value ? '-10px' : '32%', // Adjust position based on focus or value
-		color: 'gray.500',
+		top: isFocused || value ? '-10px' : '35%', // Adjust position based on focus or value
+		color: isFocused ? '#3182ce' : 'gray.500',
 		fontSize: isFocused || value ? '0.85rem' : '1rem',
 		transform: isFocused || value ? 'scale(0.85)' : 'translateY(-50%)',
 	};
@@ -81,9 +81,6 @@ const FloatingPasswordInput: React.FC<FloatingPasswordInputProps> = ({
 					pl="12px"
 					borderColor="var(--input-color)"
 					borderWidth="2px"
-					_focus={{
-						borderColor: 'gray.500',
-					}}
 				/>
 				<InputRightElement
 					width="4.5rem"
