@@ -368,7 +368,7 @@ interface UserData {
 	length?: number;
 }
 export function getPreviewDetails(
-	applicationData: any,
+	applicationData: Record<string, string>,
 	documents?: { key: string; value: string }[]
 ) {
 	let idCounter = 1; // To generate unique IDs
@@ -917,19 +917,33 @@ export const formatText = (value: string | number | null): string => {
 		)
 		.join(' ');
 };
-export function formatDocuments(vc_documents) {
+interface VcDocumentInterface {
+	document_subtype: string;
+	document_submission_reason: string;
+} // stringified JSON array +}
+export function formatDocuments(
+	vc_documents: VcDocumentInterface[]
+): { key: string; value: string }[] {
 	const formatTitle = (str) =>
 		str
 			.replace(/([A-Z])/g, ' $1') // insert space before capital letters
 			.replace(/^./, (c) => c.toUpperCase()); // capitalize first letter
 
 	return vc_documents.map((doc) => {
-		const reasons = JSON.parse(doc.document_submission_reason); // parse stringified array
+		let reasons: string[];
+		try {
+			reasons = JSON.parse(doc.document_submission_reason) as string[];
+		} catch {
+			reasons = [];
+		} // parse stringified array
 		const formattedSubtype = formatTitle(doc.document_subtype);
 
 		return {
 			key: doc.document_subtype,
-			value: `Document for ${reasons.join(', ')} (${formattedSubtype})`,
+			value:
+				reasons.length == 0
+					? formattedSubtype
+					: `Document for ${reasons.join(', ')} (${formattedSubtype})`,
 		};
 	});
 }
