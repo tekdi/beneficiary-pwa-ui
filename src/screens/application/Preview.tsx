@@ -79,6 +79,11 @@ const Preview: React.FC = () => {
 				setUserData(data);
 			} else {
 				const doc = getSubmmitedDoc(result?.data?.application_data);
+				const data = getPreviewDetails(
+					result?.data?.application_data,
+					doc
+				);
+				setUserData(data);
 				const seen = new Set();
 				const filteredDoc = doc.filter((item) => {
 					if (seen.has(item.value)) return false;
@@ -86,11 +91,6 @@ const Preview: React.FC = () => {
 					return true;
 				});
 				setDocument(filteredDoc);
-				const data = getPreviewDetails(
-					result?.data?.application_data,
-					doc
-				);
-				setUserData(data);
 			}
 
 			setBenefitName(result?.data?.external_application_id);
@@ -195,7 +195,7 @@ const Preview: React.FC = () => {
 				{userData && (
 					<>
 						<Text {...labelStyles}>Uploaded Documents</Text>
-						<UnorderedList mt={3}>
+						<UnorderedList m={3}>
 							{document.map((document) => (
 								<ListItem key={document.key}>
 									{document.value}
