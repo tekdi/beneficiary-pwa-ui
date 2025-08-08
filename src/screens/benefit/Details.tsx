@@ -102,6 +102,8 @@ interface AuthUser {
 	phone_number?: string;
 	username: string;
 	email: string;
+	dob: string;
+	age: number;
 }
 
 interface WebFormProps {
@@ -251,7 +253,7 @@ const BenefitsDetails: React.FC = () => {
 				'submitted',
 			].includes(applicationStatus?.toLowerCase() || '');
 
-			const formData = isEditableStatus
+			const baseFormData = isEditableStatus
 				? {
 						...(authUser || {}),
 						...(applicationData?.application_data || {}),
@@ -260,6 +262,17 @@ const BenefitsDetails: React.FC = () => {
 						remark: applicationData?.remark,
 					}
 				: (authUser ?? undefined);
+
+			// Calculate age from dob if present
+			const formData =
+				baseFormData && baseFormData?.dob
+					? {
+							...baseFormData,
+							age:
+								calculateAge(baseFormData.dob) ||
+								baseFormData.age,
+						}
+					: baseFormData;
 
 			if (url) {
 				setWebFormProp({

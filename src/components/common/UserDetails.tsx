@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Text, HStack, VStack } from '@chakra-ui/react';
-import { formatDate } from '../../utils/jsHelper/helper';
+import {
+	formatDate,
+	calculateAge,
+	formatText,
+} from '../../utils/jsHelper/helper';
 import { useTranslation } from 'react-i18next';
+import { getMapping } from '../../services/admin/admin';
 
 // Define common styles for Text and Input components
 const labelStyles = {
@@ -22,6 +27,17 @@ const valueStyles = {
 interface CustomField {
 	label: string;
 	value: string | number | null;
+	name?: string;
+}
+
+interface FieldConfig {
+	fieldId: string;
+	fieldName: string;
+	fieldType: string;
+	fieldValueNormalizationMapping?: Array<{
+		rawValue: string[];
+		transformedValue: string;
+	}>;
 }
 
 interface UserData {
@@ -42,12 +58,47 @@ interface FieldProps {
 	defaultValue?: string;
 }
 
-const Field: React.FC<FieldProps> = ({ label, value, defaultValue = '-' }) => (
+const Field: React.FC<FieldProps> = ({ label, value }) => (
 	<Box flex={1}>
 		<Text {...labelStyles}>{label}</Text>
-		<Text {...valueStyles}>{value ?? defaultValue}</Text>
+		<Text {...valueStyles}>{value}</Text>
 	</Box>
 );
+
+// Helper function to process field values based on field type
+const processFieldValue = (
+	field: CustomField,
+	userDob?: string | null,
+	fieldsConfig?: FieldConfig[]
+): string | number | null => {
+	// Handle null or empty values for any custom field
+	if (
+		field.value === null ||
+		field.value === undefined ||
+		field.value === ''
+	) {
+		return '-';
+	}
+
+	// Handle age field - calculate from DOB
+	if (field.name === 'age' && userDob) {
+		const calculatedAge = calculateAge(userDob);
+		return calculatedAge !== null ? calculatedAge.toString() : '-';
+	}
+
+	// Find field config for dynamic processing
+	const fieldConfig = fieldsConfig?.find(
+		(config) => config.fieldName === field.name
+	);
+
+	// If field has normalization mapping, apply formatText
+	if (fieldConfig?.fieldValueNormalizationMapping) {
+		return formatText(field.value);
+	}
+
+	// Return original value for all other fields
+	return field.value;
+};
 
 // Helper to chunk an array into pairs
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -58,12 +109,41 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 
 const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 	const { t } = useTranslation();
-	
+
+	// State for dynamic field configuration
+	const [fieldsConfig, setFieldsConfig] = useState<FieldConfig[]>([]);
+
+	// Load field configuration from API
+	useEffect(() => {
+		const loadFieldsConfig = async () => {
+			try {
+				const config = await getMapping(
+					'profileFieldToDocumentFieldMapping'
+				);
+				const configData = config?.data?.value || [];
+				setFieldsConfig(configData);
+			} catch (error) {
+				console.error('Failed to load fields config:', error);
+				setFieldsConfig([]); // Fallback to empty array
+			}
+		};
+		loadFieldsConfig();
+	}, []);
+
 	// Prepare base fields as an array
 	const baseFields = [
-		{ label: t('USER_DETAILS_FIRST_NAME'), value: userData?.firstName ?? '-' },
-		{ label: t('USER_DETAILS_MIDDLE_NAME'), value: userData?.middleName ?? '-' },
-		{ label: t('USER_DETAILS_LAST_NAME'), value: userData?.lastName ?? '-' },
+		{
+			label: t('USER_DETAILS_FIRST_NAME'),
+			value: userData?.firstName ?? '-',
+		},
+		{
+			label: t('USER_DETAILS_MIDDLE_NAME'),
+			value: userData?.middleName ?? '-',
+		},
+		{
+			label: t('USER_DETAILS_LAST_NAME'),
+			value: userData?.lastName ?? '-',
+		},
 		{
 			label: t('USER_DETAILS_DATE_OF_BIRTH'),
 			value: userData?.dob ? formatDate(userData?.dob) : '-',
@@ -104,7 +184,11 @@ const UserDetails: React.FC<UserDetailsProps> = ({ userData }) => {
 									{row.map((field) => (
 										<Field
 											label={field.label}
-											value={field.value}
+											value={processFieldValue(
+												field,
+												userData?.dob,
+												fieldsConfig
+											)}
 											key={field.label}
 										/>
 									))}
