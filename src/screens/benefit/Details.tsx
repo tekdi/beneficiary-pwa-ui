@@ -279,7 +279,7 @@ const BenefitsDetails: React.FC = () => {
 					: baseFormData;
 
 			// Filter out expired documents from form data if user has documents
-			if (formData && formData.docs && item?.document) {
+			if (formData?.docs && item?.document) {
 				const filteredDocs = filterExpiredDocuments(
 					formData.docs,
 					item.document
@@ -293,7 +293,7 @@ const BenefitsDetails: React.FC = () => {
 			if (url) {
 				setWebFormProp({
 					url,
-					formData: baseFormData,
+					formData,
 				});
 			} else {
 				setError(t('DETAILS_URL_NOT_FOUND_ERROR'));
