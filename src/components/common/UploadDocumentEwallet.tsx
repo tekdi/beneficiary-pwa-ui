@@ -42,6 +42,7 @@ interface ProcessResult {
 
 interface VCData {
 	json?: VerifiableCredential | string;
+	vcPublicId?: string;
 }
 
 interface WalletMessageData {
@@ -85,7 +86,9 @@ const UploadDocumentEwallet = () => {
 			setError('');
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
-			setError('Failed to fetch user data or documents. Please try again.');
+			setError(
+				'Failed to fetch user data or documents. Please try again.'
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -99,12 +102,14 @@ const UploadDocumentEwallet = () => {
 		const user = localStorage.getItem('user');
 
 		if (!walletToken || !user) {
-			setError('Wallet authentication data not found. Please ensure wallet is properly configured.');
+			setError(
+				'Unable to connect to wallet service. Please try logging in again.'
+			);
 			return;
 		}
 
 		if (!VITE_EWALLET_IFRAME_SRC) {
-			setError('Wallet configuration is missing. Please check your environment variables.');
+			setError('Wallet service is not not available.');
 			return;
 		}
 
@@ -153,8 +158,8 @@ const UploadDocumentEwallet = () => {
 			data: {
 				walletToken: walletToken,
 				user: user,
-				embeddedMode: true
-			}
+				embeddedMode: true,
+			},
 		};
 
 		try {
