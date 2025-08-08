@@ -35,8 +35,8 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
 		zIndex: 100,
 		transition: 'all 0.2s ease-out',
 		pointerEvents: 'none',
-		top: isFocused || value ? '-10px' : '40%', // Adjust based on focus or value
-		color: 'gray.500',
+		top: isFocused || value ? '-10px' : '35%', // Adjust based on focus or value
+		color: isFocused ? '#3182ce' : 'gray.500',
 		fontSize: isFocused || value ? '0.85rem' : '1rem',
 		transform: isFocused || value ? 'scale(0.85)' : 'translateY(-50%)',
 	};
@@ -69,9 +69,6 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
 				pl="12px"
 				borderColor="var(--input-color)"
 				borderWidth="2px"
-				_focus={{
-					borderColor: 'gray.500',
-				}}
 			/>
 			{isInvalid && touched && (
 				<FormErrorMessage mt={2}>{errorMessage}</FormErrorMessage>
