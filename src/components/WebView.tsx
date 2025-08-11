@@ -2,13 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import Layout from './common/layout/Layout';
 import { removeNullKeysTopLevel } from '../utils/jsHelper/helper';
 interface FormData {
-	user_id?: string | null;
-	name?: string | null;
-	current_class?: string | null;
-	previous_year_marks?: string | null;
-	phone_number?: string | null;
-	username?: string | null;
-	email?: string | null;
 	[key: string]: string | null | undefined;
 }
 interface BenefitItem {
