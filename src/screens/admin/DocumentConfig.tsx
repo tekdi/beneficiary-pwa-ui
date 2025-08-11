@@ -40,28 +40,32 @@ const DocumentConfig = () => {
 		[]
 	);
 	const [errors, setErrors] = useState<ValidationErrors>({});
-	
+
 	// --- State for document types ---
 	const [documentTypes, setDocumentTypes] = useState<string[]>([]);
 	const [isLoadingDocumentTypes, setIsLoadingDocumentTypes] = useState(true);
-	const [documentTypesFetchFailed, setDocumentTypesFetchFailed] = useState(false);
+	const [documentTypesFetchFailed, setDocumentTypesFetchFailed] =
+		useState(false);
 
 	// --- Fetch document types from API ---
 	useEffect(() => {
 		let isMounted = true;
-		
+
 		const fetchDocumentTypes = async () => {
 			try {
 				if (!isMounted) return;
 				setIsLoadingDocumentTypes(true);
 				setDocumentTypesFetchFailed(false);
-				
+
 				const mapping = await getMapping('documentTypeConfiguration');
-				
+
 				if (!isMounted) return;
-				
-				if (mapping?.data?.value?.documentType && Array.isArray(mapping.data.value.documentType)) {
-					setDocumentTypes(mapping.data.value.documentType);
+
+				if (
+					mapping?.value?.documentType &&
+					Array.isArray(mapping.value.documentType)
+				) {
+					setDocumentTypes(mapping.value.documentType);
 					setDocumentTypesFetchFailed(false);
 				} else {
 					console.warn('Document types not found in expected format');
@@ -70,12 +74,12 @@ const DocumentConfig = () => {
 				}
 			} catch (error) {
 				if (!isMounted) return;
-				
+
 				console.error('Error fetching document types:', error);
 				setDocumentTypesFetchFailed(true);
 				toast({
 					title: t('DOCUMENTCONFIG_ERROR_TITLE'),
-					description: t('DOCUMENTCONFIG_FETCH_ERROR'),
+					description: t('DOCUMENTCONFIG_FETCH_TYPES_ERROR'),
 					status: 'error',
 					duration: 2000,
 					isClosable: true,
@@ -87,9 +91,9 @@ const DocumentConfig = () => {
 				}
 			}
 		};
-		
+
 		fetchDocumentTypes();
-		
+
 		return () => {
 			isMounted = false;
 		};
@@ -192,8 +196,9 @@ const DocumentConfig = () => {
 		// If the field is 'vcFields', validate JSON and structure
 		if (field === 'vcFields') {
 			if (value.trim() !== '' && !validateVcFields(value)) {
-				newErrors[`vcFields_${index}`] =
-					t('DOCUMENTCONFIG_VC_FIELDS_INVALID_FORMAT');
+				newErrors[`vcFields_${index}`] = t(
+					'DOCUMENTCONFIG_VC_FIELDS_INVALID_FORMAT'
+				);
 			} else {
 				delete newErrors[`vcFields_${index}`];
 			}
@@ -207,14 +212,14 @@ const DocumentConfig = () => {
 		if (documentTypesFetchFailed) {
 			toast({
 				title: t('DOCUMENTCONFIG_ERROR_TITLE'),
-				description: 'Cannot add configuration. Document types failed to load. Please refresh the page.',
+				description: t('DOCUMENTCONFIG_CANNOT_ADD_CONFIG'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
 			});
 			return;
 		}
-		
+
 		setDocumentConfigs([
 			...documentConfigs,
 			{
@@ -240,14 +245,14 @@ const DocumentConfig = () => {
 		if (documentTypesFetchFailed) {
 			toast({
 				title: t('DOCUMENTCONFIG_ERROR_TITLE'),
-				description: 'Cannot save configurations. Document types failed to load. Please refresh the page.',
+				description: t('DOCUMENTCONFIG_CANNOT_SAVE_CONFIG'),
 				status: 'error',
 				duration: 3000,
 				isClosable: true,
 			});
 			return;
 		}
-		
+
 		let hasError = false;
 		const newErrors = {};
 		// Validate all required fields and vcFields structure
@@ -255,15 +260,17 @@ const DocumentConfig = () => {
 			['name', 'label', 'documentSubType', 'docType', 'vcFields'].forEach(
 				(field) => {
 					if (!doc[field]) {
-						newErrors[`${field}_${index}`] = `${field} ${t('DOCUMENTCONFIG_FIELD_REQUIRED')}`;
+						newErrors[`${field}_${index}`] =
+							`${field} ${t('DOCUMENTCONFIG_FIELD_REQUIRED')}`;
 						hasError = true;
 					}
 				}
 			);
 			if (doc.vcFields && doc.vcFields.trim() !== '') {
 				if (!validateVcFields(doc.vcFields)) {
-					newErrors[`vcFields_${index}`] =
-						t('DOCUMENTCONFIG_VC_FIELDS_INVALID_FORMAT');
+					newErrors[`vcFields_${index}`] = t(
+						'DOCUMENTCONFIG_VC_FIELDS_INVALID_FORMAT'
+					);
 					hasError = true;
 				} else {
 					delete newErrors[`vcFields_${index}`];
@@ -274,8 +281,7 @@ const DocumentConfig = () => {
 		if (hasError) {
 			toast({
 				title: t('DOCUMENTCONFIG_VALIDATION_ERROR_TITLE'),
-				description:
-					t('DOCUMENTCONFIG_VALIDATION_ERROR_MESSAGE'),
+				description: t('DOCUMENTCONFIG_VALIDATION_ERROR_MESSAGE'),
 				status: 'error',
 				duration: 2000,
 			});
@@ -324,24 +330,29 @@ const DocumentConfig = () => {
 				>
 					<Box>
 						<VStack spacing={6} align="stretch">
-							{documentTypesFetchFailed && !isLoadingDocumentTypes && (
-								<Box
-									bg="red.50"
-									border="1px solid"
-									borderColor="red.200"
-									borderRadius="md"
-									p={4}
-									mb={4}
-								>
-									<Text color="red.600" fontWeight="bold">
-										⚠️ Document Types Failed to Load
-									</Text>
-									<Text color="red.500" fontSize="sm">
-										Cannot add or modify configurations until document types are loaded successfully. 
-										Please refresh the page to try again.
-									</Text>
-								</Box>
-							)}
+							{documentTypesFetchFailed &&
+								!isLoadingDocumentTypes && (
+									<Box
+										bg="red.50"
+										border="1px solid"
+										borderColor="red.200"
+										borderRadius="md"
+										p={4}
+										mb={4}
+									>
+										<Text color="red.600" fontWeight="bold">
+											⚠️{' '}
+											{t(
+												'DOCUMENTCONFIG_TYPES_FAILED_WARNING'
+											)}
+										</Text>
+										<Text color="red.500" fontSize="sm">
+											{t(
+												'DOCUMENTCONFIG_TYPES_FAILED_MESSAGE'
+											)}
+										</Text>
+									</Box>
+								)}
 							{documentConfigs.map((doc, index) => (
 								<Box
 									key={doc.id}
@@ -358,7 +369,9 @@ const DocumentConfig = () => {
 											<IconButton
 												icon={<DeleteIcon />}
 												colorScheme="red"
-												aria-label={t('DOCUMENTCONFIG_REMOVE_ARIA')}
+												aria-label={t(
+													'DOCUMENTCONFIG_REMOVE_ARIA'
+												)}
 												size="lg"
 												variant="ghost"
 												onClick={() =>
@@ -391,7 +404,9 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													{t('DOCUMENTCONFIG_DOCUMENT_NAME_LABEL')}
+													{t(
+														'DOCUMENTCONFIG_DOCUMENT_NAME_LABEL'
+													)}
 													<Text
 														as="span"
 														color="red.500"
@@ -433,7 +448,9 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													{t('DOCUMENTCONFIG_DOCUMENT_LABEL_LABEL')}
+													{t(
+														'DOCUMENTCONFIG_DOCUMENT_LABEL_LABEL'
+													)}
 													<Text
 														as="span"
 														color="red.500"
@@ -487,7 +504,9 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													{t('DOCUMENTCONFIG_DOCUMENT_TYPE_LABEL')}
+													{t(
+														'DOCUMENTCONFIG_DOCUMENT_TYPE_LABEL'
+													)}
 													<Text
 														as="span"
 														color="red.500"
@@ -513,20 +532,30 @@ const DocumentConfig = () => {
 														boxShadow:
 															'0 0 0 2px #06164B33',
 													}}
-													isDisabled={isLoadingDocumentTypes || documentTypesFetchFailed}
+													isDisabled={
+														isLoadingDocumentTypes ||
+														documentTypesFetchFailed
+													}
 													placeholder={
-														isLoadingDocumentTypes 
-															? "Loading document types..." 
-															: documentTypesFetchFailed 
-																? "Document types failed to load"
-																: "Select document type"
+														isLoadingDocumentTypes
+															? 'Loading document types...'
+															: documentTypesFetchFailed
+																? t(
+																		'DOCUMENTCONFIG_TYPES_FAILED_WARNING'
+																	)
+																: 'Select document type'
 													}
 												>
-													{documentTypes.map((type) => (
-														<option key={type} value={type}>
-															{type}
-														</option>
-													))}
+													{documentTypes.map(
+														(type) => (
+															<option
+																key={type}
+																value={type}
+															>
+																{type}
+															</option>
+														)
+													)}
 												</Select>
 												<FormErrorMessage fontSize="xs">
 													{errors[`docType_${index}`]}
@@ -545,7 +574,9 @@ const DocumentConfig = () => {
 													fontWeight="bold"
 													color="#06164B"
 												>
-													{t('DOCUMENTCONFIG_DOCUMENT_SUB_TYPE_LABEL')}
+													{t(
+														'DOCUMENTCONFIG_DOCUMENT_SUB_TYPE_LABEL'
+													)}
 													<Text
 														as="span"
 														color="red.500"
@@ -591,7 +622,9 @@ const DocumentConfig = () => {
 												fontWeight="bold"
 												color="#06164B"
 											>
-												{t('DOCUMENTCONFIG_VC_FIELDS_LABEL')}
+												{t(
+													'DOCUMENTCONFIG_VC_FIELDS_LABEL'
+												)}
 												<Text as="span" color="red.500">
 													*
 												</Text>{' '}
@@ -599,7 +632,9 @@ const DocumentConfig = () => {
 													color="#06164B"
 													fontSize={12}
 												>
-													{t('DOCUMENTCONFIG_VC_FIELDS_DESCRIPTION')}
+													{t(
+														'DOCUMENTCONFIG_VC_FIELDS_DESCRIPTION'
+													)}
 												</Text>
 											</FormLabel>
 											<Textarea
@@ -611,7 +646,9 @@ const DocumentConfig = () => {
 														e.target.value
 													)
 												}
-												placeholder={t('DOCUMENTCONFIG_VC_FIELDS_PLACEHOLDER')}
+												placeholder={t(
+													'DOCUMENTCONFIG_VC_FIELDS_PLACEHOLDER'
+												)}
 												resize="vertical"
 												minH="200px"
 												bg="white"
@@ -652,7 +689,10 @@ const DocumentConfig = () => {
 								fontWeight="bold"
 								fontSize="md"
 								boxShadow="sm"
-								isDisabled={documentTypesFetchFailed || isLoadingDocumentTypes}
+								isDisabled={
+									documentTypesFetchFailed ||
+									isLoadingDocumentTypes
+								}
 							>
 								{t('DOCUMENTCONFIG_ADD_CONFIGURATION_BUTTON')}
 							</Button>
@@ -677,7 +717,10 @@ const DocumentConfig = () => {
 							fontSize="md"
 							boxShadow="sm"
 							onClick={handleSaveAll}
-							isDisabled={documentTypesFetchFailed || isLoadingDocumentTypes}
+							isDisabled={
+								documentTypesFetchFailed ||
+								isLoadingDocumentTypes
+							}
 						>
 							{t('DOCUMENTCONFIG_SAVE_ALL_BUTTON')}
 						</Button>
