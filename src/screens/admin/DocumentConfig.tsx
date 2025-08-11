@@ -315,6 +315,17 @@ const DocumentConfig = () => {
 		}
 	};
 
+	// --- Helper function to get document type select placeholder ---
+	const getDocumentTypeSelectPlaceholder = () => {
+		if (isLoadingDocumentTypes) {
+			return 'Loading document types...';
+		}
+		if (documentTypesFetchFailed) {
+			return t('DOCUMENTCONFIG_TYPES_FAILED_WARNING');
+		}
+		return 'Select document type';
+	};
+
 	return (
 		<Box bg="gray.50" minH="100vh" py={{ base: 4, md: 8 }}>
 			<Layout
@@ -537,13 +548,7 @@ const DocumentConfig = () => {
 														documentTypesFetchFailed
 													}
 													placeholder={
-														isLoadingDocumentTypes
-															? 'Loading document types...'
-															: documentTypesFetchFailed
-																? t(
-																		'DOCUMENTCONFIG_TYPES_FAILED_WARNING'
-																	)
-																: 'Select document type'
+														getDocumentTypeSelectPlaceholder()
 													}
 												>
 													{documentTypes.map(
