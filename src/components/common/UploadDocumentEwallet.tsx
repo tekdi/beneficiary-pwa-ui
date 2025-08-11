@@ -200,15 +200,24 @@ const UploadDocumentEwallet = () => {
 		const availableDocTypes = documents.map((doc: DocumentType) => doc.name).join(', ');
 		const matchedDocument = documents.find((doc: DocumentType) =>
 			parsedData?.credentialSchema?.title &&
-			typeof parsedData.credentialSchema.title === 'string' &&
-			parsedData.credentialSchema.title.includes(doc.name)
+				typeof parsedData.credentialSchema.title === 'string' &&
+				parsedData.credentialSchema.title.includes(doc.name)
 		);
 
-		const doc_data_link =
-			import.meta.env.VITE_DHIWAY_ISSUANCE_VERIFY_INSTANCE_URL +
-			'/' +
-			vcPublicId +
-			'.json';
+		if (!vcPublicId) {
+			throw new Error('vcPublicId is required to generate document link');
+		}
+
+		const baseUrl = import.meta.env
+			.VITE_DHIWAY_ISSUANCE_VERIFY_INSTANCE_URL;
+
+		if (!baseUrl) {
+			throw new Error(
+				'VITE_DHIWAY_ISSUANCE_VERIFY_INSTANCE_URL environment variable is not configured'
+			);
+		}
+
+		const doc_data_link = baseUrl + '/' + vcPublicId + '.json';
 
 		if (!matchedDocument) {
 			throw new Error(
