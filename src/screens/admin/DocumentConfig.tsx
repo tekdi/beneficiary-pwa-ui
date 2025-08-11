@@ -13,6 +13,7 @@ import {
 	Divider,
 	Textarea,
 	Text,
+	Select,
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { getMapping, updateMapping } from '../../services/admin/admin';
@@ -39,6 +40,39 @@ const DocumentConfig = () => {
 		[]
 	);
 	const [errors, setErrors] = useState<ValidationErrors>({});
+	
+	// --- State for document types ---
+	const [documentTypes, setDocumentTypes] = useState<string[]>([]);
+	const [isLoadingDocumentTypes, setIsLoadingDocumentTypes] = useState(true);
+
+	// --- Fetch document types from API ---
+	useEffect(() => {
+		const fetchDocumentTypes = async () => {
+			try {
+				setIsLoadingDocumentTypes(true);
+				const response = await getMapping('documentTypeConfiguration');
+				if (response?.data?.value?.documentType && Array.isArray(response.data.value.documentType)) {
+					setDocumentTypes(response.data.value.documentType);
+				} else {
+					console.warn('Document types not found in expected format');
+					setDocumentTypes([]);
+				}
+			} catch (error) {
+				console.error('Error fetching document types:', error);
+				toast({
+					title: t('DOCUMENTCONFIG_ERROR_TITLE'),
+					description: 'Failed to fetch document types',
+					status: 'error',
+					duration: 2000,
+					isClosable: true,
+				});
+				setDocumentTypes([]);
+			} finally {
+				setIsLoadingDocumentTypes(false);
+			}
+		};
+		fetchDocumentTypes();
+	}, [toast, t]);
 
 	// --- Fetch document configurations from API ---
 	useEffect(() => {
@@ -398,7 +432,7 @@ const DocumentConfig = () => {
 														*
 													</Text>
 												</FormLabel>
-												<Input
+												<Select
 													value={doc.docType}
 													onChange={(e) =>
 														handleChange(
@@ -416,7 +450,15 @@ const DocumentConfig = () => {
 														boxShadow:
 															'0 0 0 2px #06164B33',
 													}}
-												/>
+													isDisabled={isLoadingDocumentTypes}
+													placeholder={isLoadingDocumentTypes ? "Loading document types..." : "Select document type"}
+												>
+													{documentTypes.map((type) => (
+														<option key={type} value={type}>
+															{type}
+														</option>
+													))}
+												</Select>
 												<FormErrorMessage fontSize="xs">
 													{errors[`docType_${index}`]}
 												</FormErrorMessage>
