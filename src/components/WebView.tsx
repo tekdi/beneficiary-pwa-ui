@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import Layout from './common/layout/Layout';
 import { removeNullKeysTopLevel } from '../utils/jsHelper/helper';
 interface FormData {
-	user_id?: string;
-	name?: string;
-	current_class?: string;
-	previous_year_marks?: string;
-	phone_number?: string;
-	username?: string;
-	email?: string;
+	user_id?: string | null;
+	name?: string | null;
+	current_class?: string | null;
+	previous_year_marks?: string | null;
+	phone_number?: string | null;
+	username?: string | null;
+	email?: string | null;
+	[key: string]: string | null | undefined;
 }
 interface BenefitItem {
 	descriptor?: {
@@ -88,7 +89,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
 				src={url}
 				style={{ width: '100%' }}
 				title="Form UI"
-				name={JSON.stringify(removeNullKeysTopLevel(formData) ?? {})}
+				name={JSON.stringify(removeNullKeysTopLevel(formData ?? {}))}
 			></iframe>
 		</Layout>
 	);
