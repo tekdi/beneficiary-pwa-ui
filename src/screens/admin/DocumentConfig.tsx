@@ -62,10 +62,10 @@ const DocumentConfig = () => {
 				if (!isMounted) return;
 
 				if (
-					mapping?.value?.documentType &&
-					Array.isArray(mapping.value.documentType)
+					mapping?.data?.value?.documentType &&
+					Array.isArray(mapping.data.value.documentType)
 				) {
-					setDocumentTypes(mapping.value.documentType);
+					setDocumentTypes(mapping.data.value.documentType);
 					setDocumentTypesFetchFailed(false);
 				} else {
 					console.warn('Document types not found in expected format');
