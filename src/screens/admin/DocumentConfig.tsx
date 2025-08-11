@@ -44,34 +44,55 @@ const DocumentConfig = () => {
 	// --- State for document types ---
 	const [documentTypes, setDocumentTypes] = useState<string[]>([]);
 	const [isLoadingDocumentTypes, setIsLoadingDocumentTypes] = useState(true);
+	const [documentTypesFetchFailed, setDocumentTypesFetchFailed] = useState(false);
 
 	// --- Fetch document types from API ---
 	useEffect(() => {
+		let isMounted = true;
+		
 		const fetchDocumentTypes = async () => {
 			try {
+				if (!isMounted) return;
 				setIsLoadingDocumentTypes(true);
-				const response = await getMapping('documentTypeConfiguration');
-				if (response?.data?.value?.documentType && Array.isArray(response.data.value.documentType)) {
-					setDocumentTypes(response.data.value.documentType);
+				setDocumentTypesFetchFailed(false);
+				
+				const mapping = await getMapping('documentTypeConfiguration');
+				
+				if (!isMounted) return;
+				
+				if (mapping?.data?.value?.documentType && Array.isArray(mapping.data.value.documentType)) {
+					setDocumentTypes(mapping.data.value.documentType);
+					setDocumentTypesFetchFailed(false);
 				} else {
 					console.warn('Document types not found in expected format');
 					setDocumentTypes([]);
+					setDocumentTypesFetchFailed(true);
 				}
 			} catch (error) {
+				if (!isMounted) return;
+				
 				console.error('Error fetching document types:', error);
+				setDocumentTypesFetchFailed(true);
 				toast({
 					title: t('DOCUMENTCONFIG_ERROR_TITLE'),
-					description: 'Failed to fetch document types',
+					description: t('DOCUMENTCONFIG_FETCH_ERROR'),
 					status: 'error',
 					duration: 2000,
 					isClosable: true,
 				});
 				setDocumentTypes([]);
 			} finally {
-				setIsLoadingDocumentTypes(false);
+				if (isMounted) {
+					setIsLoadingDocumentTypes(false);
+				}
 			}
 		};
+		
 		fetchDocumentTypes();
+		
+		return () => {
+			isMounted = false;
+		};
 	}, [toast, t]);
 
 	// --- Fetch document configurations from API ---
@@ -182,6 +203,18 @@ const DocumentConfig = () => {
 
 	// --- Add and remove document configuration blocks ---
 	const addConfig = () => {
+		// Prevent adding new config if document types fetch failed
+		if (documentTypesFetchFailed) {
+			toast({
+				title: t('DOCUMENTCONFIG_ERROR_TITLE'),
+				description: 'Cannot add configuration. Document types failed to load. Please refresh the page.',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+		
 		setDocumentConfigs([
 			...documentConfigs,
 			{
@@ -190,7 +223,7 @@ const DocumentConfig = () => {
 				label: '',
 				documentSubType: '',
 				docType: '',
-				vcFields: '', // New field
+				vcFields: '',
 			},
 		]);
 	};
@@ -203,6 +236,18 @@ const DocumentConfig = () => {
 
 	// --- Save all document configurations to the backend ---
 	const handleSaveAll = async () => {
+		// Prevent saving if document types fetch failed
+		if (documentTypesFetchFailed) {
+			toast({
+				title: t('DOCUMENTCONFIG_ERROR_TITLE'),
+				description: 'Cannot save configurations. Document types failed to load. Please refresh the page.',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+		
 		let hasError = false;
 		const newErrors = {};
 		// Validate all required fields and vcFields structure
@@ -279,6 +324,24 @@ const DocumentConfig = () => {
 				>
 					<Box>
 						<VStack spacing={6} align="stretch">
+							{documentTypesFetchFailed && !isLoadingDocumentTypes && (
+								<Box
+									bg="red.50"
+									border="1px solid"
+									borderColor="red.200"
+									borderRadius="md"
+									p={4}
+									mb={4}
+								>
+									<Text color="red.600" fontWeight="bold">
+										⚠️ Document Types Failed to Load
+									</Text>
+									<Text color="red.500" fontSize="sm">
+										Cannot add or modify configurations until document types are loaded successfully. 
+										Please refresh the page to try again.
+									</Text>
+								</Box>
+							)}
 							{documentConfigs.map((doc, index) => (
 								<Box
 									key={doc.id}
@@ -450,8 +513,14 @@ const DocumentConfig = () => {
 														boxShadow:
 															'0 0 0 2px #06164B33',
 													}}
-													isDisabled={isLoadingDocumentTypes}
-													placeholder={isLoadingDocumentTypes ? "Loading document types..." : "Select document type"}
+													isDisabled={isLoadingDocumentTypes || documentTypesFetchFailed}
+													placeholder={
+														isLoadingDocumentTypes 
+															? "Loading document types..." 
+															: documentTypesFetchFailed 
+																? "Document types failed to load"
+																: "Select document type"
+													}
 												>
 													{documentTypes.map((type) => (
 														<option key={type} value={type}>
@@ -583,6 +652,7 @@ const DocumentConfig = () => {
 								fontWeight="bold"
 								fontSize="md"
 								boxShadow="sm"
+								isDisabled={documentTypesFetchFailed || isLoadingDocumentTypes}
 							>
 								{t('DOCUMENTCONFIG_ADD_CONFIGURATION_BUTTON')}
 							</Button>
@@ -607,6 +677,7 @@ const DocumentConfig = () => {
 							fontSize="md"
 							boxShadow="sm"
 							onClick={handleSaveAll}
+							isDisabled={documentTypesFetchFailed || isLoadingDocumentTypes}
 						>
 							{t('DOCUMENTCONFIG_SAVE_ALL_BUTTON')}
 						</Button>
