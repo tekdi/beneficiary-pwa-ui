@@ -1018,3 +1018,15 @@ export function filterExpiredDocuments(
 	});
 	return filteredDocuments;
 }
+
+export function removeNullKeysTopLevel<
+	T extends Record<string, unknown> | null | undefined
+>(obj: T): Partial<NonNullable<T>> {
+	if (obj == null) {
+		return {} as Partial<NonNullable<T>>;
+	}
+
+	return Object.fromEntries(
+		Object.entries(obj).filter(([, value]) => value !== null)
+	) as Partial<NonNullable<T>>;
+}
