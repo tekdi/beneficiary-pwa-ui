@@ -185,9 +185,7 @@ const UploadDocumentEwallet = () => {
 		try {
 			parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 		} catch {
-			throw new Error(
-				'Invalid document data format received from wallet.'
-			);
+			throw new Error('Invalid document data received from wallet.');
 		}
 
 		const documentsResponse = await getDocumentsList();
@@ -197,15 +195,20 @@ const UploadDocumentEwallet = () => {
 			documents = documentsResponse?.data?.value;
 		}
 
-		const availableDocTypes = documents.map((doc: DocumentType) => doc.name).join(', ');
-		const matchedDocument = documents.find((doc: DocumentType) =>
-			parsedData?.credentialSchema?.title &&
+		const availableDocTypes = documents
+			.map((doc: DocumentType) => doc.name)
+			.join(', ');
+		const matchedDocument = documents.find(
+			(doc: DocumentType) =>
+				parsedData?.credentialSchema?.title &&
 				typeof parsedData.credentialSchema.title === 'string' &&
 				parsedData.credentialSchema.title.includes(doc.name)
 		);
 
 		if (!vcPublicId) {
-			throw new Error('vcPublicId is required to generate document link');
+			throw new Error(
+				'Invalid or incomplete document data received from wallet.'
+			);
 		}
 
 		const baseUrl = import.meta.env
@@ -222,7 +225,7 @@ const UploadDocumentEwallet = () => {
 		if (!matchedDocument) {
 			throw new Error(
 				`The uploaded document does not match any of the accepted document types: ${availableDocTypes}. ` +
-				`Please select a valid document from your wallet.`
+					`Please select a valid document from your wallet.`
 			);
 		}
 
@@ -299,7 +302,10 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to process a single document
-	const getProcessDocumentError = (vc: VCData, docError: unknown): ProcessResult => {
+	const getProcessDocumentError = (
+		vc: VCData,
+		docError: unknown
+	): ProcessResult => {
 		let parsedJson: VerifiableCredential | undefined;
 		if (typeof vc.json === 'string') {
 			try {
@@ -334,6 +340,12 @@ const UploadDocumentEwallet = () => {
 	): Promise<ProcessResult | null> => {
 		if (!vc.json) return null;
 		try {
+			if (!vc.vcPublicId) {
+				throw new Error(
+					'Invalid or incomplete document data received from wallet.'
+				);
+			}
+
 			const payload = await preparePayload(vc.json, vc.vcPublicId);
 			await uploadUserDocuments(payload);
 			return {
@@ -348,7 +360,10 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to handle VC_SHARED type
-	const handleVCShared = async (data: WalletMessageData, processingToastIdRef: { current: string | number | undefined }) => {
+	const handleVCShared = async (
+		data: WalletMessageData,
+		processingToastIdRef: { current: string | number | undefined }
+	) => {
 		setIsProcessing(true);
 		if (!data?.vcs || !Array.isArray(data.vcs)) {
 			throw new Error('No valid documents received from wallet');
@@ -359,7 +374,9 @@ const UploadDocumentEwallet = () => {
 			title: 'Processing Documents',
 			description: (
 				<Box>
-					<Text mb={2}>Please wait while your documents are being processed...</Text>
+					<Text mb={2}>
+						Please wait while your documents are being processed...
+					</Text>
 					<Progress size="xs" isIndeterminate />
 				</Box>
 			),
