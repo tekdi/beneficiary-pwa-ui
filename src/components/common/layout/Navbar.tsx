@@ -20,10 +20,12 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 import CustomSelect from '../input/Select'; */
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../../utils/context/checkToken';
+
 import { logoutUser } from '../../../services/auth/auth';
 /* Language selection is disabled for now
- import { changeLanguage } from 'i18next'; */
+ import { changeLanguage } from 'i18next'; 
+ import { useAuth } from '../../../utils/context/checkToken';
+ */
 
 /* Language selection is disabled for now
 const options = [
@@ -35,9 +37,10 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
 	const [success] = useState<string>('');
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-	const { language, selectLanguage } = useAuth(); // No SONAR
+
 	const toast = useToast();
 	/* Language selection is disabled for now
+	 const { language, selectLanguage } = useAuth(); 
 	 const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
 		const { value } = e.target;
 		selectLanguage(e.target.value);
