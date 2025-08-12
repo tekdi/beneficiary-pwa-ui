@@ -147,6 +147,7 @@ const BenefitsDetails: React.FC = () => {
 	const [submitDialouge, setSubmitDialouge] = useState<boolean | object>(
 		false
 	);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
@@ -304,7 +305,14 @@ const BenefitsDetails: React.FC = () => {
 
 		setLoading(false);
 	};
-
+	useEffect(() => {
+		// Access localStorage only on client
+		try {
+		  setIsAuthenticated(!!localStorage.getItem('authToken'));
+		} catch {
+		  setIsAuthenticated(false);
+		}
+	  }, []);
 	const handleBack = () => {
 		navigate(-1);
 	};
@@ -735,7 +743,7 @@ const BenefitsDetails: React.FC = () => {
 								<Box width="70%">
 									<ListItem>{document.label}</ListItem>
 								</Box>
-								{localStorage.getItem('authToken') && (
+								{ isAuthenticated && (
 									<Box
 										width="30%"
 										display="flex"
@@ -759,7 +767,7 @@ const BenefitsDetails: React.FC = () => {
 						))}
 					</UnorderedList>
 
-					{localStorage.getItem('authToken') ? (
+					{ isAuthenticated ? (
 						<CommonButton
 							mt={6}
 							onClick={handleConfirmation}
