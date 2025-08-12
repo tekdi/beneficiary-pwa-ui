@@ -256,7 +256,6 @@ const BenefitsDetails: React.FC = () => {
 				'submitted',
 			].includes(applicationStatus?.toLowerCase() || '');
 
-			
 			const baseFormData = isEditableStatus
 				? {
 						...(authUser || {}),
@@ -736,25 +735,26 @@ const BenefitsDetails: React.FC = () => {
 								<Box width="70%">
 									<ListItem>{document.label}</ListItem>
 								</Box>
-
-								<Box
-									width="30%"
-									display="flex"
-									flexDirection="column"
-									alignItems="flex-end"
-									justifyContent="flex-start"
-									pt="2px"
-									gap={1} // vertical spacing between DocumentActions
-								>
-									{document.allowedProofs.map((proof) => (
-										<DocumentActions
-											key={proof}
-											status={proof}
-											userDocuments={userDocuments}
-											isDelete={false}
-										/>
-									))}
-								</Box>
+								{localStorage.getItem('authToken') && (
+									<Box
+										width="30%"
+										display="flex"
+										flexDirection="column"
+										alignItems="flex-end"
+										justifyContent="flex-start"
+										pt="2px"
+										gap={1} // vertical spacing between DocumentActions
+									>
+										{document.allowedProofs.map((proof) => (
+											<DocumentActions
+												key={proof}
+												status={proof}
+												userDocuments={userDocuments}
+												isDelete={false}
+											/>
+										))}
+									</Box>
+								)}
 							</Box>
 						))}
 					</UnorderedList>
