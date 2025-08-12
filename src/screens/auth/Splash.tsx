@@ -8,12 +8,12 @@ import {
 	Box,
 } from '@chakra-ui/react';
 import React from 'react';
-/* import {ChangeEvent} from 'react'; */ //NO SONAR
+import {ChangeEvent} from 'react'; //NO SONAR
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/styles/App.css';
 import CommonButton from '../../components/common/button/Button';
-/* import FloatingSelect from '../../components/common/input/FloatingSelect'; */
+import FloatingSelect from '../../components/common/input/FloatingSelect';
 
 import frameImage from '../../assets/images/frame.png';
 /* Language selection is disabled for now
