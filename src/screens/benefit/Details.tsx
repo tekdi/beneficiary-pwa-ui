@@ -147,6 +147,7 @@ const BenefitsDetails: React.FC = () => {
 	const [submitDialouge, setSubmitDialouge] = useState<boolean | object>(
 		false
 	);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
@@ -256,7 +257,6 @@ const BenefitsDetails: React.FC = () => {
 				'submitted',
 			].includes(applicationStatus?.toLowerCase() || '');
 
-			
 			const baseFormData = isEditableStatus
 				? {
 						...(authUser || {}),
@@ -305,7 +305,14 @@ const BenefitsDetails: React.FC = () => {
 
 		setLoading(false);
 	};
-
+	useEffect(() => {
+		// Access localStorage only on client
+		try {
+		  setIsAuthenticated(!!localStorage.getItem('authToken'));
+		} catch {
+		  setIsAuthenticated(false);
+		}
+	  }, []);
 	const handleBack = () => {
 		navigate(-1);
 	};
@@ -736,30 +743,31 @@ const BenefitsDetails: React.FC = () => {
 								<Box width="70%">
 									<ListItem>{document.label}</ListItem>
 								</Box>
-
-								<Box
-									width="30%"
-									display="flex"
-									flexDirection="column"
-									alignItems="flex-end"
-									justifyContent="flex-start"
-									pt="2px"
-									gap={1} // vertical spacing between DocumentActions
-								>
-									{document.allowedProofs.map((proof) => (
-										<DocumentActions
-											key={proof}
-											status={proof}
-											userDocuments={userDocuments}
-											isDelete={false}
-										/>
-									))}
-								</Box>
+								{ isAuthenticated && (
+									<Box
+										width="30%"
+										display="flex"
+										flexDirection="column"
+										alignItems="flex-end"
+										justifyContent="flex-start"
+										pt="2px"
+										gap={1} // vertical spacing between DocumentActions
+									>
+										{document.allowedProofs.map((proof) => (
+											<DocumentActions
+												key={proof}
+												status={proof}
+												userDocuments={userDocuments}
+												isDelete={false}
+											/>
+										))}
+									</Box>
+								)}
 							</Box>
 						))}
 					</UnorderedList>
 
-					{localStorage.getItem('authToken') ? (
+					{ isAuthenticated ? (
 						<CommonButton
 							mt={6}
 							onClick={handleConfirmation}
