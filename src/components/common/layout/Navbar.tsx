@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
+// import {ChangeEvent} from 'react'
 import {
 	Box,
 	Button,
@@ -20,8 +21,8 @@ import CustomSelect from '../input/Select'; */
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { logoutUser } from '../../../services/auth/auth';
-import { useAuth } from '../../../utils/context/checkToken';
 /* Language selection is disabled for now
+ import { useAuth } from '../../../utils/context/checkToken';
  import { changeLanguage } from 'i18next'; */
 
 /* Language selection is disabled for now
@@ -34,7 +35,7 @@ const Navbar: React.FC<{ isMenu?: boolean }> = ({ isMenu = true }) => {
 	const [success] = useState<string>('');
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-	/* const { language, selectLanguage } = useAuth(); */
+	/* const { language, selectLanguage } = useAuth(); */ // No SONAR
 	const toast = useToast();
 	/* Language selection is disabled for now
 	 const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {

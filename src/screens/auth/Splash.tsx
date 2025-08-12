@@ -8,7 +8,7 @@ import {
 	Box,
 } from '@chakra-ui/react';
 import React from 'react';
-/* import {ChangeEvent} from 'react'; */
+/* import {ChangeEvent} from 'react'; */ //NO SONAR
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/styles/App.css';
