@@ -6,7 +6,6 @@ import {
 	useTheme,
 	Button,
 	HStack,
-	useToast,
 } from '@chakra-ui/react';
 import Layout from './common/layout/Layout';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -19,7 +18,6 @@ interface ScanVCProps {
 const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const toast = useToast();
 	const [scanning, setScanning] = useState(false);
 	const [cameraError, setCameraError] = useState<string | null>(null);
 	const [isCameraStarting, setIsCameraStarting] = useState(false);
