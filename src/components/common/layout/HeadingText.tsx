@@ -63,15 +63,17 @@ const HeadingText: React.FC<HeadingTextProps> = ({
 							)}
 							{handleBack && <BackIcon onClick={handleBack} />}
 							{heading && (
-								<Text
-									fontFamily="Poppins"
-									fontSize="22px"
-									fontWeight="400"
-									lineHeight="28px"
-									color="#4D4639"
-									marginLeft={handleBack ? '2' : '0'}
-								>
-									{heading}{' '}
+								<Box>
+									<Text
+										fontFamily="Poppins"
+										fontSize="22px"
+										fontWeight="400"
+										lineHeight="28px"
+										color="#4D4639"
+										marginLeft={handleBack ? '2' : '0'}
+									>
+										{heading}{' '}
+									</Text>
 									{beneficiary && profileSubHeading && (
 										<Text
 											fontFamily="Poppins"
@@ -83,7 +85,7 @@ const HeadingText: React.FC<HeadingTextProps> = ({
 											{profileSubHeading}
 										</Text>
 									)}
-								</Text>
+								</Box>
 							)}
 
 							{isFilter && inputs && setFilter && (
