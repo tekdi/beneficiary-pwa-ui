@@ -36,11 +36,14 @@ const UserProfile: React.FC = () => {
 
 	useEffect(() => {
 		const storedUser = localStorage.getItem('user');
-
 		if (storedUser) {
-			const userData = JSON.parse(storedUser);
-			console.log(userData.accountId);
-			setUserName(userData.accountId); // Access accountId
+			try {
+				const storedUserData = JSON.parse(storedUser);
+				setUserName(String(storedUserData?.accountId ?? ''));
+			} catch (e) {
+				console.error('Failed to parse stored user JSON', e);
+				setUserName('');
+			}
 		}
 		if (!userData || !documents || documents.length === 0) {
 			init();
