@@ -32,7 +32,7 @@ interface BenefitCardProps {
 }
 
 const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
-	const extractValuesByDescriptors = (data, descriptorCodes) => {
+	/* const extractValuesByDescriptors = (data, descriptorCodes) => {
 		const values = [];
 
 		data.forEach((item) => {
@@ -69,7 +69,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
 		});
 
 		return values;
-	};
+	}; */ // NOSONAR
 
 	const id = item?.item_id;
 	const dateStr = item?.item?.time?.range?.end;

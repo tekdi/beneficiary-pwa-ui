@@ -19,7 +19,7 @@ interface ScanVCProps {
 const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	// const toast = useToast(); // NOSONAR
+	// const toast = useToast(); // NO SONAR
 	const [scanning, setScanning] = useState(false);
 	const [cameraError, setCameraError] = useState<string | null>(null);
 	const [isCameraStarting, setIsCameraStarting] = useState(false);
