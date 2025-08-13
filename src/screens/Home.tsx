@@ -27,6 +27,7 @@ const Home: React.FC = () => {
 	const [consentSaved, setConsentSaved] = useState(false);
 	// const { keycloak } = useKeycloak();
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
+	const [userName, setUserName] = useState('');
 	const purpose = 'sign_up_tnc';
 	const purpose_text = 'sign_up_tnc';
 	const toast = useToast();
@@ -97,6 +98,13 @@ const Home: React.FC = () => {
 	};
 
 	useEffect(() => {
+		const storedUser = localStorage.getItem('user');
+
+		if (storedUser) {
+			const userData = JSON.parse(storedUser);
+			console.log(userData.accountId);
+			setUserName(userData.accountId); // Access accountId
+		}
 		if (!userData || !documents || documents.length === 0) {
 			init();
 		}
@@ -176,6 +184,7 @@ const Home: React.FC = () => {
 			_heading={{
 				beneficiary: true,
 				heading: `${userData?.firstName || ''} ${userData?.lastName || ''}`,
+				profileSubHeading: `${userName}`,
 				// label: keycloak.tokenParsed?.preferred_username,
 			}}
 		>
@@ -200,7 +209,7 @@ const Home: React.FC = () => {
 						label={t('PROFILE_EXPLORE_BENEFITS')}
 					/>
 					{!showIframe ? (
-						<UploadDocumentEwallet/>
+						<UploadDocumentEwallet />
 					) : (
 						<CommonButton
 							onClick={() => setShowIframe(false)}
