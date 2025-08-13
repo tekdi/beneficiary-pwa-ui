@@ -69,7 +69,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
 		});
 
 		return values;
-	}; */ // NOSONAR
+	}; */ // NO SONAR
 
 	const id = item?.item_id;
 	const dateStr = item?.item?.time?.range?.end;
