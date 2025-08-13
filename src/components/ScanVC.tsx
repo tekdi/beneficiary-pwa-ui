@@ -9,7 +9,6 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 import Layout from './common/layout/Layout';
-import jsQR from 'jsqr';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useTranslation } from 'react-i18next';
 
