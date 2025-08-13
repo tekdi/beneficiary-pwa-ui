@@ -588,8 +588,6 @@ const BenefitsDetails: React.FC = () => {
 		return (
 			<WebViewFormSubmitWithRedirect
 				{...webFormProp}
-				context={context}
-				item={item}
 				submitConfirm={submitConfirm}
 			/>
 		);
