@@ -16,6 +16,7 @@ interface HeadingTextProps {
 		data: Array<{ label: string; value: string }>;
 	}[];
 	setFilter?: React.Dispatch<React.SetStateAction<unknown>>;
+	profileSubHeading?: string;
 }
 
 const BackIcon: React.FC<{ onClick: () => void; iconSize?: number }> = ({
@@ -42,6 +43,7 @@ const HeadingText: React.FC<HeadingTextProps> = ({
 	isFilter,
 	inputs,
 	setFilter,
+	profileSubHeading,
 }) => {
 	return (
 		<Box
@@ -69,7 +71,18 @@ const HeadingText: React.FC<HeadingTextProps> = ({
 									color="#4D4639"
 									marginLeft={handleBack ? '2' : '0'}
 								>
-									{heading}
+									{heading}{' '}
+									{beneficiary && profileSubHeading && (
+										<Text
+											fontFamily="Poppins"
+											fontSize="13px"
+											fontWeight="400"
+											color="#4D4639"
+											marginLeft={handleBack ? '2' : '0'}
+										>
+											{profileSubHeading}
+										</Text>
+									)}
 								</Text>
 							)}
 
