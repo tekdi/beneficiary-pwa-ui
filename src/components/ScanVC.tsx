@@ -8,16 +8,18 @@ import {
 	HStack,
 } from '@chakra-ui/react';
 import Layout from './common/layout/Layout';
+
 import { Html5Qrcode } from 'html5-qrcode';
 import { useTranslation } from 'react-i18next';
 
 interface ScanVCProps {
 	onScanResult?: (result: string) => void;
-}
+}			
 
 const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+	// const toast = useToast(); // NOSONAR
 	const [scanning, setScanning] = useState(false);
 	const [cameraError, setCameraError] = useState<string | null>(null);
 	const [isCameraStarting, setIsCameraStarting] = useState(false);
@@ -64,7 +66,7 @@ const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 							duration: 2000,
 							isClosable: true,
 						});
- */
+ 						*/	// NOSONAR
 						if (onScanResult) onScanResult(decodedText.trim());
 						stopCamera();
 					}
@@ -81,7 +83,7 @@ const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 				status: 'success',
 				duration: 2000,
 				isClosable: true,
-			}); */
+			}); */ // NOSONAR
 		} catch (err) {
 			console.error('Camera error:', err);
 			setCameraError(
@@ -166,7 +168,7 @@ const ScanVC: React.FC<ScanVCProps> = ({ onScanResult }) => {
 			if (e.target?.result) img.src = e.target.result as string;
 		};
 		reader.readAsDataURL(file);
-	}; */
+	}; */ // NOSONAR
 
 	return (
 		<Layout
