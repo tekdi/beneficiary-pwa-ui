@@ -2,8 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './i18n';
-// import keycloak from './keycloak';
-// import { ReactKeycloakProvider } from '@react-keycloak/web';
+// import keycloak from './keycloak'; // NOSONAR
+// import { ReactKeycloakProvider } from '@react-keycloak/web'; // NOSONAR
 
 const rootElement = document.getElementById('root');
 
