@@ -272,7 +272,7 @@ const BenefitsDetails: React.FC = () => {
 				? {
 						...baseFormData,
 						age: calculateAge(baseFormData.dob) || baseFormData.age,
-					}
+				}
 				: baseFormData;
 
 			// Filter out expired documents from form data if user has documents
