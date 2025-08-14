@@ -17,7 +17,7 @@ const DocumentScanner = lazy(() => import('../components/DocumentScanner'));
 const DocumentScannerRoute = () => {
 	const { userData } = useContext(AuthContext)!;
 	return (
-		<DocumentScanner userId={userData?.user_id} userData={userData?.docs} />
+		<DocumentScanner userId={userData?.user_id} userData={userData?.docs as any} />
 	);
 };
 const routes = [
