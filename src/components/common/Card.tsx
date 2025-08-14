@@ -32,7 +32,7 @@ interface BenefitCardProps {
 }
 
 const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
-	const extractValuesByDescriptors = (data, descriptorCodes) => {
+	/* const extractValuesByDescriptors = (data, descriptorCodes) => {
 		const values = [];
 
 		data.forEach((item) => {
@@ -69,18 +69,11 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ item }) => {
 		});
 
 		return values;
-	};
+	}; */ // NO SONAR
 
 	const id = item?.item_id;
 	const dateStr = item?.item?.time?.range?.end;
 	const formattedDate = dateStr ? formatDateString(dateStr) : '';
-	const eligibility = extractValuesByDescriptors(item?.item?.tags, [
-		'disabilityType',
-		'disabilityRange',
-		'class',
-		'annualIncome',
-	]);
-
 	return (
 		<Card
 			maxW="2xl"
