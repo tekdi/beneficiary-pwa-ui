@@ -49,6 +49,7 @@ interface UserDocument {
 	doc_verified: boolean;
 	uploaded_at: string;
 	is_uploaded: boolean;
+	doc_data_link: string;
 }
 
 interface DocumentScannerProps {
@@ -184,8 +185,9 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 			console.log('Scanned QR code URL:', result);
 
 			// Fetch VC JSON using the service method
-			const jsonData = await fetchVCJson(result);
-			console.log('jsonData', jsonData);
+			const jsonDataResult = await fetchVCJson(result);
+			const vcUrl = jsonDataResult?.data?.url;
+			const jsonData = jsonDataResult?.data?.vcData;
 
 			if (!jsonData || typeof jsonData !== 'object') {
 				throw new Error('Invalid document data structure');
@@ -216,6 +218,7 @@ const DocumentScanner: React.FC<DocumentScannerProps> = ({
 					uploaded_at: new Date().toISOString(),
 					imported_from: 'QR Code',
 					doc_datatype: 'Application/JSON',
+					doc_data_link: vcUrl,
 				},
 			];
 
