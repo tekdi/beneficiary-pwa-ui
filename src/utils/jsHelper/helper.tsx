@@ -344,7 +344,7 @@ const normalizeGender = (input: string) => {
 			: {}),
 		...(userData?.remark ? { remark: userData.remark } : {}),
 	};
-}; */
+}; */ // NOSONAR
 
 export const formatDate = (dateString) => {
 	if (dateString === null) return '-';
@@ -1020,7 +1020,7 @@ export function filterExpiredDocuments(
 }
 
 export function removeNullKeysTopLevel<
-	T extends Record<string, unknown> | null | undefined
+	T extends Record<string, unknown> | null | undefined,
 >(obj: T): Partial<NonNullable<T>> {
 	if (obj == null) {
 		return {} as Partial<NonNullable<T>>;

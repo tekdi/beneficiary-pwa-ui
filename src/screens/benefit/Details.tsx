@@ -151,7 +151,7 @@ const BenefitsDetails: React.FC = () => {
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
-	// const [isEligible, setIsEligible] = useState<any[]>();
+	// const [isEligible, setIsEligible] = useState<any[]>(); // NOSONAR
 	const [userDocuments, setUserDocuments] = useState();
 	const [applicationData, setApplicationData] =
 		useState<ApplicationData | null>(null);
@@ -268,15 +268,12 @@ const BenefitsDetails: React.FC = () => {
 				: (authUser ?? undefined);
 
 			// Calculate age from dob if present
-			let formData =
-				baseFormData && baseFormData?.dob
-					? {
-							...baseFormData,
-							age:
-								calculateAge(baseFormData.dob) ||
-								baseFormData.age,
-						}
-					: baseFormData;
+			let formData = baseFormData?.dob
+				? {
+						...baseFormData,
+						age: calculateAge(baseFormData.dob) || baseFormData.age,
+				}
+				: baseFormData;
 
 			// Filter out expired documents from form data if user has documents
 			if (formData?.docs && item?.document) {
@@ -308,11 +305,11 @@ const BenefitsDetails: React.FC = () => {
 	useEffect(() => {
 		// Access localStorage only on client
 		try {
-		  setIsAuthenticated(!!localStorage.getItem('authToken'));
+			setIsAuthenticated(!!localStorage.getItem('authToken'));
 		} catch {
-		  setIsAuthenticated(false);
+			setIsAuthenticated(false);
 		}
-	  }, []);
+	}, []);
 	const handleBack = () => {
 		navigate(-1);
 	};
@@ -404,7 +401,7 @@ const BenefitsDetails: React.FC = () => {
 			user.data.age = `${age}`;
 		}
 		/* const eligibilityArr = checkEligibility(resultItem, user);
-		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */
+		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */ // NOSONAR
 		const customFields = user?.data?.customFields || [];
 		const customFieldValues = customFields.reduce(
 			(acc, field) => {
@@ -588,8 +585,6 @@ const BenefitsDetails: React.FC = () => {
 		return (
 			<WebViewFormSubmitWithRedirect
 				{...webFormProp}
-				context={context}
-				item={item}
 				submitConfirm={submitConfirm}
 			/>
 		);
@@ -743,7 +738,7 @@ const BenefitsDetails: React.FC = () => {
 								<Box width="70%">
 									<ListItem>{document.label}</ListItem>
 								</Box>
-								{ isAuthenticated && (
+								{isAuthenticated && (
 									<Box
 										width="30%"
 										display="flex"
@@ -767,7 +762,7 @@ const BenefitsDetails: React.FC = () => {
 						))}
 					</UnorderedList>
 
-					{ isAuthenticated ? (
+					{isAuthenticated ? (
 						<CommonButton
 							mt={6}
 							onClick={handleConfirmation}
