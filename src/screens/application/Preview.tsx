@@ -15,6 +15,7 @@ import {
 	getPreviewDetails,
 	getSubmmitedDoc,
 } from '../../utils/jsHelper/helper';
+import { maskPIIValue, shouldMaskField } from '../../services/pii/piiMasking';
 
 interface UserData {
 	id: number;
@@ -50,6 +51,13 @@ const Preview: React.FC = () => {
 	const toast = useToast();
 	const handleBack = () => {
 		navigate('/applicationstatus');
+	};
+
+	// Simple helper to check if a field should be masked by its label
+	const shouldMaskFieldByLabel = (fieldLabel: string): boolean => {
+		// Convert label to likely field name format and check
+		const normalizedLabel = fieldLabel.toLowerCase().replace(/[^a-z]/g, '');
+		return shouldMaskField(normalizedLabel) || shouldMaskField(fieldLabel);
 	};
 
 	const init = async () => {
@@ -166,7 +174,9 @@ const Preview: React.FC = () => {
 										<Text {...valueStyles}>-</Text>
 									) : (
 										<Text {...valueStyles}>
-											{firstItem.value}
+											{shouldMaskFieldByLabel(firstItem.label)
+												? maskPIIValue(firstItem.label, firstItem.value)
+												: firstItem.value}
 										</Text>
 									)}
 								</Box>
@@ -181,7 +191,9 @@ const Preview: React.FC = () => {
 											<Text {...valueStyles}>-</Text>
 										) : (
 											<Text {...valueStyles}>
-												{secondItem.value}
+												{shouldMaskFieldByLabel(secondItem.label)
+													? maskPIIValue(secondItem.label, secondItem.value)
+													: secondItem.value}
 											</Text>
 										)}
 									</Box>

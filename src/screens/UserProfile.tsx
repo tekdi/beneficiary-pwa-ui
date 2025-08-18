@@ -13,6 +13,7 @@ import UserDetails from '../components/common/UserDetails';
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonButton from '../components/common/button/Button';
 import { useTranslation } from 'react-i18next';
+import { maskPIIValue, shouldMaskField } from '../services/pii/piiMasking';
 
 const UserProfile: React.FC = () => {
 	const [showIframe, setShowIframe] = useState(true);
@@ -93,7 +94,7 @@ const UserProfile: React.FC = () => {
 						alignSelf={'flex-start'}
 					>
 						{userData?.phoneNumber
-							? ` +91 ${userData?.phoneNumber}`
+							? ` +91 ${shouldMaskField('phoneNumber') || shouldMaskField('mobile') ? maskPIIValue('phoneNumber', userData?.phoneNumber) : userData?.phoneNumber}`
 							: t('USER_PROFILE_PHONE_NUMBER')}
 					</Text>
 				</VStack>
