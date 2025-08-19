@@ -5,9 +5,13 @@ import { fetchFields } from '../admin/admin';
  * Handles identification and masking of Personally Identifiable Information (PII) fields
  */
 
+// Normalize field keys across sources (API names, UI labels, etc.)
+const normalizeFieldKey = (name: unknown): string =>
+	String(name ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
 // Simple singleton to manage encrypted field names
 class PIIMaskingService {
-	private encryptedFields: Set<string> = new Set();
+	private readonly encryptedFields: Set<string> = new Set();
 	private isLoaded = false;
 	private isLoading = false;
 
@@ -24,8 +28,9 @@ class PIIMaskingService {
 			this.encryptedFields.clear();
 			
 			fields.forEach((field) => {
-				if (field.isEncrypted && field.name) {
-					this.encryptedFields.add(field.name.toString().toLowerCase());
+				const key = normalizeFieldKey(field.name);
+				if (field.isEncrypted && key) {
+					this.encryptedFields.add(key);
 				}
 			});
 			
@@ -44,11 +49,13 @@ class PIIMaskingService {
 	 * @returns true if the field should be masked, false otherwise
 	 */
 	shouldMaskField(fieldName: string): boolean {
+		const key = normalizeFieldKey(fieldName);
+		if (!key) return false;
+		// Only mask fields explicitly marked as encrypted in the API
 		if (!this.isLoaded) {
-			// If not loaded yet, don't mask (fail safe)
 			return false;
 		}
-		return this.encryptedFields.has(fieldName.toLowerCase());
+		return this.encryptedFields.has(key);
 	}
 
 	/**
@@ -76,7 +83,7 @@ class PIIMaskingService {
 		const raw = String(value);
 		if (!raw) return '-';
 
-		const normalizedFieldName = (fieldName || '').toLowerCase();
+		const normalizedFieldName = normalizeFieldKey(fieldName);
 		
 		// Special handling for Aadhaar - format as XXXX-XXXX-1234
 		if (normalizedFieldName === 'aadhaar' || normalizedFieldName === 'aadhar') {

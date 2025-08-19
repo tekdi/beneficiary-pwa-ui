@@ -51,6 +51,13 @@ const UserProfile: React.FC = () => {
 		}
 	}, [userData, documents]);
 
+	// Extract nested ternary for phone number display
+	const displayPhoneNumber = userData?.phoneNumber
+		? ` +91 ${shouldMaskField('phoneNumber') || shouldMaskField('mobile')
+			? maskPIIValue('phoneNumber', userData?.phoneNumber)
+			: userData?.phoneNumber}`
+		: t('USER_PROFILE_PHONE_NUMBER');
+
 	return (
 		<Layout
 			_heading={{
@@ -93,9 +100,7 @@ const UserProfile: React.FC = () => {
 						color="#433E3F"
 						alignSelf={'flex-start'}
 					>
-						{userData?.phoneNumber
-							? ` +91 ${shouldMaskField('phoneNumber') || shouldMaskField('mobile') ? maskPIIValue('phoneNumber', userData?.phoneNumber) : userData?.phoneNumber}`
-							: t('USER_PROFILE_PHONE_NUMBER')}
+						{displayPhoneNumber}
 					</Text>
 				</VStack>
 			</HStack>

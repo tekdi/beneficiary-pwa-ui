@@ -53,12 +53,9 @@ const Preview: React.FC = () => {
 		navigate('/applicationstatus');
 	};
 
-	// Simple helper to check if a field should be masked by its label
-	const shouldMaskFieldByLabel = (fieldLabel: string): boolean => {
-		// Convert label to likely field name format and check
-		const normalizedLabel = fieldLabel.toLowerCase().replace(/[^a-z]/g, '');
-		return shouldMaskField(normalizedLabel) || shouldMaskField(fieldLabel);
-	};
+	// Service now normalizes keys; delegate directly
+	const shouldMaskFieldByLabel = (fieldLabel: string): boolean =>
+		shouldMaskField(fieldLabel);
 
 	const init = async () => {
 		try {
