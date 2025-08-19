@@ -6,8 +6,19 @@ import { fetchFields } from '../admin/admin';
  */
 
 // Normalize field keys across sources (API names, UI labels, etc.)
-const normalizeFieldKey = (name: unknown): string =>
-	String(name ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const normalizeFieldKey = (name: unknown): string => {
+	if (name === null || name === undefined) {
+		return '';
+	}
+
+	// Only convert strings and numbers to avoid '[object Object]'
+	if (typeof name === 'string' || typeof name === 'number') {
+		return String(name).toLowerCase().replace(/[^a-z0-9]/g, '');
+	}
+
+	// For objects or other types, return empty string
+	return '';
+};
 
 // Simple singleton to manage encrypted field names
 class PIIMaskingService {

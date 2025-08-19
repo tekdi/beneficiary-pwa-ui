@@ -52,10 +52,12 @@ const UserProfile: React.FC = () => {
 	}, [userData, documents]);
 
 	// Extract nested ternary for phone number display
+	const shouldMaskPhoneNumber = shouldMaskField('phoneNumber') || shouldMaskField('mobile');
+	const phoneNumberValue = shouldMaskPhoneNumber 
+		? maskPIIValue('phoneNumber', userData?.phoneNumber)
+		: userData?.phoneNumber;
 	const displayPhoneNumber = userData?.phoneNumber
-		? ` +91 ${shouldMaskField('phoneNumber') || shouldMaskField('mobile')
-			? maskPIIValue('phoneNumber', userData?.phoneNumber)
-			: userData?.phoneNumber}`
+		? ` +91 ${phoneNumberValue}`
 		: t('USER_PROFILE_PHONE_NUMBER');
 
 	return (
