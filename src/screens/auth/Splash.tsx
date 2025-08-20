@@ -1,26 +1,28 @@
 import {
 	Flex,
-	FormControl,
+/* 	FormControl,
 	FormHelperText,
-	FormLabel,
+	FormLabel, */
 	Image,
 	Stack,
 	Box,
 } from '@chakra-ui/react';
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/styles/App.css';
 import CommonButton from '../../components/common/button/Button';
-import FloatingSelect from '../../components/common/input/FloatingSelect';
-
 import frameImage from '../../assets/images/frame.png';
+/* Language selection is disabled for now
 import { changeLanguage } from 'i18next';
-import { useAuth } from '../../utils/context/checkToken';
+import {ChangeEvent} from 'react'; 
+import FloatingSelect from '../../components/common/input/FloatingSelect';
+import { useAuth } from '../../utils/context/checkToken'; */
 const Splash: React.FC = () => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-
+	
+	/* Language selection is disabled for now
 	const { language, selectLanguage } = useAuth();
 	const options = [
 		{ label: t('LOGIN_ENGLISH'), value: 'en' },
@@ -32,7 +34,7 @@ const Splash: React.FC = () => {
 		const { value } = e.target;
 		selectLanguage(e.target.value);
 		changeLanguage(value);
-	};
+	}; */
 
 	const handleRedirect = () => {
 		navigate('/SignUp');
@@ -68,7 +70,7 @@ const Splash: React.FC = () => {
 					/>
 				</Flex>
 				<Stack p={4} mt={4} pt={12} className="login-form" shadow="lg">
-					<form>
+					{/* <form>
 						<FormControl>
 							<FormLabel color={'#45464F'}>
 								{t('LOGIN_SELECT_PREFERRED_LANGUAGE')}
@@ -84,7 +86,7 @@ const Splash: React.FC = () => {
 								{t('LOGIN_CHANGE_LATER')}
 							</FormHelperText>
 						</FormControl>
-					</form>
+					</form> */}
 					<CommonButton
 						onClick={handleRedirect}
 						label={t('LOGIN_REGISTER_BUTTON')}

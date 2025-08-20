@@ -70,7 +70,9 @@ const ApplicationStatus: React.FC = () => {
 			<Modal isOpen={true} onClose={() => setError(null)}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>{t('APPLICATION_STATUS_ERROR_MODAL')}</ModalHeader>
+					<ModalHeader>
+						{t('APPLICATION_STATUS_ERROR_MODAL')}
+					</ModalHeader>
 					<ModalBody>
 						<Text>{error}</Text>
 					</ModalBody>

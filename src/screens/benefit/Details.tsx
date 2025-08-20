@@ -35,6 +35,7 @@ import {
 	parseDocList,
 	validateBenefitEndDate,
 	validateRequiredDocuments,
+	filterExpiredDocuments,
 } from '../../utils/jsHelper/helper';
 
 import termsAndConditions from '../../assets/termsAndConditions.json';
@@ -104,6 +105,7 @@ interface AuthUser {
 	email: string;
 	dob: string;
 	age: number;
+	docs?: any[];
 }
 
 interface WebFormProps {
@@ -124,6 +126,7 @@ interface ApplicationData {
 	application_data?: Record<string, any>;
 	external_application_id?: string;
 	remark?: string;
+	docs?: any[];
 }
 const BenefitsDetails: React.FC = () => {
 	const [context, setContext] = useState<FinancialSupportRequest | null>(
@@ -144,10 +147,11 @@ const BenefitsDetails: React.FC = () => {
 	const [submitDialouge, setSubmitDialouge] = useState<boolean | object>(
 		false
 	);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
-	// const [isEligible, setIsEligible] = useState<any[]>();
+	// const [isEligible, setIsEligible] = useState<any[]>(); // NOSONAR
 	const [userDocuments, setUserDocuments] = useState();
 	const [applicationData, setApplicationData] =
 		useState<ApplicationData | null>(null);
@@ -264,15 +268,24 @@ const BenefitsDetails: React.FC = () => {
 				: (authUser ?? undefined);
 
 			// Calculate age from dob if present
-			const formData =
-				baseFormData && baseFormData?.dob
-					? {
-							...baseFormData,
-							age:
-								calculateAge(baseFormData.dob) ||
-								baseFormData.age,
-						}
-					: baseFormData;
+			let formData = baseFormData?.dob
+				? {
+						...baseFormData,
+						age: calculateAge(baseFormData.dob) || baseFormData.age,
+				}
+				: baseFormData;
+
+			// Filter out expired documents from form data if user has documents
+			if (formData?.docs && item?.document) {
+				const filteredDocs = filterExpiredDocuments(
+					formData.docs,
+					item.document
+				);
+				formData = {
+					...formData,
+					docs: filteredDocs,
+				};
+			}
 
 			if (url) {
 				setWebFormProp({
@@ -289,7 +302,14 @@ const BenefitsDetails: React.FC = () => {
 
 		setLoading(false);
 	};
-
+	useEffect(() => {
+		// Access localStorage only on client
+		try {
+			setIsAuthenticated(!!localStorage.getItem('authToken'));
+		} catch {
+			setIsAuthenticated(false);
+		}
+	}, []);
 	const handleBack = () => {
 		navigate(-1);
 	};
@@ -381,7 +401,7 @@ const BenefitsDetails: React.FC = () => {
 			user.data.age = `${age}`;
 		}
 		/* const eligibilityArr = checkEligibility(resultItem, user);
-		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */
+		setIsEligible(eligibilityArr.length > 0 ? eligibilityArr : undefined); */ // NOSONAR
 		const customFields = user?.data?.customFields || [];
 		const customFieldValues = customFields.reduce(
 			(acc, field) => {
@@ -565,8 +585,6 @@ const BenefitsDetails: React.FC = () => {
 		return (
 			<WebViewFormSubmitWithRedirect
 				{...webFormProp}
-				context={context}
-				item={item}
 				submitConfirm={submitConfirm}
 			/>
 		);
@@ -720,30 +738,31 @@ const BenefitsDetails: React.FC = () => {
 								<Box width="70%">
 									<ListItem>{document.label}</ListItem>
 								</Box>
-
-								<Box
-									width="30%"
-									display="flex"
-									flexDirection="column"
-									alignItems="flex-end"
-									justifyContent="flex-start"
-									pt="2px"
-									gap={1} // vertical spacing between DocumentActions
-								>
-									{document.allowedProofs.map((proof) => (
-										<DocumentActions
-											key={proof}
-											status={proof}
-											userDocuments={userDocuments}
-											isDelete={false}
-										/>
-									))}
-								</Box>
+								{isAuthenticated && (
+									<Box
+										width="30%"
+										display="flex"
+										flexDirection="column"
+										alignItems="flex-end"
+										justifyContent="flex-start"
+										pt="2px"
+										gap={1} // vertical spacing between DocumentActions
+									>
+										{document.allowedProofs.map((proof) => (
+											<DocumentActions
+												key={proof}
+												status={proof}
+												userDocuments={userDocuments}
+												isDelete={false}
+											/>
+										))}
+									</Box>
+								)}
 							</Box>
 						))}
 					</UnorderedList>
 
-					{localStorage.getItem('authToken') ? (
+					{isAuthenticated ? (
 						<CommonButton
 							mt={6}
 							onClick={handleConfirmation}

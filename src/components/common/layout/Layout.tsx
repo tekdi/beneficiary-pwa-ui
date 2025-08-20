@@ -31,6 +31,7 @@ interface LayoutProps {
 		}[];
 		handleBack?: () => void;
 		label?: string;
+		profileSubHeading?: string;
 	};
 	isBottombar?: boolean;
 	isSearchbar?: boolean;

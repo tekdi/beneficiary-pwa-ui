@@ -13,24 +13,25 @@ import Layout from '../components/common/layout/Layout';
 import { AuthContext } from '../utils/context/checkToken';
 import { useTranslation } from 'react-i18next';
 import DocumentList from '../components/DocumentList';
-// import { useKeycloak } from '@react-keycloak/web';
+// import { useKeycloak } from '@react-keycloak/web'; // NOSONAR
 import '../assets/styles/App.css';
 import UploadDocumentEwallet from '../components/common/UploadDocumentEwallet';
 import CommonDialogue from '../components/common/Dialogue';
 import termsAndConditions from '../assets/termsAndConditions.json';
-/* import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar'; */
+/* import { getAadhar, getDigiLockerRequest } from '../services/dhiway/aadhar'; */ // NOSONAR
 
 const Home: React.FC = () => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const [showIframe, setShowIframe] = useState(false);
 	const [consentSaved, setConsentSaved] = useState(false);
-	// const { keycloak } = useKeycloak();
+	// const { keycloak } = useKeycloak(); // NOSONAR
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
+	const [userName, setUserName] = useState('');
 	const purpose = 'sign_up_tnc';
 	const purpose_text = 'sign_up_tnc';
 	const toast = useToast();
-	/* 	const [fetchingAadhar, setFetchingAadhar] = useState(false); */
+	/* 	const [fetchingAadhar, setFetchingAadhar] = useState(false); */ // NOSONAR
 
 	const handleRedirect = () => {
 		navigate('/explorebenefits');
@@ -97,6 +98,16 @@ const Home: React.FC = () => {
 	};
 
 	useEffect(() => {
+		const storedUser = localStorage.getItem('user');
+		if (storedUser) {
+			try {
+				const storedUserData = JSON.parse(storedUser);
+				setUserName(String(storedUserData?.accountId ?? ''));
+			} catch (e) {
+				console.error('Failed to parse stored user JSON', e);
+				setUserName('');
+			}
+		}
 		if (!userData || !documents || documents.length === 0) {
 			init();
 		}
@@ -169,13 +180,14 @@ const Home: React.FC = () => {
 		} catch (err) {
 			console.error('Error fetching DigiLocker URL:', err);
 		}
-	}; */
+	}; */ // NOSONAR
 
 	return (
 		<Layout
 			_heading={{
 				beneficiary: true,
 				heading: `${userData?.firstName || ''} ${userData?.lastName || ''}`,
+				profileSubHeading: `${userName}`,
 				// label: keycloak.tokenParsed?.preferred_username,
 			}}
 		>
@@ -200,7 +212,7 @@ const Home: React.FC = () => {
 						label={t('PROFILE_EXPLORE_BENEFITS')}
 					/>
 					{!showIframe ? (
-						<UploadDocumentEwallet/>
+						<UploadDocumentEwallet />
 					) : (
 						<CommonButton
 							onClick={() => setShowIframe(false)}

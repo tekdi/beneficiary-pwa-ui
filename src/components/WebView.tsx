@@ -1,54 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import Layout from './common/layout/Layout';
+import { removeNullKeysTopLevel } from '../utils/jsHelper/helper';
 interface FormData {
-	user_id?: string;
-	name?: string;
-	current_class?: string;
-	previous_year_marks?: string;
-	phone_number?: string;
-	username?: string;
-	email?: string;
-}
-interface BenefitItem {
-	descriptor?: {
-		name?: string;
-		long_desc?: string;
-	};
-	price?: {
-		value?: number;
-		currency?: string;
-	};
-	document?: {
-		label?: string;
-		proof?: string;
-	}[];
-	tags?: Array<{
-		descriptor?: { code?: string; short_desc: string };
-		list?: Array<{ value?: string }>;
-	}>;
+	[key: string]: string | null | undefined;
 }
 interface WebViewFormSubmitWithRedirectProps {
 	url?: string;
 	formData?: FormData;
-	context?: FinancialSupportRequest;
-	item?: BenefitItem;
 	submitConfirm?: (content: string) => void;
-}
-
-interface FinancialSupportRequest {
-	domain: string;
-	action: string;
-	version: string;
-	bpp_id: string;
-	bpp_uri: string;
-	country: string;
-	city: string;
-	bap_id: string;
-	bap_uri: string;
-	transaction_id: string;
-	message_id: string;
-	ttl: string;
-	timestamp: string;
 }
 
 const WebViewFormSubmitWithRedirect: React.FC<
@@ -87,7 +46,7 @@ const WebViewFormSubmitWithRedirect: React.FC<
 				src={url}
 				style={{ width: '100%' }}
 				title="Form UI"
-				name={JSON.stringify(formData ?? {})}
+				name={JSON.stringify(removeNullKeysTopLevel(formData ?? {}))}
 			></iframe>
 		</Layout>
 	);

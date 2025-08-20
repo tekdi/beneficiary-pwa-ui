@@ -19,7 +19,7 @@ const UserProfile: React.FC = () => {
 	const { userData, documents, updateUserData } = useContext(AuthContext)!;
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-
+	const [userName, setUserName] = useState('');
 	const handleBack = () => {
 		navigate(-2);
 	};
@@ -35,6 +35,16 @@ const UserProfile: React.FC = () => {
 	};
 
 	useEffect(() => {
+		const storedUser = localStorage.getItem('user');
+		if (storedUser) {
+			try {
+				const storedUserData = JSON.parse(storedUser);
+				setUserName(String(storedUserData?.accountId ?? ''));
+			} catch (e) {
+				console.error('Failed to parse stored user JSON', e);
+				setUserName('');
+			}
+		}
 		if (!userData || !documents || documents.length === 0) {
 			init();
 		}
@@ -67,9 +77,18 @@ const UserProfile: React.FC = () => {
 						{userData?.lastName || ''}
 					</Text>
 					<Text
+						fontSize="12px"
+						fontWeight="500"
+						lineHeight="16px"
+						color="#433E3F"
+						alignSelf={'flex-start'}
+					>
+						{userName}
+					</Text>
+					<Text
 						fontSize="11px"
 						fontWeight="500"
-						lineHeight="24px"
+						lineHeight="16px"
 						color="#433E3F"
 						alignSelf={'flex-start'}
 					>
@@ -108,10 +127,11 @@ const UserProfile: React.FC = () => {
 						middleName: userData?.middleName,
 						lastName: userData?.lastName,
 						dob: userData?.dob,
-						customFields: userData?.customFields?.map(field => ({
-							...field,
-							value: String(field.value || '')
-						})) || [],
+						customFields:
+							userData?.customFields?.map((field) => ({
+								...field,
+								value: String(field.value || ''),
+							})) || [],
 					}}
 				/>
 				<Box
