@@ -74,7 +74,7 @@ function App() {
 		<ChakraProvider theme={theme}>
 			<AuthProvider>
 				<Suspense fallback={<Loader />}>
-					<Router>
+					<Router future={{ v7_startTransition: true }}>
 						<Routes>
 							{routes?.map((item, index) => (
 								<Route
