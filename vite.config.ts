@@ -14,8 +14,8 @@ export default defineConfig({
 				'apple-touch-icon.png',
 			],
 			manifest: {
-				name: 'Digi-Vritti one-click Scholarship',
-				short_name: 'Digi-Vritti',
+				name: 'Digi-Vrtti one-click Scholarship',
+				short_name: 'Digi-Vrtti',
 				description: 'My PWA with Vite and React',
 				theme_color: '#ffffff',
 				icons: [
