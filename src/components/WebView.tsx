@@ -4,46 +4,10 @@ import { removeNullKeysTopLevel } from '../utils/jsHelper/helper';
 interface FormData {
 	[key: string]: string | null | undefined;
 }
-interface BenefitItem {
-	descriptor?: {
-		name?: string;
-		long_desc?: string;
-	};
-	price?: {
-		value?: number;
-		currency?: string;
-	};
-	document?: {
-		label?: string;
-		proof?: string;
-	}[];
-	tags?: Array<{
-		descriptor?: { code?: string; short_desc: string };
-		list?: Array<{ value?: string }>;
-	}>;
-}
 interface WebViewFormSubmitWithRedirectProps {
 	url?: string;
 	formData?: FormData;
-	context?: FinancialSupportRequest;
-	item?: BenefitItem;
 	submitConfirm?: (content: string) => void;
-}
-
-interface FinancialSupportRequest {
-	domain: string;
-	action: string;
-	version: string;
-	bpp_id: string;
-	bpp_uri: string;
-	country: string;
-	city: string;
-	bap_id: string;
-	bap_uri: string;
-	transaction_id: string;
-	message_id: string;
-	ttl: string;
-	timestamp: string;
 }
 
 const WebViewFormSubmitWithRedirect: React.FC<

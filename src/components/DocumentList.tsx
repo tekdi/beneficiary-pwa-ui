@@ -117,7 +117,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
 		>
 			{documents.map((document) => (
 				<HStack
-					key={document.code}
+					key={document.docType}
 					borderBottomWidth="1px"
 					borderBottomColor={theme.colors.border}
 					paddingY={3}

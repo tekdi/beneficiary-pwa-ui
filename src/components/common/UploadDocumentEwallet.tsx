@@ -29,6 +29,7 @@ interface UploadPayload {
 	uploaded_at: string;
 	imported_from: string;
 	doc_datatype: string;
+	doc_data_link: string;
 }
 
 interface ProcessResult {
@@ -41,6 +42,7 @@ interface ProcessResult {
 
 interface VCData {
 	json?: VerifiableCredential | string;
+	vcPublicId?: string;
 }
 
 interface WalletMessageData {
@@ -84,7 +86,9 @@ const UploadDocumentEwallet = () => {
 			setError('');
 		} catch (error) {
 			console.error('Error fetching user data or documents:', error);
-			setError('Failed to fetch user data or documents. Please try again.');
+			setError(
+				'Failed to fetch user data or documents. Please try again.'
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -98,12 +102,14 @@ const UploadDocumentEwallet = () => {
 		const user = localStorage.getItem('user');
 
 		if (!walletToken || !user) {
-			setError('Wallet authentication data not found. Please ensure wallet is properly configured.');
+			setError(
+				'Unable to connect to wallet service. Please try logging in again.'
+			);
 			return;
 		}
 
 		if (!VITE_EWALLET_IFRAME_SRC) {
-			setError('Wallet configuration is missing. Please check your environment variables.');
+			setError('Wallet service is not not available.');
 			return;
 		}
 
@@ -152,8 +158,8 @@ const UploadDocumentEwallet = () => {
 			data: {
 				walletToken: walletToken,
 				user: user,
-				embeddedMode: true
-			}
+				embeddedMode: true,
+			},
 		};
 
 		try {
@@ -171,17 +177,17 @@ const UploadDocumentEwallet = () => {
 
 	// Prepare payload for document upload
 	const preparePayload = async (
-		data: VerifiableCredential | string
+		data: VerifiableCredential | string,
+		vcPublicId: string
 	): Promise<UploadPayload[]> => {
 		// Parse the stringified JSON if it's a string
 		let parsedData: VerifiableCredential;
 		try {
 			parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 		} catch {
-			throw new Error('Invalid document data format received from wallet.');
+			throw new Error('Invalid document data received from wallet.');
 		}
-		console.log('Parsed data:', parsedData);
-		
+
 		const documentsResponse = await getDocumentsList();
 		// Ensure we have an array of documents, assuming documents are in data property
 		let documents: DocumentType[] = [];
@@ -189,31 +195,52 @@ const UploadDocumentEwallet = () => {
 			documents = documentsResponse?.data?.value;
 		}
 
-		console.log('Available documents:', documents);
-
-		const availableDocTypes = documents.map((doc: DocumentType) => doc.name).join(', ');
-		const matchedDocument = documents.find((doc: DocumentType) =>
-			parsedData?.credentialSchema?.title &&
-			typeof parsedData.credentialSchema.title === 'string' &&
-			parsedData.credentialSchema.title.includes(doc.name)
+		const availableDocTypes = documents
+			.map((doc: DocumentType) => doc.name)
+			.join(', ');
+		const matchedDocument = documents.find(
+			(doc: DocumentType) =>
+				parsedData?.credentialSchema?.title &&
+				typeof parsedData.credentialSchema.title === 'string' &&
+				parsedData.credentialSchema.title.includes(doc.name)
 		);
+
+		if (!vcPublicId) {
+			throw new Error(
+				'Invalid or incomplete document data received from wallet.'
+			);
+		}
+
+		const baseUrl = import.meta.env
+			.VITE_DHIWAY_ISSUANCE_VERIFY_INSTANCE_URL;
+
+		if (!baseUrl) {
+			throw new Error(
+				'VITE_DHIWAY_ISSUANCE_VERIFY_INSTANCE_URL environment variable is not configured'
+			);
+		}
+
+		const doc_data_link = baseUrl + '/' + vcPublicId + '.json';
 
 		if (!matchedDocument) {
 			throw new Error(
 				`The uploaded document does not match any of the accepted document types: ${availableDocTypes}. ` +
-				`Please select a valid document from your wallet.`
+					`Please select a valid document from your wallet.`
 			);
 		}
 
-		return [{
-			doc_name: matchedDocument.name,
-			doc_type: matchedDocument.docType,
-			doc_subtype: matchedDocument.documentSubType,
-			doc_data: parsedData,
-			uploaded_at: new Date().toISOString(),
-			imported_from: 'e-wallet',
-			doc_datatype: 'Application/JSON',
-		}];
+		return [
+			{
+				doc_name: matchedDocument.name,
+				doc_type: matchedDocument.docType,
+				doc_subtype: matchedDocument.documentSubType,
+				doc_data: parsedData,
+				uploaded_at: new Date().toISOString(),
+				imported_from: 'e-wallet',
+				doc_datatype: 'Application/JSON',
+				doc_data_link: doc_data_link,
+			},
+		];
 	};
 
 	// Helper to show upload status toast
@@ -275,7 +302,10 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to process a single document
-	const getProcessDocumentError = (vc: VCData, docError: unknown): ProcessResult => {
+	const getProcessDocumentError = (
+		vc: VCData,
+		docError: unknown
+	): ProcessResult => {
 		let parsedJson: VerifiableCredential | undefined;
 		if (typeof vc.json === 'string') {
 			try {
@@ -305,15 +335,23 @@ const UploadDocumentEwallet = () => {
 		};
 	};
 
-	const processDocument = async (vc: VCData): Promise<ProcessResult | null> => {
+	const processDocument = async (
+		vc: VCData
+	): Promise<ProcessResult | null> => {
 		if (!vc.json) return null;
 		try {
-			const payload = await preparePayload(vc.json);
+			if (!vc.vcPublicId) {
+				throw new Error(
+					'Invalid or incomplete document data received from wallet.'
+				);
+			}
+
+			const payload = await preparePayload(vc.json, vc.vcPublicId);
 			await uploadUserDocuments(payload);
 			return {
 				success: true,
 				docName: payload[0].doc_name,
-				docType: payload[0].doc_type
+				docType: payload[0].doc_type,
 			};
 		} catch (docError: unknown) {
 			console.error('Error processing document:', docError);
@@ -322,7 +360,10 @@ const UploadDocumentEwallet = () => {
 	};
 
 	// Helper to handle VC_SHARED type
-	const handleVCShared = async (data: WalletMessageData, processingToastIdRef: { current: string | number | undefined }) => {
+	const handleVCShared = async (
+		data: WalletMessageData,
+		processingToastIdRef: { current: string | number | undefined }
+	) => {
 		setIsProcessing(true);
 		if (!data?.vcs || !Array.isArray(data.vcs)) {
 			throw new Error('No valid documents received from wallet');
@@ -333,7 +374,9 @@ const UploadDocumentEwallet = () => {
 			title: 'Processing Documents',
 			description: (
 				<Box>
-					<Text mb={2}>Please wait while your documents are being processed...</Text>
+					<Text mb={2}>
+						Please wait while your documents are being processed...
+					</Text>
 					<Progress size="xs" isIndeterminate />
 				</Box>
 			),
