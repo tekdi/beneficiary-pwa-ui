@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Text, VStack, Divider, HStack, Button } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { Box, Text, VStack, Divider, HStack, Button, Link } from '@chakra-ui/react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
 	IoCheckmarkCircle,
 	IoCloseCircle,
@@ -155,16 +155,19 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 									<React.Fragment
 										key={app.internal_application_id}
 									>
-										<Box
+										<Link
+											as={RouterLink}
+											to={`/previewapplication/${app.internal_application_id}`}
 											width="100%"
 											px="16px"
 											py="12px"
-											_hover={{ bg: '#F5F5F5' }}
+											_hover={{ 
+												bg: '#F5F5F5',
+												textDecoration: 'none'
+											}}
 											position="relative"
 											pb={paddingBottom}
-											cursor="pointer"
-											role="link"
-											tabIndex={0}
+											display="block"
 											aria-label={`View ${app.application_name}`}
 											title={`View ${app.application_name}`}
 											_focusVisible={{
@@ -172,19 +175,6 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 												outlineColor: '#3c5fdd',
 												outlineOffset: '2px'
 											}}
-											onKeyDown={(e) => {
-												if (e.key === 'Enter') {
-													e.preventDefault();
-													navigate(
-														`/previewapplication/${app.internal_application_id}`
-													);
-												}
-											}}
-											onClick={() =>
-												navigate(
-													`/previewapplication/${app.internal_application_id}`
-												)
-											}
 										>
 											<Text
 												fontSize="14px"
@@ -228,7 +218,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 													)}
 												</Button>
 											)}
-										</Box>
+										</Link>
 										{i !== arr.length - 1 && (
 											<Divider
 												borderColor="#E2E8F0"
