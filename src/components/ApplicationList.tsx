@@ -163,6 +163,23 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 											position="relative"
 											pb={paddingBottom}
 											cursor="pointer"
+											role="link"
+											tabIndex={0}
+											aria-label={`View ${app.application_name}`}
+											title={`View ${app.application_name}`}
+											_focusVisible={{
+												outline: '2px solid',
+												outlineColor: '#3c5fdd',
+												outlineOffset: '2px'
+											}}
+											onKeyDown={(e) => {
+												if (e.key === 'Enter') {
+													e.preventDefault();
+													navigate(
+														`/previewapplication/${app.internal_application_id}`
+													);
+												}
+											}}
 											onClick={() =>
 												navigate(
 													`/previewapplication/${app.internal_application_id}`
