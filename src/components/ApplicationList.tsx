@@ -156,19 +156,18 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 										key={app.internal_application_id}
 									>
 										<Box
-											as="button"
-											onClick={() =>
-												navigate(
-													`/previewapplication/${app.internal_application_id}`
-												)
-											}
 											width="100%"
-											textAlign="left"
 											px="16px"
 											py="12px"
 											_hover={{ bg: '#F5F5F5' }}
 											position="relative"
 											pb={paddingBottom}
+											cursor="pointer"
+											onClick={() =>
+												navigate(
+													`/previewapplication/${app.internal_application_id}`
+												)
+											}
 										>
 											<Text
 												fontSize="14px"
