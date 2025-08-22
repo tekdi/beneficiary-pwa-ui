@@ -1,5 +1,13 @@
 import React from 'react';
-import { Box, Text, VStack, Divider, HStack, Button, Link } from '@chakra-ui/react';
+import {
+	Box,
+	Text,
+	VStack,
+	Divider,
+	HStack,
+	Button,
+	Link,
+} from '@chakra-ui/react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
 	IoCheckmarkCircle,
@@ -161,9 +169,9 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 											width="100%"
 											px="16px"
 											py="12px"
-											_hover={{ 
+											_hover={{
 												bg: '#F5F5F5',
-												textDecoration: 'none'
+												textDecoration: 'none',
 											}}
 											position="relative"
 											pb={paddingBottom}
@@ -173,7 +181,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 											_focusVisible={{
 												outline: '2px solid',
 												outlineColor: '#3c5fdd',
-												outlineOffset: '2px'
+												outlineOffset: '2px',
 											}}
 										>
 											<Text
