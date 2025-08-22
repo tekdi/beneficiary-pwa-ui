@@ -19,8 +19,8 @@ jobs:
       - name: Install dependencies and build project
         run: |
           echo '${{ secrets.ENV_UBA_DEV }}' > .env
-          npm install --legacy-peer-deps
-          npm run build
+          yarn install
+          yarn build
 
       - name: Install AWS CLI
         run: |
