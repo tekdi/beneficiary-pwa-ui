@@ -31,7 +31,8 @@ function App() {
 			const decoded = jwtDecode(token) as DecodedToken;
 			// Check for roles in resource_access
 			const resourceAccess = decoded.resource_access || {};
-			const beneficiaryRoles = resourceAccess['beneficiary-app']?.roles || [];
+			const beneficiaryRoles =
+				resourceAccess['beneficiary-app']?.roles || [];
 
 			const isAdmin = beneficiaryRoles.includes('admin');
 			const isBeneficiary = beneficiaryRoles.includes('beneficiary');
@@ -74,7 +75,12 @@ function App() {
 		<ChakraProvider theme={theme}>
 			<AuthProvider>
 				<Suspense fallback={<Loader />}>
-					<Router>
+					<Router
+						future={{
+							v7_startTransition: true,
+							v7_relativeSplatPath: true,
+						}}
+					>
 						<Routes>
 							{routes?.map((item, index) => (
 								<Route
