@@ -1567,10 +1567,10 @@
     lodash-es "^4.17.21"
     react-is "^18.2.0"
 
-"@rjsf/validator-ajv6@^5.23.1":
-  version "5.24.12"
-  resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv6/-/validator-ajv6-5.24.12.tgz#845d6bd37975ee18a176ea2249bbc5000a589132"
-  integrity sha512-yEDAstLeoO9FIaB4692wLAKkYtJy2dvCdqu8n4gknHdzg5kols7xOWaJCoyyke9BKP+LBOEuFkQi9Gfmr/l6Fg==
+"@rjsf/validator-ajv6@^5.24.13":
+  version "5.24.13"
+  resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv6/-/validator-ajv6-5.24.13.tgz#5f1358d4c85b23dbb662e2cbf57411c98c35ebf1"
+  integrity sha512-BepDcRERVqhPBtIiU7JGqpch3+rfrx+767LcVXYgjx9fHe8SHYAHQz/mbAD9X2bG2u95vd6jrchq5edxsqLYzQ==
   dependencies:
     ajv "^6.12.6"
     lodash "^4.17.21"
