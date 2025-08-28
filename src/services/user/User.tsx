@@ -79,3 +79,31 @@ export const deleteDocument = async (id) => {
 		throw error;
 	}
 };
+
+/**
+ * Fetches user fields from the API for terms and conditions.
+ * @returns {Promise<Array>} - Promise representing the API response with user fields.
+ */
+export const getUserFields = async () => {
+	const token = localStorage.getItem('authToken');
+	
+	try {
+		const response = await axios.get(
+			`${apiBaseUrl}/fields/context/USERS`,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+			}
+		);
+
+		return response.data;
+	} catch (error) {
+		console.error(
+			'Error fetching user fields:',
+			error.response?.data || error.message
+		);
+		throw error;
+	}
+};
