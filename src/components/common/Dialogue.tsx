@@ -279,7 +279,7 @@ const CommonDialogue: React.FC<CommonDialogueProps> = ({
 															<Text
 																color={'#4D4639'}
 																size="14px"
-																key={`field-${index}`}
+																key={`field-${field.name}`}
 																mb={1}
 															>
 																• {field.label}
