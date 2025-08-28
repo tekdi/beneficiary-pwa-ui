@@ -81,15 +81,17 @@ export const deleteDocument = async (id) => {
 };
 
 /**
- * Fetches user fields from the API for terms and conditions.
- * @returns {Promise<Array>} - Promise representing the API response with user fields.
+ * Fetches fields from the API based on context and filter criteria.
+ * @param {string} context - The context type for filtering fields (e.g., 'USERS').
+ * @param {string} filterDataFields - Comma-separated list of fields to include in response (e.g., 'name,label').
+ * @returns {Promise<Array>} - Promise representing the API response with filtered fields.
  */
-export const getUserFields = async () => {
+export const getUserFields = async (context = 'USERS', filterDataFields = 'name,label') => {
 	const token = localStorage.getItem('authToken');
-	
+
 	try {
 		const response = await axios.get(
-			`${apiBaseUrl}/fields/context/USERS`,
+			`${apiBaseUrl}/fields?context=${context}&filterDataFields=${filterDataFields}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
