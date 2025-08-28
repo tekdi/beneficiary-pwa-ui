@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "clean:vite": "rm -rf node_modules/.vite",
+    "build": "yarn clean:vite && tsc -b && vite build",
     "lint": "eslint 'src/**/*.{js,mjs,cjs,ts,jsx,tsx}'",
     "lint:fix": "eslint 'src/**/*.{js,mjs,cjs,ts,jsx,tsx}' --fix",
     "preview": "vite preview",

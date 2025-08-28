@@ -1,6 +1,14 @@
 import React from 'react';
-import { Box, Text, VStack, Divider, HStack, Button } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import {
+	Box,
+	Text,
+	VStack,
+	Divider,
+	HStack,
+	Button,
+	Link,
+} from '@chakra-ui/react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
 	IoCheckmarkCircle,
 	IoCloseCircle,
@@ -155,20 +163,26 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 									<React.Fragment
 										key={app.internal_application_id}
 									>
-										<Box
-											as="button"
-											onClick={() =>
-												navigate(
-													`/previewapplication/${app.internal_application_id}`
-												)
-											}
+										<Link
+											as={RouterLink}
+											to={`/previewapplication/${app.internal_application_id}`}
 											width="100%"
-											textAlign="left"
 											px="16px"
 											py="12px"
-											_hover={{ bg: '#F5F5F5' }}
+											_hover={{
+												bg: '#F5F5F5',
+												textDecoration: 'none',
+											}}
 											position="relative"
 											pb={paddingBottom}
+											display="block"
+											aria-label={`View ${app.application_name}`}
+											title={`View ${app.application_name}`}
+											_focusVisible={{
+												outline: '2px solid',
+												outlineColor: '#3c5fdd',
+												outlineOffset: '2px',
+											}}
 										>
 											<Text
 												fontSize="14px"
@@ -212,7 +226,7 @@ const ApplicationList: React.FC<ApplicationListProps> = ({
 													)}
 												</Button>
 											)}
-										</Box>
+										</Link>
 										{i !== arr.length - 1 && (
 											<Divider
 												borderColor="#E2E8F0"
